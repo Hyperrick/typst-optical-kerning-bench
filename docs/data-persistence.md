@@ -5,16 +5,15 @@ The preference suite has two persistence layers:
 1. Local browser persistence through `localStorage`.
 2. Optional central persistence through the Cloudflare Worker endpoints.
 
-Generate a hosted site with central submission enabled:
+Generate the hosted site with central submission enabled:
 
 ```sh
 cargo run -p optikern-cli -- survey \
   --submit-endpoint https://typst-optical-kerning-bench.example.workers.dev/submit
 ```
 
-If no endpoint is configured, the `Submit Results` button reports that
-submission is not connected in that build. The public page does not include a
-JSON export path.
+If no endpoint is configured, the generated site is a local/static preview only.
+The public page does not include a JSON export path.
 
 When the submit endpoint ends in `/submit`, the generator derives the public
 results endpoint as `/results`. Use `--results-endpoint` only if the aggregate
@@ -79,57 +78,7 @@ participant:
 fingerprint:
 ```
 
-## Submitted Payload
-
-The page sends one JSON document per participant session:
-
-```json
-{
-  "schemaVersion": 6,
-  "createdAt": "2026-06-21T14:00:00.000Z",
-  "participantId": "4adf1b58-...",
-  "sessionId": "9c75d222-...",
-  "seed": "1780000000000",
-  "order": [12, 3, 44],
-  "sides": [[3, 0, 2, 4, 1], [1, 4, 0, 2, 3]],
-  "votes": [
-    {
-      "trialId": "eb-garamond:word:avatar:five-way",
-      "fontId": "eb-garamond",
-      "family": "EB Garamond",
-      "category": "serif",
-      "kind": "word",
-      "sample": "AVATAR",
-      "shownModes": [
-        "nearest-contour-distance",
-        "profile-whitespace",
-        "area-balance",
-        "metric-prior-hybrid",
-        "safe-fallback-only"
-      ],
-      "vote": "3",
-      "winner": "metric-prior-hybrid",
-      "losers": [
-        "nearest-contour-distance",
-        "profile-whitespace",
-        "area-balance",
-        "safe-fallback-only"
-      ],
-      "loser": "nearest-contour-distance,profile-whitespace,area-balance,safe-fallback-only",
-      "confidence": null,
-      "recordedAt": "2026-06-21T14:01:00.000Z"
-    }
-  ],
-  "selectedTrialCount": 30,
-  "trialCount": 30,
-  "trialPoolCount": 40,
-  "completed": 30,
-  "userAgent": "Mozilla/5.0 ...",
-  "pageUrl": "https://example.github.io/typst-optical-kerning-bench/"
-}
-```
-
-## Recommended V1 Backend
+## Backend Contract
 
 For GitHub Pages, use a small endpoint outside Pages. Cloudflare Workers plus
 KV is a reasonable V1 choice because no write or reset secret is exposed in the

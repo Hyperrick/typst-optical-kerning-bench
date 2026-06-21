@@ -41,15 +41,15 @@ Do not point Pages directly at `reports/`; that folder is ignored and meant for
 local generated output. The hosted survey embeds samples as SVG paths, so it
 does not need runtime font files.
 
-## Vote Collection
+## Runtime Data Flow
 
 GitHub Pages cannot receive or store votes by itself. The V1 collection model
 is:
 
-1. Participant opens the hosted page.
-2. Participant completes blind five-way A-E trials.
-3. Participant clicks `Submit Results`.
-4. The configured endpoint stores the session in the backing KV/database.
+1. `index.html` runs entirely as a static page.
+2. It autosaves progress in browser `localStorage`.
+3. At the end, it posts the completed session to the configured Worker.
+4. The Worker stores the session in Cloudflare KV.
 5. `results.html` reads public aggregates from the configured `/results`
    endpoint.
 
