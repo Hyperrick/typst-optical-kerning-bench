@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "guarded-v4-review-eb-garamond-100pt-no-ligatures",
+  "status": "side-shape-aware-tuning-pass",
+  "algorithm": "guarded-profile-hybrid",
+  "sampleManifest": "corpus/samples/guarded-v1-review.json",
+  "renderSummary": "renders/guarded-v4-review/eb-garamond-100pt-no-ligatures/summary.json",
+  "settings": {
+    "fontId": "eb-garamond",
+    "fontFamily": "EB Garamond",
+    "pointSize": 100,
+    "ligatures": false,
+    "dpi": 300
+  },
+  "runStatus": {
+    "sampleCount": 32,
+    "okCount": 32,
+    "errorCount": 0
+  },
+  "comparisonToGuardedV3": {
+    "avgAbsEmV3": 0.0313,
+    "avgAbsEmV4": 0.0235,
+    "maxAbsEmV3": 0.1152,
+    "maxAbsEmV4": 0.0624
+  },
+  "categorySignal": [
+    {"category": "alphanumeric", "v3AvgAbsEm": 0.0156, "v4AvgAbsEm": 0.0168},
+    {"category": "baseline-word", "v3AvgAbsEm": 0.0048, "v4AvgAbsEm": 0.0048},
+    {"category": "lowercase-pair", "v3AvgAbsEm": 0.0048, "v4AvgAbsEm": 0.0048},
+    {"category": "lowercase-word", "v3AvgAbsEm": 0.0195, "v4AvgAbsEm": 0.0195},
+    {"category": "mixed-pair", "v3AvgAbsEm": 0.0224, "v4AvgAbsEm": 0.0184},
+    {"category": "mixed-word", "v3AvgAbsEm": 0.0408, "v4AvgAbsEm": 0.0368},
+    {"category": "numbers", "v3AvgAbsEm": 0.0840, "v4AvgAbsEm": 0.0264},
+    {"category": "punctuation-pair", "v3AvgAbsEm": 0.0444, "v4AvgAbsEm": 0.0444},
+    {"category": "uppercase-pair", "v3AvgAbsEm": 0.0042, "v4AvgAbsEm": 0.0042},
+    {"category": "uppercase-word", "v3AvgAbsEm": 0.0474, "v4AvgAbsEm": 0.0474}
+  ],
+  "strongestImprovements": [
+    {"id": "number-1001", "text": "1001", "v3WidthDeltaEm": -0.1152, "v4WidthDeltaEm": -0.0264},
+    {"id": "number-digits", "text": "0123456789", "v3WidthDeltaEm": -0.1032, "v4WidthDeltaEm": 0.0168},
+    {"id": "number-decimal", "text": "10.000", "v3WidthDeltaEm": -0.0888, "v4WidthDeltaEm": 0.0192},
+    {"id": "number-a10", "text": "A10", "v3WidthDeltaEm": -0.0288, "v4WidthDeltaEm": 0.0120},
+    {"id": "pair-to", "text": "To", "v3WidthDeltaEm": -0.0384, "v4WidthDeltaEm": -0.0264},
+    {"id": "word-total", "text": "ToTaL", "v3WidthDeltaEm": -0.0744, "v4WidthDeltaEm": -0.0624}
+  ],
+  "strongestRegressions": [
+    {"id": "number-v2", "text": "V2.0", "v3WidthDeltaEm": 0.0024, "v4WidthDeltaEm": 0.0216},
+    {"id": "number-year", "text": "2026", "v3WidthDeltaEm": -0.0288, "v4WidthDeltaEm": 0.0432}
+  ],
+  "notes": [
+    "No word-specific or pair-specific override was added.",
+    "This pass adds deterministic outline-derived side-shape features for the interacting glyph sides.",
+    "The current side classes are round-like, stem-like, and neutral, inferred from outline slices.",
+    "The biggest remaining broad issue is not numbers anymore; uppercase-word spacing is now the largest category by average error."
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "guarded-v3-review-eb-garamond-100pt-no-ligatures",
+  "status": "lower-upper-overhang-tuning-pass",
+  "algorithm": "guarded-profile-hybrid",
+  "sampleManifest": "corpus/samples/guarded-v1-review.json",
+  "renderSummary": "renders/guarded-v3-review/eb-garamond-100pt-no-ligatures/summary.json",
+  "settings": {
+    "fontId": "eb-garamond",
+    "fontFamily": "EB Garamond",
+    "pointSize": 100,
+    "ligatures": false,
+    "dpi": 300
+  },
+  "runStatus": {
+    "sampleCount": 32,
+    "okCount": 32,
+    "errorCount": 0
+  },
+  "comparisonToGuardedV2": {
+    "avgAbsEmV2": 0.0342,
+    "avgAbsEmV3": 0.0313,
+    "maxAbsEmV2": 0.1320,
+    "maxAbsEmV3": 0.1152
+  },
+  "categorySignal": [
+    {"category": "alphanumeric", "v2AvgAbsEm": 0.0156, "v3AvgAbsEm": 0.0156},
+    {"category": "baseline-word", "v2AvgAbsEm": 0.0048, "v3AvgAbsEm": 0.0048},
+    {"category": "lowercase-pair", "v2AvgAbsEm": 0.0048, "v3AvgAbsEm": 0.0048},
+    {"category": "lowercase-word", "v2AvgAbsEm": 0.0195, "v3AvgAbsEm": 0.0195},
+    {"category": "mixed-pair", "v2AvgAbsEm": 0.0224, "v3AvgAbsEm": 0.0224},
+    {"category": "mixed-word", "v2AvgAbsEm": 0.0712, "v3AvgAbsEm": 0.0408},
+    {"category": "numbers", "v2AvgAbsEm": 0.0840, "v3AvgAbsEm": 0.0840},
+    {"category": "punctuation-pair", "v2AvgAbsEm": 0.0444, "v3AvgAbsEm": 0.0444},
+    {"category": "uppercase-pair", "v2AvgAbsEm": 0.0042, "v3AvgAbsEm": 0.0042},
+    {"category": "uppercase-word", "v2AvgAbsEm": 0.0474, "v3AvgAbsEm": 0.0474}
+  ],
+  "strongestImprovements": [
+    {"id": "word-total", "text": "ToTaL", "v2WidthDeltaEm": -0.1320, "v3WidthDeltaEm": -0.0744},
+    {"id": "word-opentype", "text": "OpenType", "v2WidthDeltaEm": -0.0600, "v3WidthDeltaEm": -0.0264}
+  ],
+  "notes": [
+    "No word-specific or pair-specific override was added.",
+    "The pass adds a deterministic outline-derived top-left-overhang signal for lowercase-to-uppercase pairs.",
+    "Goldfish remains unchanged.",
+    "The next broad failure class is still number-only figure runs."
+  ]
+}

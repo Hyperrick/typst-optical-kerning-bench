@@ -52,17 +52,21 @@ enum Command {
         #[arg(long)]
         no_compile: bool,
     },
-    /// Build a static blind A/B preference-click suite.
-    Survey {
+    /// Compare InDesign Optical against Typst Metric and guarded optical.
+    TriadCompare {
         #[arg(long)]
-        submit_endpoint: Option<String>,
+        run_indesign: bool,
         #[arg(long)]
-        results_endpoint: Option<String>,
-        #[arg(
-            long,
-            default_value = "https://github.com/Hyperrick/typst-optical-kerning-bench"
-        )]
-        repo_url: String,
+        no_compile: bool,
+    },
+    /// Print guarded optical deltas for one shaped sample.
+    SampleDeltas {
+        #[arg(long)]
+        font_id: String,
+        #[arg(long)]
+        text: String,
+        #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
+        ligatures: bool,
     },
 }
 
@@ -78,15 +82,14 @@ fn main() -> Result<()> {
         Command::ContactSheet { no_compile } => {
             commands::contact_sheet::run(&cli.root, !no_compile)
         }
-        Command::Survey {
-            submit_endpoint,
-            results_endpoint,
-            repo_url,
-        } => commands::survey::run(
-            &cli.root,
-            submit_endpoint.as_deref(),
-            results_endpoint.as_deref(),
-            &repo_url,
-        ),
+        Command::TriadCompare {
+            run_indesign,
+            no_compile,
+        } => commands::triad_compare::run(&cli.root, run_indesign, !no_compile),
+        Command::SampleDeltas {
+            font_id,
+            text,
+            ligatures,
+        } => commands::sample_deltas::run(&cli.root, &font_id, &text, ligatures),
     }
 }

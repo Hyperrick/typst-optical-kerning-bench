@@ -1,23 +1,38 @@
 # Typst Optical Kerning Bench
 
-Rust-first benchmark suite for evaluating optical kerning algorithms against
-Typst-rendered PDFs and optional Adobe InDesign baselines.
+Rust-first lab for developing a deterministic optical kerning algorithm that
+could plausibly fit Typst.
 
-The goal is not to patch Typst directly. The goal is to produce reproducible
-evidence: pinned fonts, critical pairs, algorithmic deltas, rendered PDFs,
-performance data, and reports that can support a future Typst RFC or PR.
+The repo focuses on one question: can an outline-based, cacheable algorithm get
+close to InDesign Optical while preserving good font metric kerning and Typst's
+performance expectations?
+
+The current development loop is:
+
+1. shape text with Rustybuzz,
+2. evaluate adjacent shaped glyph pairs from font outlines,
+3. emit deterministic `em` deltas,
+4. render Typst Metric, Typst Guarded Optical, and InDesign Optical,
+5. compare cropped PNGs and overlays.
 
 ## Quick Start
 
 ```sh
 cargo run -p optikern-cli -- fetch-fonts
 cargo run -p optikern-cli -- bench
-cargo run -p optikern-cli -- render-typst
-cargo run -p optikern-cli -- report
-cargo run -p optikern-cli -- contact-sheet
+cargo run -p optikern-cli -- sample-deltas --font-id eb-garamond --text ToTaL --ligatures=false
+scripts/run-guarded-review-batch.py --output renders/guarded-v5-review/eb-garamond-100pt-no-ligatures
 ```
 
 Outputs are written to `metrics/`, `renders/`, and `reports/`.
+
+Useful focused commands:
+
+```sh
+cargo run -p optikern-cli -- contact-sheet
+cargo run -p optikern-cli -- triad-compare --run-indesign
+scripts/run-goldfish-pipeline.sh --text Goldfish --point-size 100 --ligatures false
+```
 
 ## InDesign Baselines
 
@@ -42,76 +57,26 @@ columns for pairs and real words.
 See [`docs/indesign-baseline.md`](docs/indesign-baseline.md) for the exact
 document construction rules.
 
-## Human Preference Study
-
-The public GitHub Pages survey is currently paused while the examples and
-algorithms are being realigned. The deployed Cloudflare Worker rejects new
-submissions with `survey_closed`.
-
-Generate a blind five-way click suite:
-
-```sh
-cargo run -p optikern-cli -- survey
-open reports/survey.html
-```
-
-The survey is a fast subjective screening layer for local review until the
-public study is re-opened. It renders samples as inline SVG paths from the
-pinned font outlines and can help compare human preference against algorithm
-simplicity, runtime cost, and PDF/InDesign evidence. See
-[`docs/preference-study.md`](docs/preference-study.md).
-
-The same command also writes a GitHub Pages-ready static bundle to `site/`:
-
-```sh
-open site/index.html
-```
-
-To enable central persistence and point the public page back to the source repo,
-pass a Cloudflare Worker submit endpoint and repository URL when generating the
-site. If the submit endpoint ends in `/submit`, the public results endpoint is
-derived as `/results`:
-
-```sh
-cargo run -p optikern-cli -- survey \
-  --submit-endpoint https://typst-optical-kerning-bench.hyperrick.workers.dev/submit \
-  --repo-url https://github.com/Hyperrick/typst-optical-kerning-bench
-```
-
-Use `--results-endpoint` only when the public aggregate endpoint does not live
-next to `/submit`.
-
-The public URL is
-<https://hyperrick.github.io/typst-optical-kerning-bench/>. While paused, the
-Pages workflow publishes an offline landing page from `site/`. When the survey
-is re-enabled, the intended bundle includes:
-
-- `index.html`: the survey,
-- `methods.html`: algorithm and repository notes,
-- `results.html`: public aggregate results from the configured Worker.
-
-Progress is stored locally in each browser; completed sessions are submitted to
-the configured endpoint.
-See [`docs/github-pages.md`](docs/github-pages.md) and
-[`docs/data-persistence.md`](docs/data-persistence.md). The Cloudflare Worker
-setup and reset flow are documented in
-[`docs/cloudflare-worker.md`](docs/cloudflare-worker.md); the reset call is also
-available as `scripts/reset-cloudflare-db.sh`.
-
 ## Algorithms
 
-Implemented V1 algorithms:
+Implemented candidate algorithms:
 
 - `nearest-contour-distance`
 - `profile-whitespace`
 - `area-balance`
 - `metric-prior-hybrid`
+- `guarded-profile-hybrid`
 - `safe-fallback-only`
 
 See [`docs/algorithms.md`](docs/algorithms.md) for the current heuristics and
 the constraints that make them plausible for a future Typst implementation.
 See [`docs/research-alignment.md`](docs/research-alignment.md) for the external
 sources that shaped the current benchmark rules.
+
+The current leading candidate is `guarded-profile-hybrid`. The V5 pass adds
+contact-zone awareness for local outline collisions, uppercase punctuation, and
+round-to-overhang pairs. See
+[`docs/guarded-v5-review-results.md`](docs/guarded-v5-review-results.md).
 
 ## Contact Sheet
 
@@ -122,12 +87,14 @@ cargo run -p optikern-cli -- contact-sheet
 ```
 
 This writes `reports/contact-sheet.typ` and, when Typst is installed,
-`reports/contact-sheet.pdf`. The sheet uses the same pinned fonts and applies
-algorithm deltas between every adjacent non-space glyph pair in the sample.
+`reports/contact-sheet.pdf`. The sheet is a compact Typst-rendered smoke review
+for simple pair and word spacing. Ligature-capable words must be evaluated after
+shaping: a substituted ligature glyph is spaced against its neighbors while its
+internal letters are not kerned separately.
 
 ## Design Constraints
 
 - Deterministic algorithms only.
 - No ML or runtime raster analysis in the layout path.
-- Deltas are emitted as `em` values and simulated in Typst with `#h(...)`.
+- Deltas are emitted as `em` values and can be applied after shaping.
 - InDesign Optical is a comparison baseline, not an absolute truth.

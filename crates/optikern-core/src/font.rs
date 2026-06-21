@@ -109,9 +109,18 @@ impl FontKit {
         let glyph_id = face
             .glyph_index(ch)
             .ok_or_else(|| anyhow!("font {} has no glyph for {ch:?}", self.id))?;
-        let advance = face
-            .glyph_hor_advance(glyph_id)
-            .ok_or_else(|| anyhow!("font {} has no horizontal advance for {ch:?}", self.id))?;
+        self.glyph_metrics_by_id(glyph_id)
+    }
+
+    pub fn glyph_metrics_by_id(&self, glyph_id: GlyphId) -> Result<GlyphMetrics> {
+        let face = self.face()?;
+        let advance = face.glyph_hor_advance(glyph_id).ok_or_else(|| {
+            anyhow!(
+                "font {} has no horizontal advance for glyph {:?}",
+                self.id,
+                glyph_id
+            )
+        })?;
 
         Ok(GlyphMetrics {
             glyph_id,
@@ -128,6 +137,18 @@ impl FontKit {
         let face = self.face()?;
         let outline = outline_glyph(&face, metrics.glyph_id, self.units_per_em, options)
             .ok_or_else(|| anyhow!("font {} has no outline for {ch:?}", self.id))?;
+        Ok((metrics, outline))
+    }
+
+    pub fn outline_by_id(
+        &self,
+        glyph_id: GlyphId,
+        options: FlattenOptions,
+    ) -> Result<(GlyphMetrics, GlyphOutline)> {
+        let metrics = self.glyph_metrics_by_id(glyph_id)?;
+        let face = self.face()?;
+        let outline = outline_glyph(&face, metrics.glyph_id, self.units_per_em, options)
+            .ok_or_else(|| anyhow!("font {} has no outline for glyph {:?}", self.id, glyph_id))?;
         Ok((metrics, outline))
     }
 }

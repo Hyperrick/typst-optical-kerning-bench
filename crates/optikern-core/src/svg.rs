@@ -1,5 +1,5 @@
 use anyhow::Result;
-use ttf_parser::OutlineBuilder;
+use ttf_parser::{GlyphId, OutlineBuilder};
 
 use crate::font::FontKit;
 
@@ -20,17 +20,26 @@ pub struct SvgBounds {
 
 impl SvgBounds {
     pub fn translated(self, x: f32) -> Self {
+        self.translated_xy(x, 0.0)
+    }
+
+    pub fn translated_xy(self, x: f32, y: f32) -> Self {
         Self {
             min_x: self.min_x + x,
-            min_y: self.min_y,
+            min_y: self.min_y + y,
             max_x: self.max_x + x,
-            max_y: self.max_y,
+            max_y: self.max_y + y,
         }
     }
 }
 
 pub fn svg_glyph(font: &FontKit, ch: char) -> Result<SvgGlyph> {
     let metrics = font.glyph_metrics(ch)?;
+    svg_glyph_by_id(font, metrics.glyph_id)
+}
+
+pub fn svg_glyph_by_id(font: &FontKit, glyph_id: GlyphId) -> Result<SvgGlyph> {
+    let metrics = font.glyph_metrics_by_id(glyph_id)?;
     let face = font.face()?;
     let mut builder = SvgBuilder::new(font.units_per_em());
     let rect = face.outline_glyph(metrics.glyph_id, &mut builder);

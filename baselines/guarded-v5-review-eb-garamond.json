@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "guarded-v5-review-eb-garamond-100pt-no-ligatures",
+  "status": "contact-zone-aware-tuning-pass",
+  "algorithm": "guarded-profile-hybrid",
+  "sampleManifest": "corpus/samples/guarded-v1-review.json",
+  "renderSummary": "renders/guarded-v5-review/eb-garamond-100pt-no-ligatures/summary.json",
+  "settings": {
+    "fontId": "eb-garamond",
+    "fontFamily": "EB Garamond",
+    "pointSize": 100,
+    "ligatures": false,
+    "dpi": 300
+  },
+  "runStatus": {
+    "sampleCount": 32,
+    "okCount": 32,
+    "errorCount": 0
+  },
+  "comparisonToGuardedV4": {
+    "avgAbsEmV4": 0.0235,
+    "avgAbsEmV5": 0.0184,
+    "maxAbsEmV4": 0.0624,
+    "maxAbsEmV5": 0.0624
+  },
+  "categorySignal": [
+    {"category": "alphanumeric", "v4AvgAbsEm": 0.0168, "v5AvgAbsEm": 0.0168},
+    {"category": "baseline-word", "v4AvgAbsEm": 0.0048, "v5AvgAbsEm": 0.0048},
+    {"category": "lowercase-pair", "v4AvgAbsEm": 0.0048, "v5AvgAbsEm": 0.0048},
+    {"category": "lowercase-word", "v4AvgAbsEm": 0.0195, "v5AvgAbsEm": 0.0195},
+    {"category": "mixed-pair", "v4AvgAbsEm": 0.0184, "v5AvgAbsEm": 0.0184},
+    {"category": "mixed-word", "v4AvgAbsEm": 0.0368, "v5AvgAbsEm": 0.0288},
+    {"category": "numbers", "v4AvgAbsEm": 0.0264, "v5AvgAbsEm": 0.0264},
+    {"category": "punctuation-pair", "v4AvgAbsEm": 0.0444, "v5AvgAbsEm": 0.0048},
+    {"category": "uppercase-pair", "v4AvgAbsEm": 0.0042, "v5AvgAbsEm": 0.0042},
+    {"category": "uppercase-word", "v4AvgAbsEm": 0.0474, "v5AvgAbsEm": 0.0330}
+  ],
+  "strongestImprovements": [
+    {"id": "pair-t-period", "text": "T.", "v4WidthDeltaEm": -0.0480, "v5WidthDeltaEm": 0.0072},
+    {"id": "pair-p-period", "text": "P.", "v4WidthDeltaEm": -0.0408, "v5WidthDeltaEm": -0.0024},
+    {"id": "word-wayfinder", "text": "WAYFINDER", "v4WidthDeltaEm": 0.0456, "v5WidthDeltaEm": 0.0072},
+    {"id": "word-total", "text": "ToTaL", "v4WidthDeltaEm": -0.0624, "v5WidthDeltaEm": -0.0384},
+    {"id": "word-wavy", "text": "WAVY", "v4WidthDeltaEm": 0.0288, "v5WidthDeltaEm": -0.0096}
+  ],
+  "strongestRegressions": [],
+  "notes": [
+    "No word-specific or pair-specific override was added.",
+    "This pass adds deterministic contact-zone rules for local outline collisions, uppercase punctuation, and round-to-overhang pairs.",
+    "YF is now allowed to open when the nearest-contour pass detects a real local collision.",
+    "Uppercase punctuation can tighten beyond metric kerning only when the minimum gap is safely open.",
+    "Round lower-to-upper-overhang pairs can tighten further when both the right side of the left glyph and the top-left overhang of the right glyph support it."
+  ]
+}

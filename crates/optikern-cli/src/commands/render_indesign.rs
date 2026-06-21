@@ -3,8 +3,12 @@ use std::path::Path;
 use std::process::Command;
 
 use anyhow::{Context, Result, anyhow};
+use serde::Serialize;
 
 use crate::corpus;
+
+const PAIRS_PER_FONT: usize = 4;
+const WORDS_PER_FONT: usize = 6;
 
 pub fn run(root: &Path, execute: bool) -> Result<()> {
     let root = root.canonicalize().context("failed to resolve repo root")?;
@@ -15,11 +19,13 @@ pub fn run(root: &Path, execute: bool) -> Result<()> {
     let words = corpus::load_words(root)?;
     let samples = corpus::load_samples(root)?;
     prepare_document_fonts(root, &manifest.fonts)?;
+    let cases_by_font = build_cases_by_font(&manifest.fonts, &pairs, &words);
 
     let fonts_json = serde_json::to_string_pretty(&manifest.fonts)?;
     let pairs_json = serde_json::to_string_pretty(&pairs)?;
     let words_json = serde_json::to_string_pretty(&words)?;
     let samples_json = serde_json::to_string_pretty(&samples)?;
+    let cases_json = serde_json::to_string_pretty(&cases_by_font)?;
     let out_dir = root.join("renders/indesign");
     let out_dir_js = escape_js_string(&out_dir.display().to_string());
 
@@ -33,6 +39,7 @@ var FONTS = {fonts_json};
 var PAIRS = {pairs_json};
 var WORDS = {words_json};
 var SAMPLES = {samples_json};
+var CASES_BY_FONT = {cases_json};
 
 function writeTextFile(path, text) {{
   var file = File(path);
@@ -156,44 +163,27 @@ function build(modeName, modeValue) {{
     addFrame(page, [y, 36, y + 18, 560], font.family + " / " + modeName, "Helvetica", 10, "$ID/Metrics", false);
     y += 28;
 
-    for (var i = 0; i < Math.min(PAIRS.length, 24); i++) {{
+    var cases = CASES_BY_FONT[font.id] || [];
+    for (var i = 0; i < cases.length; i++) {{
       if (y > 760) {{
         page = addPageAtEnd(doc);
         pageNo += 1;
         y = 36;
       }}
-      var pair = PAIRS[i];
-      addFrame(page, [y, 36, y + 54, 560], pair, font.family, 48, modeValue, true);
+      var selected = cases[i];
+      var frameHeight = selected.kind == "pair" ? 54 : 48;
+      addFrame(page, [y, 36, y + frameHeight, 560], selected.sample, font.family, selected.pointSize, modeValue, selected.kind == "pair");
       sidecar.cases.push({{
-        kind: "pair",
+        kind: selected.kind,
         fontId: font.id,
         family: font.family,
-        sample: pair,
-        pointSize: 48,
+        sample: selected.sample,
+        pointSize: selected.pointSize,
         page: pageNo,
-        roiPt: [y, 36, y + 54, 560]
+        roiPt: [y, 36, y + frameHeight, 560],
+        source: "review-selection"
       }});
-      y += 62;
-    }}
-
-    for (var w = 0; w < Math.min(WORDS.length, 6); w++) {{
-      if (y > 760) {{
-        page = addPageAtEnd(doc);
-        pageNo += 1;
-        y = 36;
-      }}
-      var word = WORDS[w];
-      addFrame(page, [y, 36, y + 48, 560], word, font.family, 42, modeValue, false);
-      sidecar.cases.push({{
-        kind: "word",
-        fontId: font.id,
-        family: font.family,
-        sample: word,
-        pointSize: 42,
-        page: pageNo,
-        roiPt: [y, 36, y + 48, 560]
-      }});
-      y += 56;
+      y += frameHeight + 8;
     }}
 
     for (var s = 0; s < Math.min(SAMPLES.length, 2); s++) {{
@@ -281,13 +271,11 @@ function buildComparison() {{
     addComparisonHeader(page, y);
     y += 20;
 
-    for (var i = 0; i < Math.min(PAIRS.length, 10); i++) {{
-      addComparisonRow(page, y, PAIRS[i], font.family, 28, "pair", sidecar, font.id, pageNo);
-      y += 39;
-    }}
-
-    for (var w = 0; w < Math.min(WORDS.length, 8); w++) {{
-      addComparisonRow(page, y, WORDS[w], font.family, 23, "word", sidecar, font.id, pageNo);
+    var cases = CASES_BY_FONT[font.id] || [];
+    for (var i = 0; i < cases.length; i++) {{
+      var selected = cases[i];
+      var rowSize = selected.kind == "pair" ? 28 : 23;
+      addComparisonRow(page, y, selected.sample, font.family, rowSize, selected.kind, sidecar, font.id, pageNo);
       y += 39;
     }}
   }}
@@ -324,6 +312,54 @@ buildComparison();
 
 fn escape_js_string(input: &str) -> String {
     input.replace('\\', "\\\\").replace('"', "\\\"")
+}
+
+fn build_cases_by_font(
+    fonts: &[crate::corpus::FontEntry],
+    pairs: &[String],
+    words: &[String],
+) -> std::collections::BTreeMap<String, Vec<IndesignCase>> {
+    let mut cases_by_font = std::collections::BTreeMap::new();
+    for (font_index, font) in fonts.iter().enumerate() {
+        let mut cases = Vec::new();
+        for index in rotated_indices(pairs.len(), font_index * PAIRS_PER_FONT)
+            .into_iter()
+            .take(PAIRS_PER_FONT)
+        {
+            cases.push(IndesignCase {
+                kind: "pair",
+                sample: pairs[index].clone(),
+                point_size: 48,
+            });
+        }
+        for index in rotated_indices(words.len(), font_index * WORDS_PER_FONT)
+            .into_iter()
+            .take(WORDS_PER_FONT)
+        {
+            cases.push(IndesignCase {
+                kind: "word",
+                sample: words[index].clone(),
+                point_size: 42,
+            });
+        }
+        cases_by_font.insert(font.id.clone(), cases);
+    }
+    cases_by_font
+}
+
+fn rotated_indices(total: usize, start: usize) -> Vec<usize> {
+    if total == 0 {
+        return Vec::new();
+    }
+    (0..total).map(|offset| (start + offset) % total).collect()
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct IndesignCase {
+    kind: &'static str,
+    sample: String,
+    point_size: u32,
 }
 
 fn prepare_document_fonts(root: &Path, fonts: &[crate::corpus::FontEntry]) -> Result<()> {

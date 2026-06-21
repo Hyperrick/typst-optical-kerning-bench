@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "guarded-v1-review-eb-garamond-100pt-no-ligatures",
+  "status": "pre-class-aware-tuning",
+  "algorithm": "guarded-profile-hybrid",
+  "sampleManifest": "corpus/samples/guarded-v1-review.json",
+  "renderSummary": "renders/guarded-v1-review/eb-garamond-100pt-no-ligatures/summary.json",
+  "settings": {
+    "fontId": "eb-garamond",
+    "fontFamily": "EB Garamond",
+    "pointSize": 100,
+    "ligatures": false,
+    "dpi": 300
+  },
+  "runStatus": {
+    "sampleCount": 32,
+    "okCount": 32,
+    "errorCount": 0
+  },
+  "categorySignal": [
+    {"category": "baseline-word", "count": 1, "avgAbsEm": 0.0048, "maxAbsEm": 0.0048},
+    {"category": "lowercase-pair", "count": 2, "avgAbsEm": 0.0048, "maxAbsEm": 0.0048},
+    {"category": "lowercase-word", "count": 7, "avgAbsEm": 0.0195, "maxAbsEm": 0.0456},
+    {"category": "uppercase-word", "count": 4, "avgAbsEm": 0.0336, "maxAbsEm": 0.0624},
+    {"category": "uppercase-pair", "count": 4, "avgAbsEm": 0.0420, "maxAbsEm": 0.0696},
+    {"category": "numbers", "count": 4, "avgAbsEm": 0.0510, "maxAbsEm": 0.0984},
+    {"category": "punctuation-pair", "count": 2, "avgAbsEm": 0.0588, "maxAbsEm": 0.0768},
+    {"category": "mixed-pair", "count": 3, "avgAbsEm": 0.0616, "maxAbsEm": 0.0792},
+    {"category": "alphanumeric", "count": 2, "avgAbsEm": 0.0876, "maxAbsEm": 0.1056},
+    {"category": "mixed-word", "count": 3, "avgAbsEm": 0.0944, "maxAbsEm": 0.2064}
+  ],
+  "strongestDeviations": [
+    {"id": "word-total", "text": "ToTaL", "widthDeltaPx": -86, "widthDeltaEm": -0.2064},
+    {"id": "number-v2", "text": "V2.0", "widthDeltaPx": 44, "widthDeltaEm": 0.1056},
+    {"id": "number-digits", "text": "0123456789", "widthDeltaPx": -41, "widthDeltaEm": -0.0984},
+    {"id": "pair-to", "text": "To", "widthDeltaPx": -33, "widthDeltaEm": -0.0792},
+    {"id": "pair-t-period", "text": "T.", "widthDeltaPx": -32, "widthDeltaEm": -0.0768},
+    {"id": "number-1001", "text": "1001", "widthDeltaPx": -30, "widthDeltaEm": -0.0720},
+    {"id": "pair-ly", "text": "LY", "widthDeltaPx": 29, "widthDeltaEm": 0.0696},
+    {"id": "number-a10", "text": "A10", "widthDeltaPx": -29, "widthDeltaEm": -0.0696}
+  ],
+  "notes": [
+    "This is the state before class-aware tuning.",
+    "Goldfish remains the successful regression case, but mixed-case, figures, punctuation, and diagonal uppercase pairs show broad failure classes."
+  ]
+}

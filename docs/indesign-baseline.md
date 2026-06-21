@@ -33,13 +33,20 @@ Each test case is placed into a fixed text frame. The sidecar JSON records:
 
 Pair frames use `48pt`, word frames use `42pt`, and paragraph frames use
 `12pt`. Pair tests disable ligatures so `fi`, `fl`, and similar pairs remain
-visible as pair-spacing cases.
+visible as pair-spacing cases. Word and paragraph baselines should preserve the
+renderer's normal shaping behavior: if InDesign or Typst substitutes a ligature,
+the comparison treats that ligature as the glyph to kern against its neighbors,
+not as separate internal letters.
 
 The comparison PDF uses one page per font with fixed side-by-side columns:
 
 - sample label
 - InDesign Metrics
 - InDesign Optical
+
+The selected comparison rows use a deterministic per-font rotation: four pair
+examples and six word examples per font. This keeps the InDesign visual baseline
+compact while still covering different categories.
 
 The JSX computes frame bounds relative to `page.bounds`, not spread origin.
 This avoids alternating blank pages or overlapped frames when InDesign's spread

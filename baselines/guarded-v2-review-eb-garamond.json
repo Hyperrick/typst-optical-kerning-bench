@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "guarded-v2-review-eb-garamond-100pt-no-ligatures",
+  "status": "class-aware-tuning-pass",
+  "algorithm": "guarded-profile-hybrid",
+  "sampleManifest": "corpus/samples/guarded-v1-review.json",
+  "renderSummary": "renders/guarded-v2-review/eb-garamond-100pt-no-ligatures/summary.json",
+  "settings": {
+    "fontId": "eb-garamond",
+    "fontFamily": "EB Garamond",
+    "pointSize": 100,
+    "ligatures": false,
+    "dpi": 300
+  },
+  "runStatus": {
+    "sampleCount": 32,
+    "okCount": 32,
+    "errorCount": 0
+  },
+  "comparisonToGuardedV1": {
+    "avgAbsEmV1": 0.0443,
+    "avgAbsEmV2": 0.0342,
+    "maxAbsEmV1": 0.2064,
+    "maxAbsEmV2": 0.1320
+  },
+  "categorySignal": [
+    {"category": "alphanumeric", "v1AvgAbsEm": 0.0876, "v2AvgAbsEm": 0.0156},
+    {"category": "baseline-word", "v1AvgAbsEm": 0.0048, "v2AvgAbsEm": 0.0048},
+    {"category": "lowercase-pair", "v1AvgAbsEm": 0.0048, "v2AvgAbsEm": 0.0048},
+    {"category": "lowercase-word", "v1AvgAbsEm": 0.0195, "v2AvgAbsEm": 0.0195},
+    {"category": "mixed-pair", "v1AvgAbsEm": 0.0616, "v2AvgAbsEm": 0.0224},
+    {"category": "mixed-word", "v1AvgAbsEm": 0.0944, "v2AvgAbsEm": 0.0712},
+    {"category": "numbers", "v1AvgAbsEm": 0.0510, "v2AvgAbsEm": 0.0840},
+    {"category": "punctuation-pair", "v1AvgAbsEm": 0.0588, "v2AvgAbsEm": 0.0444},
+    {"category": "uppercase-pair", "v1AvgAbsEm": 0.0420, "v2AvgAbsEm": 0.0042},
+    {"category": "uppercase-word", "v1AvgAbsEm": 0.0336, "v2AvgAbsEm": 0.0474}
+  ],
+  "strongestImprovements": [
+    {"id": "number-v2", "text": "V2.0", "v1WidthDeltaEm": 0.1056, "v2WidthDeltaEm": 0.0024},
+    {"id": "word-total", "text": "ToTaL", "v1WidthDeltaEm": -0.2064, "v2WidthDeltaEm": -0.1320},
+    {"id": "pair-ly", "text": "LY", "v1WidthDeltaEm": 0.0696, "v2WidthDeltaEm": 0.0},
+    {"id": "pair-av", "text": "AV", "v1WidthDeltaEm": -0.0456, "v2WidthDeltaEm": -0.0024},
+    {"id": "pair-yo", "text": "Yo", "v1WidthDeltaEm": -0.0552, "v2WidthDeltaEm": -0.0144},
+    {"id": "pair-to", "text": "To", "v1WidthDeltaEm": -0.0792, "v2WidthDeltaEm": -0.0384}
+  ],
+  "strongestRegressions": [
+    {"id": "number-decimal", "text": "10.000", "v1WidthDeltaEm": -0.0192, "v2WidthDeltaEm": -0.0888},
+    {"id": "number-1001", "text": "1001", "v1WidthDeltaEm": -0.0720, "v2WidthDeltaEm": -0.1152},
+    {"id": "word-avatar", "text": "AVATAR", "v1WidthDeltaEm": 0.0120, "v2WidthDeltaEm": 0.0528},
+    {"id": "word-wayfinder", "text": "WAYFINDER", "v1WidthDeltaEm": 0.0048, "v2WidthDeltaEm": 0.0456}
+  ],
+  "notes": [
+    "No word-specific or pair-specific override was added.",
+    "The pass uses broad cluster classes only: uppercase, lowercase, digit, punctuation, other.",
+    "The algorithm remains deterministic, which is required for a Typst compiler path.",
+    "The next pass should focus on figures because v2 improves broad text cases but regresses number-only samples."
+  ]
+}

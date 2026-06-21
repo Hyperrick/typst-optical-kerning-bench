@@ -39,7 +39,8 @@ deterministic, outline-based directions that could plausibly fit Typst.
 
 ## Benchmark rules derived from that
 
-1. Word examples must evaluate every adjacent non-space glyph pair.
+1. Word examples must evaluate every adjacent non-space glyph pair after text
+   shaping, not merely every adjacent Unicode character.
 2. Algorithms may return zero for normal pairs; they must not be forced to
    change every pair.
 3. Per-font values must be read from the font or computed from its outlines.
@@ -48,7 +49,11 @@ deterministic, outline-based directions that could plausibly fit Typst.
    optical estimates mainly as a fallback or disagreement signal.
 5. Monospaced fonts should be detected dynamically and preserved by candidate
    algorithms, because optical tightening can break alignment-sensitive text.
-6. Raster and ML approaches can be reference baselines, but not the primary
+6. Ligature substitutions must be respected. When active OpenType features
+   replace a sequence such as `fi` with one glyph, that replacement glyph is
+   kerned against its shaped neighbors; the internal `f-i` boundary is not a
+   spacing decision anymore.
+7. Raster and ML approaches can be reference baselines, but not the primary
    compiler-path proposal.
 
 ## Current interpretation

@@ -1,0 +1,162 @@
+[
+  {
+    "id": "baseline-goldfish",
+    "category": "baseline-word",
+    "text": "Goldfish"
+  },
+  {
+    "id": "pair-av",
+    "category": "uppercase-pair",
+    "text": "AV"
+  },
+  {
+    "id": "pair-va",
+    "category": "uppercase-pair",
+    "text": "VA"
+  },
+  {
+    "id": "pair-wa",
+    "category": "uppercase-pair",
+    "text": "WA"
+  },
+  {
+    "id": "pair-ly",
+    "category": "uppercase-pair",
+    "text": "LY"
+  },
+  {
+    "id": "pair-ta",
+    "category": "mixed-pair",
+    "text": "Ta"
+  },
+  {
+    "id": "pair-to",
+    "category": "mixed-pair",
+    "text": "To"
+  },
+  {
+    "id": "pair-yo",
+    "category": "mixed-pair",
+    "text": "Yo"
+  },
+  {
+    "id": "pair-rn",
+    "category": "lowercase-pair",
+    "text": "rn"
+  },
+  {
+    "id": "pair-nn",
+    "category": "lowercase-pair",
+    "text": "nn"
+  },
+  {
+    "id": "pair-p-period",
+    "category": "punctuation-pair",
+    "text": "P."
+  },
+  {
+    "id": "pair-t-period",
+    "category": "punctuation-pair",
+    "text": "T."
+  },
+  {
+    "id": "word-avatar",
+    "category": "uppercase-word",
+    "text": "AVATAR"
+  },
+  {
+    "id": "word-wavy",
+    "category": "uppercase-word",
+    "text": "WAVY"
+  },
+  {
+    "id": "word-wayfinder",
+    "category": "uppercase-word",
+    "text": "WAYFINDER"
+  },
+  {
+    "id": "word-landmark",
+    "category": "uppercase-word",
+    "text": "LANDMARK"
+  },
+  {
+    "id": "word-total",
+    "category": "mixed-word",
+    "text": "ToTaL"
+  },
+  {
+    "id": "word-typography",
+    "category": "lowercase-word",
+    "text": "typography"
+  },
+  {
+    "id": "word-water",
+    "category": "lowercase-word",
+    "text": "water"
+  },
+  {
+    "id": "word-valley",
+    "category": "lowercase-word",
+    "text": "valley"
+  },
+  {
+    "id": "word-minimum",
+    "category": "lowercase-word",
+    "text": "minimum"
+  },
+  {
+    "id": "word-yellow",
+    "category": "lowercase-word",
+    "text": "yellow"
+  },
+  {
+    "id": "word-lorem",
+    "category": "lowercase-word",
+    "text": "lorem"
+  },
+  {
+    "id": "word-ipsum",
+    "category": "lowercase-word",
+    "text": "ipsum"
+  },
+  {
+    "id": "word-opentype",
+    "category": "mixed-word",
+    "text": "OpenType"
+  },
+  {
+    "id": "word-kerning",
+    "category": "mixed-word",
+    "text": "Kerning"
+  },
+  {
+    "id": "number-digits",
+    "category": "numbers",
+    "text": "0123456789"
+  },
+  {
+    "id": "number-year",
+    "category": "numbers",
+    "text": "2026"
+  },
+  {
+    "id": "number-1001",
+    "category": "numbers",
+    "text": "1001"
+  },
+  {
+    "id": "number-decimal",
+    "category": "numbers",
+    "text": "10.000"
+  },
+  {
+    "id": "number-a10",
+    "category": "alphanumeric",
+    "text": "A10"
+  },
+  {
+    "id": "number-v2",
+    "category": "alphanumeric",
+    "text": "V2.0"
+  }
+]

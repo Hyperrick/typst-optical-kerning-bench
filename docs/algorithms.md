@@ -7,26 +7,42 @@ used only after rendering PDFs to evaluate output.
 
 1. Load the font with `ttf-parser`.
 2. Read font metrics such as x-height/cap-height when available.
-3. Map each corpus character to a glyph id.
+3. Shape the sample with Rustybuzz and the same OpenType feature settings as
+   the renderer mode, then read the resulting glyph ids and clusters.
 4. Flatten quadratic and cubic contours into deterministic line segments.
 5. Build vertical profile samples across a Latin-relevant band derived from the
    font metrics.
 6. Compare the left glyph's right profile against the right glyph's left profile
    at the default advance position.
 
-The benchmark evaluates every adjacent non-space glyph pair in a word. Looking
-at every pair does not mean changing every pair. The current candidate methods
-derive a per-font robust gap distribution from a Latin reference alphabet and
-apply optical deltas only when a pair is an outlier against that distribution.
+The benchmark evaluates every adjacent non-space glyph pair in a word after
+shaping. Pair samples disable standard ligatures so explicit pair cases remain
+literal. Word samples keep standard ligatures enabled, matching normal Typst and
+InDesign text behavior. Looking at every pair does not mean changing every pair.
+The current candidate methods derive a per-font robust gap distribution from a
+Latin reference alphabet and apply optical deltas only when a pair is an outlier
+against that distribution.
 
-The algorithms emit one pair delta in `em`. Typst render sheets apply this as:
+Ligatures must be handled after shaping. If a font and the active Typst feature
+settings turn `f` + `i` into a single `fi` ligature glyph, the algorithm must not
+kern inside that ligature. It should instead evaluate the ligature glyph against
+its real shaped neighbors, for example `d-fi_ligature` and `fi_ligature-s` in a
+word like `Goldfish`. If ligatures are disabled, `f` and `i` remain separate
+glyphs and `f-i` becomes an ordinary adjacent pair again.
+
+The algorithms emit one glyph-pair delta in `em`. Typst render sheets apply this
+as explicit spacing for simple pair review:
 
 ```typst
 #set text(kerning: false)
 A#h(-0.042em)V
 ```
 
-This avoids double-applying OpenType kerning.
+This avoids double-applying OpenType kerning for pair sheets. For
+ligature-sensitive word review, deltas must be computed after shaping and
+applied to shaped glyph positions. Inserting `#h(...)` into source text is only
+a prototype trick for non-ligature review because it can change the source
+sequence that forms a ligature.
 
 ## Dynamic Font Calibration
 
@@ -55,6 +71,13 @@ cacheable.
 - `metric-prior-hybrid`: uses HarfBuzz/Rustybuzz metric kerning as a prior. It
   preserves existing metric kerning when it is close to the optical estimate and
   blends only when the disagreement is large. Monospaced fonts are preserved.
+- `guarded-profile-hybrid`: starts from the metric-prior hybrid, then blocks
+  negative optical corrections when the nearest contour gap is already small
+  but the profile average is inflated by an aperture or counter-like shape.
+  The current V5 pass also adds contact-zone rules for local outline collisions,
+  uppercase punctuation, and round-to-overhang pairs. This is intended to catch
+  cases such as Libre Baskerville `G|o`, EB Garamond `Y|F`, `P|.`, `T|.`, and
+  `o|T` without hard-coding a font or glyph name.
 - `safe-fallback-only`: preserves metric kerning if it exists; otherwise uses
   the robust optical outlier correction. Monospaced fonts are preserved.
 

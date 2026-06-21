@@ -4,7 +4,10 @@ use std::path::Path;
 use std::time::Instant;
 
 use anyhow::{Context, Result};
-use optikern_core::{EvaluationConfig, FontKit, evaluate_pair_with_config};
+use optikern_core::{
+    EvaluationConfig, FontKit, ShapedGlyphPair, ShapingOptions, evaluate_pair_with_config,
+    evaluate_shaped_pair_with_config, shape_text,
+};
 
 use crate::corpus;
 use crate::data::{BenchFailure, BenchFont, BenchReport};
@@ -15,7 +18,6 @@ pub fn run(root: &Path) -> Result<()> {
     let manifest = corpus::load_fonts(root)?;
     let configured_pairs = corpus::load_pairs(root)?;
     let words = corpus::load_words(root)?;
-    let pairs = collect_pairs(&configured_pairs, &words);
 
     let mut fonts = vec![];
     let mut results = vec![];
@@ -42,10 +44,14 @@ pub fn run(root: &Path) -> Result<()> {
         let font = FontKit::load(&entry.id, &path)
             .with_context(|| format!("failed to load font {}", path.display()))?;
         let config = EvaluationConfig::for_font(&font);
+        let mut seen = BTreeSet::new();
 
-        for pair in &pairs {
+        for pair in &configured_pairs {
             match evaluate_pair_with_config(&font, pair, config) {
-                Ok(result) => results.push(result),
+                Ok(result) => {
+                    seen.insert(result.pair.clone());
+                    results.push(result);
+                }
                 Err(error) => failures.push(BenchFailure {
                     font_id: entry.id.clone(),
                     pair: pair.clone(),
@@ -53,13 +59,40 @@ pub fn run(root: &Path) -> Result<()> {
                 }),
             }
         }
+
+        for word in &words {
+            let pairs = match shaped_word_pairs(&font, word) {
+                Ok(pairs) => pairs,
+                Err(error) => {
+                    failures.push(BenchFailure {
+                        font_id: entry.id.clone(),
+                        pair: word.clone(),
+                        reason: error.to_string(),
+                    });
+                    continue;
+                }
+            };
+            for pair in pairs {
+                if !seen.insert(pair.key.clone()) {
+                    continue;
+                }
+                match evaluate_shaped_pair_with_config(&font, &pair, config, true) {
+                    Ok(result) => results.push(result),
+                    Err(error) => failures.push(BenchFailure {
+                        font_id: entry.id.clone(),
+                        pair: pair.display,
+                        reason: error.to_string(),
+                    }),
+                }
+            }
+        }
     }
 
     let report = BenchReport {
-        schema_version: 1,
+        schema_version: 2,
         font_manifest_commit: manifest.commit,
         fonts,
-        pair_count: pairs.len(),
+        pair_count: results.len(),
         word_count: words.len(),
         results,
         failures,
@@ -78,19 +111,6 @@ pub fn run(root: &Path) -> Result<()> {
     Ok(())
 }
 
-fn collect_pairs(configured_pairs: &[String], words: &[String]) -> Vec<String> {
-    let mut pairs = BTreeSet::new();
-    for pair in configured_pairs {
-        pairs.insert(pair.clone());
-    }
-    for word in words {
-        let chars = word.chars().collect::<Vec<_>>();
-        for pair in chars.windows(2) {
-            if pair[0].is_whitespace() || pair[1].is_whitespace() {
-                continue;
-            }
-            pairs.insert(pair.iter().collect());
-        }
-    }
-    pairs.into_iter().collect()
+fn shaped_word_pairs(font: &FontKit, word: &str) -> Result<Vec<ShapedGlyphPair>> {
+    Ok(shape_text(font, word, ShapingOptions::typst_word())?.adjacent_pairs())
 }

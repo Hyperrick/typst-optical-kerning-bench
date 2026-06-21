@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "guarded-v1-goldfish",
+  "status": "experimental-reference",
+  "algorithm": "guarded-profile-hybrid",
+  "sample": {
+    "text": "Goldfish",
+    "fontId": "eb-garamond",
+    "fontFamily": "EB Garamond",
+    "fontPath": "corpus/fonts/eb-garamond.ttf",
+    "pointSize": 100,
+    "ligatures": false,
+    "dpi": 300
+  },
+  "algorithmConstants": {
+    "metricOpticalDisagreementPull": 0.8,
+    "nearestGuardFormula": "clamp(target_gap_em * 0.08, 0.012, 0.020)",
+    "apertureCloseMinFormula": "clamp(target_gap_em * 0.42, 0.040, 0.120)",
+    "safeCompactionFormula": "clamp(gap_mad_em * 0.25, 0.008, 0.016)",
+    "globalClampEm": [-0.16, 0.16],
+    "deadZoneEm": 0.006
+  },
+  "comparisons": {
+    "metricParity": {
+      "widthDeltaPx": 0,
+      "widthDeltaEm": 0.0
+    },
+    "indesignOpticalVsTypstGuarded": {
+      "widthDeltaPx": 2,
+      "widthDeltaEm": 0.0048
+    }
+  },
+  "pairDeltas": [
+    {
+      "display": "G|o",
+      "leftCluster": "G",
+      "rightCluster": "o",
+      "leftGlyphId": 38,
+      "rightGlyphId": 490,
+      "deltaEm": -0.014103062,
+      "metricDeltaEm": 0.0,
+      "opticalDeltaEm": -0.01179895
+    },
+    {
+      "display": "o|l",
+      "leftCluster": "o",
+      "rightCluster": "l",
+      "leftGlyphId": 490,
+      "rightGlyphId": 478,
+      "deltaEm": -0.029103108,
+      "metricDeltaEm": -0.015000045,
+      "opticalDeltaEm": 0.0
+    },
+    {
+      "display": "l|d",
+      "leftCluster": "l",
+      "rightCluster": "d",
+      "leftGlyphId": 478,
+      "rightGlyphId": 436,
+      "deltaEm": -0.014103062,
+      "metricDeltaEm": 0.0,
+      "opticalDeltaEm": 0.0
+    },
+    {
+      "display": "d|f",
+      "leftCluster": "d",
+      "rightCluster": "f",
+      "leftGlyphId": 436,
+      "rightGlyphId": 452,
+      "deltaEm": 0.0,
+      "metricDeltaEm": 0.0,
+      "opticalDeltaEm": 0.0
+    },
+    {
+      "display": "f|i",
+      "leftCluster": "f",
+      "rightCluster": "i",
+      "leftGlyphId": 452,
+      "rightGlyphId": 462,
+      "deltaEm": 0.01400001,
+      "metricDeltaEm": 0.07000005,
+      "opticalDeltaEm": 0.0
+    },
+    {
+      "display": "i|s",
+      "leftCluster": "i",
+      "rightCluster": "s",
+      "leftGlyphId": 462,
+      "rightGlyphId": 509,
+      "deltaEm": -0.014103062,
+      "metricDeltaEm": 0.0,
+      "opticalDeltaEm": 0.0
+    },
+    {
+      "display": "s|h",
+      "leftCluster": "s",
+      "rightCluster": "h",
+      "leftGlyphId": 509,
+      "rightGlyphId": 459,
+      "deltaEm": -0.014103062,
+      "metricDeltaEm": 0.0,
+      "opticalDeltaEm": 0.0
+    }
+  ],
+  "artifacts": {
+    "comparisonJson": "renders/goldfish/no-ligatures-100pt-tuned/metrics/comparison.json",
+    "deltaJson": "renders/goldfish/no-ligatures-100pt-tuned/metrics/guarded-deltas.json",
+    "metricOverlay": "renders/goldfish/no-ligatures-100pt-tuned/overlays/metric-parity.png",
+    "opticalOverlay": "renders/goldfish/no-ligatures-100pt-tuned/overlays/optical-vs-guarded.png"
+  },
+  "notes": [
+    "This baseline preserves the successful Goldfish state before broader tuning.",
+    "It is not a final algorithm contract and should remain a regression reference while broader glyph classes are tuned."
+  ]
+}
