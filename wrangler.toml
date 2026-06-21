@@ -10,3 +10,4 @@ kv_namespaces = [
 
 [vars]
 ALLOWED_ORIGIN = "https://hyperrick.github.io"
+SURVEY_CLOSED = "true"

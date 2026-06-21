@@ -30,6 +30,18 @@ export default {
 };
 
 async function handleSubmit(request, env, headers) {
+  if (env.SURVEY_CLOSED === "true") {
+    return json(
+      {
+        ok: false,
+        error: "survey_closed",
+        message: "The preference study is currently offline.",
+      },
+      410,
+      headers,
+    );
+  }
+
   let payload;
   try {
     payload = await request.json();
