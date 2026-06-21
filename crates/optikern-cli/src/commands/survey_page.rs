@@ -178,6 +178,20 @@ button.secondary {{
   border-color: var(--accent-2);
   color: white;
 }}
+button:disabled {{
+  cursor: not-allowed;
+  opacity: 0.45;
+}}
+button.ghost {{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+}}
+.button-icon {{
+  width: 16px;
+  height: 16px;
+}}
 .study {{
   margin-top: 22px;
 }}
@@ -322,6 +336,12 @@ button.secondary {{
   color: var(--muted);
   font-size: 16px;
 }}
+.complete-actions {{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}}
 .choices {{
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -409,6 +429,7 @@ button.choice {{
   .trial-tools {{ flex-direction: column; align-items: flex-end; gap: 8px; }}
   .choices {{ grid-template-columns: 1fr; }}
   .complete {{ grid-template-columns: 1fr; }}
+  .complete-actions {{ justify-content: flex-start; }}
 }}
 </style>
 </head>
@@ -484,6 +505,13 @@ button.choice {{
         <div class="trial-head">
           <div>Choose the best spacing</div>
           <div class="trial-tools">
+            <button id="backButton" class="ghost" type="button" disabled>
+              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 19-7-7 7-7"></path>
+                <path d="M19 12H5"></path>
+              </svg>
+              <span>Back</span>
+            </button>
             <label class="scale-control">
               <span>Scale</span>
               <input id="scaleSlider" type="range" min="0.75" max="1.6" step="0.05" value="1" aria-label="Scale examples">
@@ -522,7 +550,16 @@ button.choice {{
           <div>Your choices help us understand which optical spacing direction feels most balanced in real reading samples.</div>
           <div id="submitStatus" class="meta"></div>
         </div>
-        <button id="submit" class="primary">Submit Results</button>
+        <div class="complete-actions">
+          <button id="backButtonComplete" class="ghost" type="button">
+            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 19-7-7 7-7"></path>
+              <path d="M19 12H5"></path>
+            </svg>
+            <span>Back</span>
+          </button>
+          <button id="submit" class="primary">Submit Results</button>
+        </div>
       </div>
     </div>
   </section>
@@ -691,9 +728,17 @@ function currentSideOrder() {{
 function hasStarted() {{
   return Boolean(state.startedAt) || state.votes.length > 0;
 }}
+function updateBackButtons() {{
+  const canGoBack = state.votes.length > 0;
+  ["backButton", "backButtonComplete"].forEach(id => {{
+    const button = document.getElementById(id);
+    if (button) button.disabled = !canGoBack;
+  }});
+}}
 function render() {{
   applyTheme();
   applyScale();
+  updateBackButtons();
   if (!hasStarted()) {{
     document.getElementById("introScreen").hidden = false;
     document.getElementById("surveyFrame").hidden = true;
@@ -759,6 +804,15 @@ function recordVote(value) {{
   saveState();
   render();
 }}
+function goBack() {{
+  if (state.votes.length === 0) return;
+  state.votes.pop();
+  delete state.lastSubmittedAt;
+  delete state.lastSubmittedVoteCount;
+  delete state.lastSubmitResponse;
+  saveState();
+  render();
+}}
 function sessionPayload() {{
   return {{
     ...state,
@@ -804,6 +858,8 @@ async function submitResults() {{
 document.querySelectorAll("[data-vote]").forEach(button => {{
   button.addEventListener("click", () => recordVote(button.dataset.vote));
 }});
+document.getElementById("backButton").addEventListener("click", goBack);
+document.getElementById("backButtonComplete").addEventListener("click", goBack);
 document.querySelectorAll("[data-theme-choice]").forEach(button => {{
   button.addEventListener("click", () => {{
     state.theme = normalizeTheme(button.dataset.themeChoice);
