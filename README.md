@@ -89,7 +89,8 @@ the configured endpoint.
 See [`docs/github-pages.md`](docs/github-pages.md) and
 [`docs/data-persistence.md`](docs/data-persistence.md). The Cloudflare Worker
 setup and reset flow are documented in
-[`docs/cloudflare-worker.md`](docs/cloudflare-worker.md).
+[`docs/cloudflare-worker.md`](docs/cloudflare-worker.md); the reset call is also
+available as `scripts/reset-cloudflare-db.sh`.
 
 ## Algorithms
 

@@ -60,5 +60,13 @@ curl -X POST \
   https://typst-optical-kerning-bench.example.workers.dev/admin/reset
 ```
 
+Or use the repo script:
+
+```sh
+OPTIKERN_WORKER_URL=https://typst-optical-kerning-bench.example.workers.dev \
+RESET_TOKEN=... \
+scripts/reset-cloudflare-db.sh
+```
+
 The token is a Cloudflare secret. It is not committed to the repository and is
 not exposed to the static site.
