@@ -328,7 +328,7 @@ fn render_svg_sample(
     let height_em = (bounds.max_y - bounds.min_y + 2.0 * pad).max(0.1);
     Ok((
         format!(
-            "<svg class=\"sample-svg\" viewBox=\"{:.5} {:.5} {:.5} {:.5}\" style=\"width:{:.2}pt;height:{:.2}pt\" aria-hidden=\"true\"><g fill=\"currentColor\" fill-rule=\"nonzero\" stroke=\"none\">{}</g></svg>",
+            "<svg class=\"sample-svg\" viewBox=\"{:.5} {:.5} {:.5} {:.5}\" style=\"--sample-width:{:.2}pt;--sample-height:{:.2}pt\" aria-hidden=\"true\"><g fill=\"currentColor\" fill-rule=\"nonzero\" stroke=\"none\">{}</g></svg>",
             min_x,
             min_y,
             width_em,

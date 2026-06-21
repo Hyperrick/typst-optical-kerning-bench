@@ -351,7 +351,7 @@ button.ghost {{
 }}
 .choices {{
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(140px * var(--sample-scale))), 1fr));
   gap: 14px;
   align-items: stretch;
 }}
@@ -404,10 +404,9 @@ button.choice {{
 }}
 .sample-svg {{
   display: block;
-  max-width: 100%;
+  width: min(calc(var(--sample-width) * var(--sample-scale)), 100%);
+  height: auto;
   overflow: visible;
-  transform: scale(var(--sample-scale));
-  transform-origin: center;
 }}
 .intro {{
   max-width: 820px;
@@ -729,9 +728,6 @@ function applyScale() {{
   const value = document.getElementById("scaleValue");
   if (slider) slider.value = String(scale);
   if (value) value.textContent = `${{Math.round(scale * 100)}}%`;
-  document.querySelectorAll(".sample-svg").forEach(svg => {{
-    svg.style.maxWidth = scale > 1 ? `${{100 / scale}}%` : "100%";
-  }});
 }}
 
 function currentTrialIndex() {{
