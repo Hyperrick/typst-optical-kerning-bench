@@ -34,9 +34,6 @@ nn
 ra
 ry
 rt
-ff
-fi
-fl
 ij
 T.
 T,

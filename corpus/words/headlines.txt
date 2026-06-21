@@ -8,7 +8,6 @@ TYPST
 VAST
 PLAYFAIR
 Reference
-Office
 Waterfall
 Yellowstone
 Portfolio
@@ -59,9 +58,7 @@ Specimen
 Hierarchy
 Contrast
 Alignment
-Gridfit
 Hinting
-Figma
 InDesign
 Typst compiler
 Page layout

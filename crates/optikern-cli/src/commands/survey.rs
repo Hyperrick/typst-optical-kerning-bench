@@ -178,12 +178,15 @@ fn build_trials(
 
         for index in rotated_indices(pairs.len(), font_index * PAIRS_PER_FONT, PAIRS_PER_FONT) {
             let sample = &pairs[index];
-            if results.contains_key(sample) {
+            if results.contains_key(sample) && !contains_ligature_sequence(sample) {
                 add_sample_trial(&mut trials, font, &font_kit, "pair", sample, 44.0, results)?;
             }
         }
 
         for index in rotated_indices(words.len(), font_index * WORDS_PER_FONT, WORDS_PER_FONT) {
+            if contains_ligature_sequence(&words[index]) {
+                continue;
+            }
             add_sample_trial(
                 &mut trials,
                 font,
@@ -196,6 +199,11 @@ fn build_trials(
         }
     }
     Ok(trials)
+}
+
+fn contains_ligature_sequence(sample: &str) -> bool {
+    let sample = sample.to_ascii_lowercase();
+    sample.contains("ff") || sample.contains("fi") || sample.contains("fl")
 }
 
 fn rotated_indices(total: usize, start: usize, limit: usize) -> Vec<usize> {
