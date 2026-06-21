@@ -13,6 +13,14 @@ use crate::data::{BenchFont, BenchReport};
 
 const PAIRS_PER_FONT: usize = 4;
 const WORDS_PER_FONT: usize = 6;
+const WORD_DELTA_SCALE: f32 = 0.30;
+const WORD_TOTAL_DELTA_LIMIT: f32 = 0.30;
+const WORD_KERN_PAIR_ALLOWLIST: &[&str] = &[
+    "av", "va", "aw", "wa", "ay", "ya", "at", "ta", "fa", "la", "lt", "lv", "lw", "ly", "pa", "to",
+    "tr", "te", "ty", "tu", "yo", "we", "wo", "wy", "fo", "rn", "nn", "ra", "ry", "rt", "ij", "p.",
+    "p,", "f.", "f,", "t.", "t,", "y.", "y,", "a.", "a,", "\"a", "a\"", "'a", "a'", "(a", "a)",
+    "[a", "a]",
+];
 
 const MODES: &[&str] = &[
     "nearest-contour-distance",
@@ -176,18 +184,28 @@ fn build_trials(
         let font_path = root.join(font.path.trim_start_matches("./"));
         let font_kit = FontKit::load(&font.id, &font_path)?;
 
-        for index in rotated_indices(pairs.len(), font_index * PAIRS_PER_FONT, PAIRS_PER_FONT) {
+        let mut added_pairs = 0;
+        for index in rotated_indices(pairs.len(), font_index * PAIRS_PER_FONT) {
+            if added_pairs >= PAIRS_PER_FONT {
+                break;
+            }
             let sample = &pairs[index];
             if results.contains_key(sample) && !contains_ligature_sequence(sample) {
-                add_sample_trial(&mut trials, font, &font_kit, "pair", sample, 44.0, results)?;
+                if add_sample_trial(&mut trials, font, &font_kit, "pair", sample, 44.0, results)? {
+                    added_pairs += 1;
+                }
             }
         }
 
-        for index in rotated_indices(words.len(), font_index * WORDS_PER_FONT, WORDS_PER_FONT) {
+        let mut added_words = 0;
+        for index in rotated_indices(words.len(), font_index * WORDS_PER_FONT) {
+            if added_words >= WORDS_PER_FONT {
+                break;
+            }
             if contains_ligature_sequence(&words[index]) {
                 continue;
             }
-            add_sample_trial(
+            if add_sample_trial(
                 &mut trials,
                 font,
                 &font_kit,
@@ -195,7 +213,9 @@ fn build_trials(
                 &words[index],
                 32.0,
                 results,
-            )?;
+            )? {
+                added_words += 1;
+            }
         }
     }
     Ok(trials)
@@ -206,13 +226,11 @@ fn contains_ligature_sequence(sample: &str) -> bool {
     sample.contains("ff") || sample.contains("fi") || sample.contains("fl")
 }
 
-fn rotated_indices(total: usize, start: usize, limit: usize) -> Vec<usize> {
+fn rotated_indices(total: usize, start: usize) -> Vec<usize> {
     if total == 0 {
         return Vec::new();
     }
-    (0..limit.min(total))
-        .map(|offset| (start + offset) % total)
-        .collect()
+    (0..total).map(|offset| (start + offset) % total).collect()
 }
 
 fn add_sample_trial(
@@ -223,13 +241,13 @@ fn add_sample_trial(
     sample: &str,
     size_pt: f32,
     results: &BTreeMap<String, &AlgorithmSet>,
-) -> Result<()> {
+) -> Result<bool> {
     let choices = MODES
         .iter()
-        .map(|mode| render_choice(font_kit, sample, mode, results, size_pt))
+        .map(|mode| render_choice(font_kit, kind, sample, mode, results, size_pt))
         .collect::<Result<Vec<_>>>()?;
     if !is_informative(&choices) {
-        return Ok(());
+        return Ok(false);
     }
     let id = format!("{}:{}:{}:five-way", font.id, kind, sample_id(sample));
     trials.push(Trial {
@@ -243,7 +261,7 @@ fn add_sample_trial(
         size_pt,
         choices,
     });
-    Ok(())
+    Ok(true)
 }
 
 fn is_informative(choices: &[Choice]) -> bool {
@@ -256,13 +274,15 @@ fn is_informative(choices: &[Choice]) -> bool {
 
 fn render_choice(
     font: &FontKit,
+    kind: &str,
     sample: &str,
     mode: &str,
     results: &BTreeMap<String, &AlgorithmSet>,
     size_pt: f32,
 ) -> Result<Choice> {
     let algorithm = parse_algorithm(mode);
-    let (html, total_delta_em) = render_svg_sample(font, sample, algorithm, results, size_pt)?;
+    let (html, total_delta_em) =
+        render_svg_sample(font, kind, sample, algorithm, results, size_pt)?;
     Ok(Choice {
         mode: mode.to_owned(),
         label: mode_label(mode),
@@ -280,6 +300,7 @@ fn parse_algorithm(mode: &str) -> Option<Algorithm> {
 
 fn render_svg_sample(
     font: &FontKit,
+    kind: &str,
     sample: &str,
     algorithm: Option<Algorithm>,
     results: &BTreeMap<String, &AlgorithmSet>,
@@ -312,6 +333,9 @@ fn render_svg_sample(
             continue;
         }
         let pair = [chars[index], chars[index + 1]].iter().collect::<String>();
+        if kind == "word" && !is_word_kern_pair(&pair) {
+            continue;
+        }
         let Some(output) = results.get(&pair).and_then(|set| {
             set.outputs
                 .iter()
@@ -319,8 +343,9 @@ fn render_svg_sample(
         }) else {
             continue;
         };
-        total_delta_em += output.delta_em;
-        cursor += output.delta_em;
+        let delta = adjusted_sample_delta(kind, total_delta_em, output.delta_em);
+        total_delta_em += delta;
+        cursor += delta;
     }
 
     let bounds = bounds.unwrap_or(SvgBounds {
@@ -347,6 +372,26 @@ fn render_svg_sample(
         ),
         total_delta_em,
     ))
+}
+
+fn is_word_kern_pair(pair: &str) -> bool {
+    if contains_ligature_sequence(pair) {
+        return false;
+    }
+    let chars = pair.chars().collect::<Vec<_>>();
+    if chars.len() != 2 {
+        return false;
+    }
+    let pair = pair.to_ascii_lowercase();
+    WORD_KERN_PAIR_ALLOWLIST.contains(&pair.as_str())
+}
+
+fn adjusted_sample_delta(kind: &str, current_total: f32, delta: f32) -> f32 {
+    if kind != "word" {
+        return delta;
+    }
+    let scaled = delta * WORD_DELTA_SCALE;
+    (current_total + scaled).clamp(-WORD_TOTAL_DELTA_LIMIT, WORD_TOTAL_DELTA_LIMIT) - current_total
 }
 
 fn merge_bounds(existing: Option<SvgBounds>, next: SvgBounds) -> SvgBounds {

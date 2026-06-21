@@ -2,6 +2,7 @@
 /metrics/
 /renders/
 /reports/
+/output/
 /corpus/fonts/*.ttf
 /corpus/fonts/*.otf
 /corpus/fonts/*.ttc
