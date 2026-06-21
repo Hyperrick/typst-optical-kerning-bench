@@ -342,6 +342,13 @@ button.ghost {{
   justify-content: flex-end;
   gap: 10px;
 }}
+.survey-nav {{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}}
 .choices {{
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -372,6 +379,11 @@ button.choice {{
 .choice:active {{
   background: var(--choice-active);
   transform: translateY(0);
+}}
+.choice.is-selected {{
+  background: var(--choice-active);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--choice-shadow);
 }}
 .choice-label {{
   color: var(--ink);
@@ -428,6 +440,7 @@ button.choice {{
   .trial-head {{ align-items: flex-start; }}
   .trial-tools {{ flex-direction: column; align-items: flex-end; gap: 8px; }}
   .choices {{ grid-template-columns: 1fr; }}
+  .survey-nav {{ align-items: stretch; flex-direction: column-reverse; }}
   .complete {{ grid-template-columns: 1fr; }}
   .complete-actions {{ justify-content: flex-start; }}
 }}
@@ -505,13 +518,6 @@ button.choice {{
         <div class="trial-head">
           <div>Choose the best spacing</div>
           <div class="trial-tools">
-            <button id="backButton" class="ghost" type="button" disabled>
-              <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m12 19-7-7 7-7"></path>
-                <path d="M19 12H5"></path>
-              </svg>
-              <span>Back</span>
-            </button>
             <label class="scale-control">
               <span>Scale</span>
               <input id="scaleSlider" type="range" min="0.75" max="1.6" step="0.05" value="1" aria-label="Scale examples">
@@ -542,6 +548,16 @@ button.choice {{
             <span class="choice-label">E</span>
             <span class="sample-wrap" id="choiceE"></span>
           </button>
+        </div>
+        <div class="survey-nav">
+          <button id="backButton" class="ghost" type="button" disabled>
+            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 19-7-7 7-7"></path>
+              <path d="M19 12H5"></path>
+            </svg>
+            <span>Back</span>
+          </button>
+          <button id="nextButton" class="primary" type="button" disabled>Next</button>
         </div>
       </div>
       <div id="complete" class="complete" hidden>
@@ -651,6 +667,7 @@ function loadState() {{
     if (parsed.schemaVersion === 7) {{
       parsed.scale = normalizeScale(parsed.scale || 1);
       parsed.theme = normalizeTheme(parsed.theme);
+      parsed.cursor = normalizeCursor(parsed);
       return parsed;
     }}
   }}
@@ -670,6 +687,7 @@ function loadState() {{
     sides,
     scale: 1,
     theme: getInitialTheme(),
+    cursor: 0,
     trialPoolCount: TRIALS.length,
     votes: []
   }};
@@ -717,7 +735,7 @@ function applyScale() {{
 }}
 
 function currentTrialIndex() {{
-  return Math.min(state.votes.length, state.order.length - 1);
+  return Math.min(normalizeCursor(state), state.order.length - 1);
 }}
 function currentTrial() {{
   return TRIALS[state.order[currentTrialIndex()]];
@@ -728,17 +746,28 @@ function currentSideOrder() {{
 function hasStarted() {{
   return Boolean(state.startedAt) || state.votes.length > 0;
 }}
-function updateBackButtons() {{
-  const canGoBack = state.votes.length > 0;
+function normalizeCursor(value) {{
+  const voteCount = Array.isArray(value.votes) ? value.votes.length : 0;
+  const max = Array.isArray(value.order) ? value.order.length : 0;
+  const fallback = voteCount >= max && max > 0 ? max : voteCount;
+  const cursor = Number.isInteger(value.cursor) ? value.cursor : fallback;
+  return Math.min(Math.max(cursor, 0), max);
+}}
+function updateNavigation() {{
+  state.cursor = normalizeCursor(state);
+  const canGoBack = state.cursor > 0;
+  const canGoNext = state.cursor < state.votes.length;
   ["backButton", "backButtonComplete"].forEach(id => {{
     const button = document.getElementById(id);
     if (button) button.disabled = !canGoBack;
   }});
+  const next = document.getElementById("nextButton");
+  if (next) next.disabled = !canGoNext;
 }}
 function render() {{
   applyTheme();
   applyScale();
-  updateBackButtons();
+  updateNavigation();
   if (!hasStarted()) {{
     document.getElementById("introScreen").hidden = false;
     document.getElementById("surveyFrame").hidden = true;
@@ -749,7 +778,7 @@ function render() {{
   document.getElementById("surveyFrame").hidden = false;
   const done = state.votes.length;
   document.getElementById("bar").style.width = `${{100 * done / state.order.length}}%`;
-  if (done >= state.order.length) {{
+  if (done >= state.order.length && state.cursor >= state.order.length) {{
     document.getElementById("trialContent").hidden = true;
     document.getElementById("complete").hidden = false;
     document.getElementById("submit").hidden = !SUBMIT_ENDPOINT;
@@ -765,14 +794,21 @@ function render() {{
   const trial = currentTrial();
   const sideOrder = currentSideOrder();
   const choices = sideOrder.map(i => trial.choices[i]);
-  document.getElementById("trialCount").textContent = `${{done + 1}} / ${{state.order.length}}`;
+  const cursor = currentTrialIndex();
+  document.getElementById("trialCount").textContent = `${{cursor + 1}} / ${{state.order.length}}`;
   CHOICE_IDS.forEach((id, slot) => {{
     document.getElementById(id).innerHTML = choices[slot] ? choices[slot].html : "";
+  }});
+  document.querySelectorAll("[data-vote]").forEach(button => {{
+    const selected = state.votes[cursor]?.vote === button.dataset.vote;
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-pressed", selected ? "true" : "false");
   }});
   applyScale();
 }}
 function recordVote(value) {{
-  if (state.votes.length >= state.order.length) return;
+  state.cursor = normalizeCursor(state);
+  if (state.cursor >= state.order.length) return;
   const trial = currentTrial();
   const sideOrder = currentSideOrder();
   let winner = null;
@@ -785,7 +821,7 @@ function recordVote(value) {{
       .map(choiceIndex => trial.choices[choiceIndex].mode)
       .join(",");
   }}
-  state.votes.push({{
+  const vote = {{
     trialId: trial.id,
     comparisonId: trial.comparison_id,
     fontId: trial.font_id,
@@ -800,16 +836,30 @@ function recordVote(value) {{
     losers: loser ? loser.split(",") : [],
     confidence: null,
     recordedAt: new Date().toISOString()
-  }});
+  }};
+  if (state.cursor < state.votes.length) {{
+    state.votes[state.cursor] = vote;
+  }} else {{
+    state.votes.push(vote);
+  }}
+  state.cursor = Math.min(state.cursor + 1, state.order.length);
+  delete state.lastSubmittedAt;
+  delete state.lastSubmittedVoteCount;
+  delete state.lastSubmitResponse;
   saveState();
   render();
 }}
 function goBack() {{
-  if (state.votes.length === 0) return;
-  state.votes.pop();
-  delete state.lastSubmittedAt;
-  delete state.lastSubmittedVoteCount;
-  delete state.lastSubmitResponse;
+  state.cursor = normalizeCursor(state);
+  if (state.cursor === 0) return;
+  state.cursor -= 1;
+  saveState();
+  render();
+}}
+function goNext() {{
+  state.cursor = normalizeCursor(state);
+  if (state.cursor >= state.votes.length) return;
+  state.cursor = Math.min(state.cursor + 1, state.order.length);
   saveState();
   render();
 }}
@@ -860,6 +910,7 @@ document.querySelectorAll("[data-vote]").forEach(button => {{
 }});
 document.getElementById("backButton").addEventListener("click", goBack);
 document.getElementById("backButtonComplete").addEventListener("click", goBack);
+document.getElementById("nextButton").addEventListener("click", goNext);
 document.querySelectorAll("[data-theme-choice]").forEach(button => {{
   button.addEventListener("click", () => {{
     state.theme = normalizeTheme(button.dataset.themeChoice);
