@@ -18,4 +18,51 @@ LAVA
 VAULT
 T. rex
 "Attention"
-
+Lorem ipsum
+Dolor sit amet
+Kerning
+Optical
+Metrics
+Glyphs
+Baseline
+Cap height
+OpenType
+HarfBuzz
+Bezier
+Vector
+Raster
+Compiler
+Cache
+Layout
+Typesetter
+Monospace
+Variable font
+Wordmark
+Logotype
+Brandbook
+Interface
+Prototype
+Whitespace
+Negative space
+Tracking
+Letterform
+Counterform
+Syntax
+Debugger
+Render pass
+Pixel grid
+Source code
+Design system
+Editorial
+Publication
+Specimen
+Hierarchy
+Contrast
+Alignment
+Gridfit
+Hinting
+Figma
+InDesign
+Typst compiler
+Page layout
+Print proof

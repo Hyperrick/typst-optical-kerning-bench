@@ -9,7 +9,7 @@ Generate the hosted site with central submission enabled:
 
 ```sh
 cargo run -p optikern-cli -- survey \
-  --submit-endpoint https://typst-optical-kerning-bench.example.workers.dev/submit
+  --submit-endpoint https://typst-optical-kerning-bench.hyperrick.workers.dev/submit
 ```
 
 If no endpoint is configured, the generated site is a local/static preview only.
@@ -67,7 +67,7 @@ Reset the KV data with:
 ```sh
 curl -X POST \
   -H "Authorization: Bearer $RESET_TOKEN" \
-  https://typst-optical-kerning-bench.example.workers.dev/admin/reset
+  https://typst-optical-kerning-bench.hyperrick.workers.dev/admin/reset
 ```
 
 The reset deletes these prefixes:

@@ -11,8 +11,8 @@ use super::{survey_methods_page, survey_page, survey_results_page};
 use crate::corpus;
 use crate::data::{BenchFont, BenchReport};
 
-const PAIRS_PER_FONT: usize = 2;
-const WORDS_PER_FONT: usize = 2;
+const PAIRS_PER_FONT: usize = 4;
+const WORDS_PER_FONT: usize = 6;
 
 const MODES: &[&str] = &[
     "nearest-contour-distance",
@@ -169,26 +169,42 @@ fn build_trials(
     by_font: &BTreeMap<String, BTreeMap<String, &AlgorithmSet>>,
 ) -> Result<Vec<Trial>> {
     let mut trials = Vec::new();
-    for font in fonts {
+    for (font_index, font) in fonts.iter().enumerate() {
         let Some(results) = by_font.get(&font.id) else {
             continue;
         };
         let font_path = root.join(font.path.trim_start_matches("./"));
         let font_kit = FontKit::load(&font.id, &font_path)?;
 
-        for sample in pairs
-            .iter()
-            .filter(|pair| results.contains_key(*pair))
-            .take(PAIRS_PER_FONT)
-        {
-            add_sample_trial(&mut trials, font, &font_kit, "pair", sample, 44.0, results)?;
+        for index in rotated_indices(pairs.len(), font_index * PAIRS_PER_FONT, PAIRS_PER_FONT) {
+            let sample = &pairs[index];
+            if results.contains_key(sample) {
+                add_sample_trial(&mut trials, font, &font_kit, "pair", sample, 44.0, results)?;
+            }
         }
 
-        for sample in words.iter().take(WORDS_PER_FONT) {
-            add_sample_trial(&mut trials, font, &font_kit, "word", sample, 32.0, results)?;
+        for index in rotated_indices(words.len(), font_index * WORDS_PER_FONT, WORDS_PER_FONT) {
+            add_sample_trial(
+                &mut trials,
+                font,
+                &font_kit,
+                "word",
+                &words[index],
+                32.0,
+                results,
+            )?;
         }
     }
     Ok(trials)
+}
+
+fn rotated_indices(total: usize, start: usize, limit: usize) -> Vec<usize> {
+    if total == 0 {
+        return Vec::new();
+    }
+    (0..limit.min(total))
+        .map(|offset| (start + offset) % total)
+        .collect()
 }
 
 fn add_sample_trial(

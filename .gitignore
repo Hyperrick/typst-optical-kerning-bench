@@ -6,5 +6,6 @@
 /corpus/fonts/*.otf
 /corpus/fonts/*.ttc
 .playwright-cli/
+.wrangler/
 .dev.vars
 .DS_Store

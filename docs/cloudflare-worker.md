@@ -57,13 +57,13 @@ Run:
 ```sh
 curl -X POST \
   -H "Authorization: Bearer $RESET_TOKEN" \
-  https://typst-optical-kerning-bench.example.workers.dev/admin/reset
+  https://typst-optical-kerning-bench.hyperrick.workers.dev/admin/reset
 ```
 
 Or use the repo script:
 
 ```sh
-OPTIKERN_WORKER_URL=https://typst-optical-kerning-bench.example.workers.dev \
+OPTIKERN_WORKER_URL=https://typst-optical-kerning-bench.hyperrick.workers.dev \
 RESET_TOKEN=... \
 scripts/reset-cloudflare-db.sh
 ```

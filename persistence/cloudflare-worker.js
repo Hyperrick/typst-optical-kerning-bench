@@ -122,7 +122,7 @@ async function handleResults(env, headers) {
       samples: stats.samples,
     },
     200,
-    withCache(headers),
+    noStore(headers),
   );
 }
 
@@ -225,7 +225,7 @@ function aggregateParticipantRecords(records) {
     modes: [...modes.values()]
       .map((mode) => ({
         ...mode,
-        winRate: mode.appearances > 0 ? mode.wins / mode.appearances : 0,
+        winRate: mode.wins + mode.losses > 0 ? mode.wins / (mode.wins + mode.losses) : 0,
       }))
       .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins || a.mode.localeCompare(b.mode)),
     headToHead: [...headToHead.values()].sort((a, b) => b.wins - a.wins),
@@ -340,10 +340,10 @@ function corsHeaders(env) {
   };
 }
 
-function withCache(headers) {
+function noStore(headers) {
   return {
     ...headers,
-    "cache-control": "public, max-age=60",
+    "cache-control": "no-store",
   };
 }
 

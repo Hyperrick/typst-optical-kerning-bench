@@ -541,7 +541,7 @@ const TRIALS = {trials_json};
 const SUBMIT_ENDPOINT = {submit_endpoint_json};
 const SESSION_TRIAL_LIMIT = 30;
 const PARTICIPANT_KEY = "optikern.participant.v1";
-const STORAGE_KEY = "optikern.preference.v6";
+const STORAGE_KEY = "optikern.preference.v7";
 const CHOICE_IDS = ["choiceA", "choiceB", "choiceC", "choiceD", "choiceE"];
 
 function xmur3(str) {{
@@ -611,7 +611,7 @@ function loadState() {{
   const existing = localStorage.getItem(STORAGE_KEY);
   if (existing) {{
     const parsed = JSON.parse(existing);
-    if (parsed.schemaVersion === 6) {{
+    if (parsed.schemaVersion === 7) {{
       parsed.scale = normalizeScale(parsed.scale || 1);
       parsed.theme = normalizeTheme(parsed.theme);
       return parsed;
@@ -623,7 +623,7 @@ function loadState() {{
   const order = selectSessionOrder(rand);
   const sides = TRIALS.map(trial => shuffle(trial.choices.map((_, index) => index), rand));
   return {{
-    schemaVersion: 6,
+    schemaVersion: 7,
     createdAt: new Date().toISOString(),
     startedAt: null,
     participantId: getParticipantId(),

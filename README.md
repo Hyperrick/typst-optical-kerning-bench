@@ -69,7 +69,7 @@ derived as `/results`:
 
 ```sh
 cargo run -p optikern-cli -- survey \
-  --submit-endpoint https://typst-optical-kerning-bench.example.workers.dev/submit \
+  --submit-endpoint https://typst-optical-kerning-bench.hyperrick.workers.dev/submit \
   --repo-url https://github.com/Hyperrick/typst-optical-kerning-bench
 ```
 
