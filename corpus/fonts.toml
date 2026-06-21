@@ -1,0 +1,64 @@
+# Pinned to google/fonts HEAD on 2026-06-21.
+source = "https://github.com/google/fonts"
+commit = "cf28404eac0c6f9753bef3510bbe271952e4154d"
+
+[[fonts]]
+id = "eb-garamond"
+family = "EB Garamond"
+category = "serif"
+path = "ofl/ebgaramond/EBGaramond[wght].ttf"
+
+[[fonts]]
+id = "libre-baskerville"
+family = "Libre Baskerville"
+category = "serif"
+path = "ofl/librebaskerville/LibreBaskerville[wght].ttf"
+
+[[fonts]]
+id = "merriweather"
+family = "Merriweather"
+category = "serif"
+path = "ofl/merriweather/Merriweather[opsz,wdth,wght].ttf"
+
+[[fonts]]
+id = "inter"
+family = "Inter"
+category = "sans"
+path = "ofl/inter/Inter[opsz,wght].ttf"
+
+[[fonts]]
+id = "source-sans-3"
+family = "Source Sans 3"
+category = "sans"
+path = "ofl/sourcesans3/SourceSans3[wght].ttf"
+
+[[fonts]]
+id = "roboto"
+family = "Roboto"
+category = "sans"
+path = "ofl/roboto/Roboto[wdth,wght].ttf"
+
+[[fonts]]
+id = "oswald"
+family = "Oswald"
+category = "display"
+path = "ofl/oswald/Oswald[wght].ttf"
+
+[[fonts]]
+id = "playfair-display"
+family = "Playfair Display"
+category = "display"
+path = "ofl/playfairdisplay/PlayfairDisplay[wght].ttf"
+
+[[fonts]]
+id = "roboto-mono"
+family = "Roboto Mono"
+category = "mono"
+path = "ofl/robotomono/RobotoMono[wght].ttf"
+
+[[fonts]]
+id = "source-code-pro"
+family = "Source Code Pro"
+category = "mono"
+path = "ofl/sourcecodepro/SourceCodePro[wght].ttf"
+

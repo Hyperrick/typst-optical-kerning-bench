@@ -1,0 +1,10 @@
+name = "typst-optical-kerning-bench"
+main = "persistence/cloudflare-worker.js"
+compatibility_date = "2026-06-21"
+
+kv_namespaces = [
+  { binding = "VOTES", id = "REPLACE_WITH_KV_NAMESPACE_ID" }
+]
+
+[vars]
+ALLOWED_ORIGIN = "https://hyperrick.github.io"

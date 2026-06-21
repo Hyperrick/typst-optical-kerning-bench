@@ -1,0 +1,10 @@
+/target/
+/metrics/
+/renders/
+/reports/
+/corpus/fonts/*.ttf
+/corpus/fonts/*.otf
+/corpus/fonts/*.ttc
+.playwright-cli/
+.dev.vars
+.DS_Store

@@ -1,0 +1,5 @@
+Typography shapes the color of a printed page.
+AV pairs, To pairs, and punctuation reveal weak kerning quickly.
+Optical kerning is most useful for display text and poorly kerned fonts.
+Metrics should remain the default when the font already carries good spacing.
+

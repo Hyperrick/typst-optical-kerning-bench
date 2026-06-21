@@ -1,0 +1,328 @@
+pub fn build_html(results_endpoint: Option<&str>, survey_href: &str, repo_url: &str) -> String {
+    let endpoint_json =
+        serde_json::to_string(&results_endpoint.unwrap_or("")).unwrap_or_else(|_| "\"\"".into());
+    RESULTS_TEMPLATE
+        .replace("__RESULTS_ENDPOINT__", &endpoint_json)
+        .replace("__SURVEY_HREF__", &escape_attr(survey_href))
+        .replace("__REPO_URL__", &escape_attr(repo_url))
+}
+
+const RESULTS_TEMPLATE: &str = r#"<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results | Optical Kerning Preference Study</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%231f6f68"/><path d="M7 23 14 8h3l8 15h-4l-2-4h-7l-2 4H7Zm6-7h5l-2.5-5L13 16Z" fill="white"/></svg>'>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f7f7f4;
+  --ink: #171717;
+  --muted: #686868;
+  --line: #d9d8d2;
+  --panel: #ffffff;
+  --accent: #1f6f68;
+  --good: #247a44;
+  --warn: #a65d00;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #151514;
+    --ink: #f1f0ea;
+    --muted: #aaa79e;
+    --line: #3f3d38;
+    --panel: #201f1d;
+    --accent: #69c7ba;
+    --good: #77d295;
+    --warn: #e0aa5c;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px;
+}
+header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
+}
+h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.12;
+}
+h2 {
+  margin: 30px 0 10px;
+  font-size: 21px;
+}
+p {
+  color: var(--muted);
+  margin: 10px 0;
+  font-size: 16px;
+}
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.actions a {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 11px;
+  background: var(--panel);
+  text-decoration: none;
+}
+.status {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 16px;
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+.metric {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 15px;
+}
+.metric strong {
+  display: block;
+  font-size: 26px;
+  line-height: 1.1;
+}
+.metric span {
+  color: var(--muted);
+  font-size: 14px;
+}
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+}
+th, td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  font-size: 15px;
+}
+th:first-child, td:first-child {
+  text-align: left;
+}
+th {
+  color: var(--muted);
+  font-weight: 650;
+}
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}
+.winner {
+  color: var(--good);
+  font-weight: 700;
+}
+.note {
+  color: var(--muted);
+  font-size: 14px;
+}
+footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 16px;
+}
+@media (max-width: 760px) {
+  main { padding: 16px; }
+  .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Public Preference Results</h1>
+    <p>These are aggregate results from the blind five-way optical-kerning study. Raw participant records, browser fingerprints, and reset controls are not exposed by this page.</p>
+    <div class="actions">
+      <a href="__SURVEY_HREF__">Back to survey</a>
+      <a href="methods.html">Methods</a>
+      <a href="__REPO_URL__" target="_blank" rel="noopener">GitHub repository</a>
+    </div>
+  </header>
+
+  <div id="status" class="status">Loading public results...</div>
+
+  <section class="summary" id="summary" hidden></section>
+
+  <section>
+    <h2>Method Ranking</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Wins</th>
+            <th>Appearances</th>
+            <th>Losses</th>
+            <th>Win rate</th>
+          </tr>
+        </thead>
+        <tbody id="modeRows">
+          <tr><td colspan="5">No results loaded.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pairwise Margins</h2>
+    <p class="note">Each five-way vote counts as one win against every shown alternative.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Winner</th>
+            <th>Against</th>
+            <th>Wins</th>
+          </tr>
+        </thead>
+        <tbody id="headRows">
+          <tr><td colspan="3">No results loaded.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    This is an independent community study. It is not an official Typst survey, and it is not affiliated with Typst.
+  </footer>
+</main>
+
+<script>
+const RESULTS_ENDPOINT = __RESULTS_ENDPOINT__;
+const MODE_LABELS = {
+  "nearest-contour-distance": "Nearest contour distance",
+  "profile-whitespace": "Profile whitespace",
+  "area-balance": "Area balance",
+  "metric-prior-hybrid": "Metric-prior hybrid",
+  "safe-fallback-only": "Safe fallback only"
+};
+
+function label(mode) {
+  return MODE_LABELS[mode] || mode;
+}
+function int(value) {
+  return Number.isFinite(Number(value)) ? Number(value).toLocaleString() : "0";
+}
+function percent(value, fallbackWins, fallbackAppearances) {
+  let rate = Number(value);
+  if (!Number.isFinite(rate) && fallbackAppearances > 0) {
+    rate = fallbackWins / fallbackAppearances;
+  }
+  if (!Number.isFinite(rate)) rate = 0;
+  return `${Math.round(rate * 1000) / 10}%`;
+}
+function setStatus(message, isError = false) {
+  const status = document.getElementById("status");
+  status.textContent = message;
+  status.style.color = isError ? "var(--warn)" : "var(--muted)";
+}
+function renderSummary(data) {
+  const submissions = data.submissions || {};
+  const votes = data.votes || {};
+  const summary = document.getElementById("summary");
+  summary.hidden = false;
+  summary.innerHTML = `
+    <div class="metric"><strong>${int(submissions.included)}</strong><span>included participants</span></div>
+    <div class="metric"><strong>${int(submissions.completed)}</strong><span>completed sessions</span></div>
+    <div class="metric"><strong>${int(votes.included)}</strong><span>included votes</span></div>
+    <div class="metric"><strong>${int(submissions.excludedDuplicates)}</strong><span>excluded duplicates</span></div>
+  `;
+}
+function renderModes(data) {
+  const modes = Array.isArray(data.modes) ? data.modes.slice() : [];
+  const rows = modes
+    .sort((a, b) => (b.winRate || 0) - (a.winRate || 0) || (b.wins || 0) - (a.wins || 0))
+    .map((mode, index) => `
+      <tr>
+        <td class="${index === 0 ? "winner" : ""}">${label(mode.mode)}<br><code>${mode.mode}</code></td>
+        <td>${int(mode.wins)}</td>
+        <td>${int(mode.appearances)}</td>
+        <td>${int(mode.losses)}</td>
+        <td>${percent(mode.winRate, mode.wins, mode.appearances)}</td>
+      </tr>
+    `)
+    .join("");
+  document.getElementById("modeRows").innerHTML = rows || '<tr><td colspan="5">No votes have been submitted yet.</td></tr>';
+}
+function renderHeadToHead(data) {
+  const rows = (Array.isArray(data.headToHead) ? data.headToHead.slice(0, 40) : [])
+    .map(row => `
+      <tr>
+        <td>${label(row.winner)}<br><code>${row.winner}</code></td>
+        <td>${label(row.loser)}<br><code>${row.loser}</code></td>
+        <td>${int(row.wins)}</td>
+      </tr>
+    `)
+    .join("");
+  document.getElementById("headRows").innerHTML = rows || '<tr><td colspan="3">No pairwise margins yet.</td></tr>';
+}
+async function loadResults() {
+  if (!RESULTS_ENDPOINT) {
+    setStatus("No public results endpoint is configured in this local build.");
+    return;
+  }
+  try {
+    const response = await fetch(RESULTS_ENDPOINT, { headers: { accept: "application/json" } });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "invalid results response");
+    renderSummary(data);
+    renderModes(data);
+    renderHeadToHead(data);
+    setStatus(`Updated ${data.generatedAt || "now"}.`);
+  } catch (error) {
+    setStatus(`Could not load public results: ${error.message}`, true);
+  }
+}
+loadResults();
+</script>
+</body>
+</html>
+"#;
+
+fn escape_attr(input: &str) -> String {
+    input
+        .replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&#39;")
+}
