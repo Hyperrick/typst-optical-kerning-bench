@@ -5,6 +5,8 @@ pub struct ProfileConfig {
     pub slices: usize,
     pub min_y: f32,
     pub max_y: f32,
+    pub x_height: f32,
+    pub cap_height: f32,
 }
 
 impl Default for ProfileConfig {
@@ -13,7 +15,21 @@ impl Default for ProfileConfig {
             slices: 80,
             min_y: -0.20,
             max_y: 0.88,
+            x_height: 0.52,
+            cap_height: 0.72,
         }
+    }
+}
+
+impl ProfileConfig {
+    pub fn for_latin(x_height: Option<f32>, cap_height: Option<f32>) -> Self {
+        let mut config = Self::default();
+        config.x_height = x_height.unwrap_or(config.x_height).clamp(0.35, 0.72);
+        config.cap_height = cap_height
+            .unwrap_or(config.cap_height)
+            .clamp(config.x_height, 0.95);
+        config.max_y = (config.cap_height + 0.16).clamp(0.70, 1.05);
+        config
     }
 }
 
@@ -46,7 +62,7 @@ pub fn gap_stats(
             continue;
         };
         let gap = left_advance + right_x - left_x;
-        let weight = optical_weight(y);
+        let weight = optical_weight(y, config);
         gaps.push(gap);
         weighted_sum += gap * weight;
         weight_sum += weight;
@@ -111,10 +127,10 @@ fn intersections(segments: &[LineSegment], y: f32) -> Vec<f32> {
     xs
 }
 
-fn optical_weight(y: f32) -> f32 {
-    if (0.05..=0.62).contains(&y) {
+fn optical_weight(y: f32, config: ProfileConfig) -> f32 {
+    if (0.02..=config.x_height).contains(&y) {
         3.0
-    } else if (-0.02..=0.75).contains(&y) {
+    } else if (-0.04..=config.cap_height).contains(&y) {
         2.0
     } else {
         0.75

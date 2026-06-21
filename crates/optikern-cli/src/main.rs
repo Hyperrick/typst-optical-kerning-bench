@@ -47,6 +47,11 @@ enum Command {
         #[arg(long)]
         no_compile: bool,
     },
+    /// Build a compact A3 visual contact sheet from metrics/bench.json.
+    ContactSheet {
+        #[arg(long)]
+        no_compile: bool,
+    },
     /// Build a static blind A/B preference-click suite.
     Survey {
         #[arg(long)]
@@ -70,6 +75,9 @@ fn main() -> Result<()> {
         Command::RenderIndesign { run } => commands::render_indesign::run(&cli.root, run),
         Command::EvalPdf { input } => commands::eval_pdf::run(&cli.root, &input),
         Command::Report { no_compile } => commands::report::run(&cli.root, !no_compile),
+        Command::ContactSheet { no_compile } => {
+            commands::contact_sheet::run(&cli.root, !no_compile)
+        }
         Command::Survey {
             submit_endpoint,
             results_endpoint,

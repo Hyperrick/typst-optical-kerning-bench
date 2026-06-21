@@ -14,7 +14,7 @@ cargo run -p optikern-cli -- fetch-fonts
 cargo run -p optikern-cli -- bench
 cargo run -p optikern-cli -- render-typst
 cargo run -p optikern-cli -- report
-cargo run -p optikern-cli -- survey
+cargo run -p optikern-cli -- contact-sheet
 ```
 
 Outputs are written to `metrics/`, `renders/`, and `reports/`.
@@ -44,6 +44,10 @@ document construction rules.
 
 ## Human Preference Study
 
+The public GitHub Pages survey is currently paused while the examples and
+algorithms are being realigned. The deployed Cloudflare Worker rejects new
+submissions with `survey_closed`.
+
 Generate a blind five-way click suite:
 
 ```sh
@@ -51,10 +55,11 @@ cargo run -p optikern-cli -- survey
 open reports/survey.html
 ```
 
-The survey is a fast subjective screening layer. It renders samples as inline
-SVG paths from the pinned font outlines, submits vote sessions, and helps
-compare human preference against algorithm simplicity, runtime cost, and
-PDF/InDesign evidence. See [`docs/preference-study.md`](docs/preference-study.md).
+The survey is a fast subjective screening layer for local review until the
+public study is re-opened. It renders samples as inline SVG paths from the
+pinned font outlines and can help compare human preference against algorithm
+simplicity, runtime cost, and PDF/InDesign evidence. See
+[`docs/preference-study.md`](docs/preference-study.md).
 
 The same command also writes a GitHub Pages-ready static bundle to `site/`:
 
@@ -76,9 +81,10 @@ cargo run -p optikern-cli -- survey \
 Use `--results-endpoint` only when the public aggregate endpoint does not live
 next to `/submit`.
 
-The intended public URL is
-<https://hyperrick.github.io/typst-optical-kerning-bench/>. The Pages workflow
-publishes `site/` and includes:
+The public URL is
+<https://hyperrick.github.io/typst-optical-kerning-bench/>. While paused, the
+Pages workflow publishes an offline landing page from `site/`. When the survey
+is re-enabled, the intended bundle includes:
 
 - `index.html`: the survey,
 - `methods.html`: algorithm and repository notes,
@@ -104,6 +110,20 @@ Implemented V1 algorithms:
 
 See [`docs/algorithms.md`](docs/algorithms.md) for the current heuristics and
 the constraints that make them plausible for a future Typst implementation.
+See [`docs/research-alignment.md`](docs/research-alignment.md) for the external
+sources that shaped the current benchmark rules.
+
+## Contact Sheet
+
+Generate a compact A3 PDF showing the baselines and all algorithms side by side:
+
+```sh
+cargo run -p optikern-cli -- contact-sheet
+```
+
+This writes `reports/contact-sheet.typ` and, when Typst is installed,
+`reports/contact-sheet.pdf`. The sheet uses the same pinned fonts and applies
+algorithm deltas between every adjacent non-space glyph pair in the sample.
 
 ## Design Constraints
 

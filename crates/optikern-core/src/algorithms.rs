@@ -6,6 +6,8 @@ use crate::outline::FlattenOptions;
 use crate::profile::{GapStats, ProfileConfig, gap_stats};
 use crate::shape::metric_pair_delta_em;
 
+const CALIBRATION_ALPHABET: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Algorithm {
@@ -44,6 +46,10 @@ pub struct AlgorithmOutput {
     pub delta_em: f32,
     pub metric_delta_em: f32,
     pub optical_delta_em: f32,
+    #[serde(default)]
+    pub target_gap_em: f32,
+    #[serde(default)]
+    pub gap_distribution_mad_em: f32,
     pub gap_min_em: f32,
     pub gap_weighted_mean_em: f32,
     pub gap_robust_mean_em: f32,
@@ -60,7 +66,36 @@ pub struct AlgorithmSet {
     pub outputs: Vec<AlgorithmOutput>,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct EvaluationConfig {
+    pub profile: ProfileConfig,
+    pub target_gap_em: f32,
+    pub gap_mad_em: f32,
+    pub preserve_monospace: bool,
+}
+
+impl EvaluationConfig {
+    pub fn for_font(font: &FontKit) -> Self {
+        let profile = ProfileConfig::for_latin(font.x_height_em(), font.cap_height_em());
+        let (target_gap_em, gap_mad_em) = calibrated_gap_distribution(font, profile);
+        Self {
+            profile,
+            target_gap_em,
+            gap_mad_em,
+            preserve_monospace: font.is_monospaced(),
+        }
+    }
+}
+
 pub fn evaluate_pair(font: &FontKit, pair: &str) -> Result<AlgorithmSet> {
+    evaluate_pair_with_config(font, pair, EvaluationConfig::for_font(font))
+}
+
+pub fn evaluate_pair_with_config(
+    font: &FontKit,
+    pair: &str,
+    config: EvaluationConfig,
+) -> Result<AlgorithmSet> {
     let mut chars = pair.chars();
     let left = chars
         .next()
@@ -76,28 +111,35 @@ pub fn evaluate_pair(font: &FontKit, pair: &str) -> Result<AlgorithmSet> {
         &left_outline,
         left_metrics.advance_em,
         &right_outline,
-        ProfileConfig::default(),
+        config.profile,
     )
     .ok_or_else(|| anyhow!("not enough outline overlap for pair {pair:?}"))?;
     let metric_delta = metric_pair_delta_em(font, pair).unwrap_or(0.0);
-    let optical_profile_delta = clamp_delta(target_gap() - stats.weighted_mean_gap);
+    let optical_profile_delta = distribution_delta(stats.weighted_mean_gap, config);
+    let optical_robust_delta = distribution_delta(stats.robust_mean_gap, config);
 
     let outputs = Algorithm::all()
         .iter()
         .copied()
         .map(|algorithm| {
             let delta = match algorithm {
-                Algorithm::NearestContourDistance => nearest_distance_delta(stats),
-                Algorithm::ProfileWhitespace => optical_profile_delta,
-                Algorithm::AreaBalance => clamp_delta(target_gap() - stats.robust_mean_gap),
-                Algorithm::MetricPriorHybrid => {
-                    metric_prior_hybrid(metric_delta, optical_profile_delta)
+                Algorithm::NearestContourDistance => {
+                    nearest_distance_delta(stats, config.target_gap_em)
                 }
-                Algorithm::SafeFallbackOnly => {
-                    if metric_delta.abs() >= 0.01 {
+                Algorithm::ProfileWhitespace => optical_profile_delta,
+                Algorithm::AreaBalance => optical_robust_delta,
+                Algorithm::MetricPriorHybrid => {
+                    if config.preserve_monospace {
                         metric_delta
                     } else {
-                        optical_profile_delta
+                        metric_prior_hybrid(metric_delta, optical_robust_delta)
+                    }
+                }
+                Algorithm::SafeFallbackOnly => {
+                    if config.preserve_monospace || metric_delta.abs() >= dead_zone() {
+                        metric_delta
+                    } else {
+                        optical_robust_delta
                     }
                 }
             };
@@ -106,6 +148,8 @@ pub fn evaluate_pair(font: &FontKit, pair: &str) -> Result<AlgorithmSet> {
                 delta_em: delta,
                 metric_delta_em: metric_delta,
                 optical_delta_em: optical_profile_delta,
+                target_gap_em: config.target_gap_em,
+                gap_distribution_mad_em: config.gap_mad_em,
                 gap_min_em: stats.min_gap,
                 gap_weighted_mean_em: stats.weighted_mean_gap,
                 gap_robust_mean_em: stats.robust_mean_gap,
@@ -124,34 +168,111 @@ pub fn evaluate_pair(font: &FontKit, pair: &str) -> Result<AlgorithmSet> {
     })
 }
 
-fn nearest_distance_delta(stats: GapStats) -> f32 {
-    let desired_min = 0.025;
+fn calibrated_gap_distribution(font: &FontKit, profile: ProfileConfig) -> (f32, f32) {
+    let flatten = FlattenOptions::default();
+    let mut gaps = Vec::new();
+    let chars = CALIBRATION_ALPHABET.chars().collect::<Vec<_>>();
+    for left in &chars {
+        for right in &chars {
+            let Ok((left_metrics, left_outline)) = font.outline(*left, flatten) else {
+                continue;
+            };
+            let Ok((_right_metrics, right_outline)) = font.outline(*right, flatten) else {
+                continue;
+            };
+            if let Some(stats) = gap_stats(
+                &left_outline,
+                left_metrics.advance_em,
+                &right_outline,
+                profile,
+            ) {
+                gaps.push(stats.robust_mean_gap);
+            }
+        }
+    }
+
+    if gaps.is_empty() {
+        return (default_target_gap(profile), 0.055);
+    }
+    gaps.sort_by(|a, b| a.total_cmp(b));
+    let median = percentile(&gaps, 0.5).clamp(0.045, 0.42);
+    let mut deviations = gaps
+        .iter()
+        .map(|gap| (gap - median).abs())
+        .collect::<Vec<_>>();
+    deviations.sort_by(|a, b| a.total_cmp(b));
+    let mad = percentile(&deviations, 0.5).clamp(0.025, 0.16);
+    (median, mad)
+}
+
+fn default_target_gap(profile: ProfileConfig) -> f32 {
+    (profile.x_height * 0.13).clamp(0.055, 0.10)
+}
+
+fn nearest_distance_delta(stats: GapStats, target_gap: f32) -> f32 {
+    let desired_min = (target_gap * 0.38).clamp(0.018, 0.040);
     if stats.min_gap < desired_min {
-        clamp_delta(desired_min - stats.min_gap)
+        normalized_delta(desired_min - stats.min_gap)
     } else {
-        clamp_delta((target_gap() - stats.min_gap) * 0.55)
+        let config = EvaluationConfig {
+            profile: ProfileConfig::default(),
+            target_gap_em: target_gap,
+            gap_mad_em: (target_gap * 0.32).clamp(0.025, 0.08),
+            preserve_monospace: false,
+        };
+        distribution_delta(stats.min_gap, config) * 0.5
+    }
+}
+
+fn distribution_delta(gap: f32, config: EvaluationConfig) -> f32 {
+    let spread = (config.gap_mad_em * 1.35).clamp(0.035, 0.14);
+    let lower = (config.target_gap_em - spread * 1.15).max(0.020);
+    let upper = config.target_gap_em + spread;
+    if gap > upper {
+        normalized_delta((upper - gap) * 0.85)
+    } else if gap < lower {
+        normalized_delta((lower - gap) * 0.65)
+    } else {
+        0.0
     }
 }
 
 fn metric_prior_hybrid(metric_delta: f32, optical_delta: f32) -> f32 {
-    if metric_delta.abs() < 0.01 {
+    if metric_delta.abs() < dead_zone() {
         return optical_delta;
     }
 
     let disagreement = (optical_delta - metric_delta).abs();
-    if disagreement <= 0.08 {
+    if disagreement <= 0.045 {
         metric_delta
     } else {
-        clamp_delta(metric_delta + 0.35 * (optical_delta - metric_delta))
+        normalized_delta(metric_delta + 0.35 * (optical_delta - metric_delta))
     }
 }
 
-fn target_gap() -> f32 {
-    0.065
+fn normalized_delta(value: f32) -> f32 {
+    let clamped = clamp_delta(value);
+    if clamped.abs() < dead_zone() {
+        0.0
+    } else {
+        clamped
+    }
+}
+
+fn dead_zone() -> f32 {
+    0.006
 }
 
 fn clamp_delta(value: f32) -> f32 {
-    value.clamp(-0.18, 0.18)
+    value.clamp(-0.16, 0.16)
+}
+
+fn percentile(values: &[f32], p: f32) -> f32 {
+    if values.is_empty() {
+        return 0.0;
+    }
+    let idx = ((values.len() - 1) as f32 * p.clamp(0.0, 1.0)).round() as usize;
+    values[idx]
 }
 
 #[cfg(test)]

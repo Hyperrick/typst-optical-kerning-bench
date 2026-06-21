@@ -5,7 +5,10 @@ mod profile;
 mod shape;
 mod svg;
 
-pub use algorithms::{Algorithm, AlgorithmOutput, AlgorithmSet, evaluate_pair};
+pub use algorithms::{
+    Algorithm, AlgorithmOutput, AlgorithmSet, EvaluationConfig, evaluate_pair,
+    evaluate_pair_with_config,
+};
 pub use font::{FontKit, GlyphMetrics};
 pub use outline::{FlattenOptions, GlyphOutline, LineSegment, Point};
 pub use profile::{GapStats, ProfileConfig};

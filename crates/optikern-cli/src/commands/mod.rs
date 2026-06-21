@@ -1,4 +1,5 @@
 pub mod bench;
+pub mod contact_sheet;
 pub mod eval_pdf;
 pub mod fetch_fonts;
 pub mod render_indesign;

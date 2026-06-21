@@ -59,6 +59,46 @@ impl FontKit {
         self.units_per_em
     }
 
+    pub fn x_height_em(&self) -> Option<f32> {
+        self.face()
+            .ok()
+            .and_then(|face| face.x_height())
+            .map(|height| f32::from(height) / self.units_per_em)
+    }
+
+    pub fn cap_height_em(&self) -> Option<f32> {
+        self.face()
+            .ok()
+            .and_then(|face| face.capital_height())
+            .map(|height| f32::from(height) / self.units_per_em)
+    }
+
+    pub fn is_monospaced(&self) -> bool {
+        if self
+            .face()
+            .map(|face| face.is_monospaced())
+            .unwrap_or(false)
+        {
+            return true;
+        }
+
+        self.has_uniform_representative_advances()
+    }
+
+    fn has_uniform_representative_advances(&self) -> bool {
+        let advances = "Hn0iMW"
+            .chars()
+            .filter_map(|ch| self.glyph_metrics(ch).ok())
+            .map(|metrics| metrics.advance_em)
+            .collect::<Vec<_>>();
+        if advances.len() < 4 {
+            return false;
+        }
+        let min = advances.iter().copied().fold(f32::INFINITY, f32::min);
+        let max = advances.iter().copied().fold(f32::NEG_INFINITY, f32::max);
+        max - min <= 0.01
+    }
+
     pub fn face(&self) -> Result<Face<'_>> {
         Face::parse(&self.bytes, self.face_index)
             .map_err(|err| anyhow!("failed to parse font {}: {err:?}", self.path.display()))

@@ -4,7 +4,7 @@ use std::path::Path;
 use std::time::Instant;
 
 use anyhow::{Context, Result};
-use optikern_core::{FontKit, evaluate_pair};
+use optikern_core::{EvaluationConfig, FontKit, evaluate_pair_with_config};
 
 use crate::corpus;
 use crate::data::{BenchFailure, BenchFont, BenchReport};
@@ -41,9 +41,10 @@ pub fn run(root: &Path) -> Result<()> {
 
         let font = FontKit::load(&entry.id, &path)
             .with_context(|| format!("failed to load font {}", path.display()))?;
+        let config = EvaluationConfig::for_font(&font);
 
         for pair in &pairs {
-            match evaluate_pair(&font, pair) {
+            match evaluate_pair_with_config(&font, pair, config) {
                 Ok(result) => results.push(result),
                 Err(error) => failures.push(BenchFailure {
                     font_id: entry.id.clone(),
