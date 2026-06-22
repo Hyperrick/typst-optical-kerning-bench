@@ -1,5 +1,6 @@
 use crate::class::PairClass;
 
+use super::digit_context::{DigitRunContext, digit_run_context_delta};
 use super::math::{dead_zone, normalized_delta};
 use super::types::{Algorithm, AlgorithmSet, EvaluationConfig};
 
@@ -18,7 +19,7 @@ pub(super) fn apply_run_context_adjustments(
     config: EvaluationConfig,
 ) {
     let context = RunContext::from_results(results, config);
-    if !context.has_adjustments() {
+    if !context.has_adjustments(config) {
         return;
     }
 
@@ -49,6 +50,17 @@ pub(super) fn apply_run_context_adjustments(
         );
         delta = normalized_delta(
             delta + sans_run_context_delta(delta, output.metric_delta_em, pair_class, context),
+        );
+        delta = normalized_delta(
+            delta
+                + digit_run_context_delta(
+                    delta,
+                    output.metric_delta_em,
+                    pair_class,
+                    context.digit_run,
+                    context.sans_like,
+                    config,
+                ),
         );
         delta = normalized_delta(
             delta
@@ -100,6 +112,7 @@ pub(super) struct RunContext {
     pub(super) metricless_lower_pairs: usize,
     pub(super) connected_lower_pairs: usize,
     pub(super) opening_lower_pairs: usize,
+    pub(super) digit_run: DigitRunContext,
 }
 
 impl RunContext {
@@ -168,6 +181,10 @@ impl RunContext {
                     context.strong_mixed_metric_pairs += 1;
                 }
             }
+
+            context
+                .digit_run
+                .record(class, output.metric_delta_em, output.gap_min_em, config);
         }
 
         context.connected_script_like = context.letter_pairs >= 3
@@ -193,11 +210,12 @@ impl RunContext {
         context
     }
 
-    fn has_adjustments(self) -> bool {
+    fn has_adjustments(self, config: EvaluationConfig) -> bool {
         self.connected_script_like
             || self.script_mixed_case_like
             || self.script_lower_run_like
             || self.script_upper_run_like
+            || self.digit_run.has_adjustments(self.sans_like, config)
             || (self.sans_like
                 && (self.strong_upper_metric_pairs >= 2 || self.strong_mixed_metric_pairs >= 2))
     }

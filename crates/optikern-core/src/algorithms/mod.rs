@@ -1,5 +1,6 @@
 mod basic;
 mod constraints;
+mod digit_context;
 mod evaluate;
 mod geometry;
 mod guarded;

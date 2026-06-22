@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "name": "number-focus",
+  "description": "Targeted optical kerning review for digit and punctuation runs across the full font spread.",
+  "cases": [
+    {
+      "fontId": "eb-garamond",
+      "sample": "10.000"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "10.000"
+    },
+    {
+      "fontId": "inter",
+      "sample": "10.000"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "10.000"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "10.000"
+    }
+  ]
+}

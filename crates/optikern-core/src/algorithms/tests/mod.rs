@@ -20,6 +20,7 @@ use super::{Algorithm, AlgorithmOutput, AlgorithmSet, EvaluationConfig};
 
 mod basic;
 mod constraints;
+mod digit_context;
 mod geometry;
 mod guarded;
 mod run_context;
@@ -32,6 +33,54 @@ fn test_config(target_gap_em: f32, gap_mad_em: f32) -> EvaluationConfig {
         preserve_monospace: false,
         class_gap_calibration: ClassGapCalibration::empty(),
     }
+}
+
+fn guarded_run_result(left: char, right: char, delta_em: f32, gap_min_em: f32) -> AlgorithmSet {
+    guarded_run_result_with_metrics(left, right, delta_em, 0.0, delta_em, gap_min_em)
+}
+
+fn guarded_run_result_with_metrics(
+    left: char,
+    right: char,
+    delta_em: f32,
+    metric_delta_em: f32,
+    optical_delta_em: f32,
+    gap_min_em: f32,
+) -> AlgorithmSet {
+    AlgorithmSet {
+        font_id: "test".to_owned(),
+        pair: format!("{left}{right}"),
+        left,
+        right,
+        display: format!("{left}{right}"),
+        shaping_text: format!("{left}{right}"),
+        left_glyph_id: 1,
+        right_glyph_id: 2,
+        left_cluster: left.to_string(),
+        right_cluster: right.to_string(),
+        outputs: vec![AlgorithmOutput {
+            algorithm: Algorithm::GuardedProfileHybrid,
+            delta_em,
+            metric_delta_em,
+            optical_delta_em,
+            target_gap_em: 0.231,
+            gap_distribution_mad_em: 0.056,
+            gap_min_em,
+            gap_weighted_mean_em: 0.100,
+            gap_robust_mean_em: 0.100,
+            gap_mad_em: 0.030,
+            samples: 80,
+        }],
+    }
+}
+
+fn guarded_delta(result: &AlgorithmSet) -> f32 {
+    result
+        .outputs
+        .iter()
+        .find(|output| output.algorithm == Algorithm::GuardedProfileHybrid)
+        .map(|output| output.delta_em)
+        .unwrap()
 }
 
 fn glyph_from_rects(rects: &[(f32, f32, f32, f32)]) -> GlyphOutline {

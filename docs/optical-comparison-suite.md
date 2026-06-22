@@ -36,6 +36,28 @@ scripts/run-optical-comparison-suite.py \
   --baseline-output baselines/optical-comparison-suite-v8-cross-font.json
 ```
 
+Targeted number-focus suite:
+
+```sh
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-number-focus-suite.json \
+  --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-cross-font \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-number-focus-v14 \
+  --baseline-output baselines/optical-comparison-suite-number-focus-v14.json
+```
+
+Five-font verification suite:
+
+```sh
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-cross-font-suite.json \
+  --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-cross-font \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v14 \
+  --baseline-output baselines/optical-comparison-suite-five-font-v14.json
+```
+
 Full verification suite:
 
 ```sh
@@ -65,6 +87,10 @@ The `fast`, `cross-font`, and `full` case lists are explicit JSON files under
   baseline for the visual matrix.
 - `baselines/optical-comparison-suite-v8-cross-font.json`: compact cross-font
   optical baseline.
+- `baselines/optical-comparison-suite-number-focus-v14.json`: compact
+  digit-run focus baseline.
+- `baselines/optical-comparison-suite-five-font-v14.json`: compact five-font
+  optical baseline after the V14 digit-run pass.
 
 Overlay colors:
 
@@ -74,51 +100,39 @@ magenta = Typst Guarded Optical
 black   = overlap
 ```
 
-## Current Result: V8
+## Current Result: V14
 
-The latest full 30-case suite is still the V7 reference. Compared with the
-original V1 baseline, V7 reduced mean score from `0.0428em` to `0.0249em` and
-worst-case score from `0.1416em` to `0.0936em`, with no measured score
-regressions. V8 has currently been verified on the 12-case fast suite and the
-18-case cross-font visual matrix.
+The current no-ligature five-font matrix compares InDesign Optical against
+Typst Guarded Optical for 30 rows. V14 adds a digit-run context pass after the
+V13 script-run work. Compared with the previous five-font current baseline, the
+mean score improved from `0.0276em` to `0.0240em`, with no measured regression
+above `0.001em`.
 
-V7 full-suite worst cases by combined optical score:
+V14 five-font worst cases by combined optical score:
 
 ```text
-Inter OpenType:       -0.0936em width, 0.0401em ink
+Comic Neue Goldfish:  +0.0648em width, 0.0271em ink
 Libre AVATAR:         +0.0552em width, 0.0310em ink
-Libre Goldfish:       +0.0360em width, 0.0413em ink
+Comic Neue ToTaL:     +0.0504em width, 0.0332em ink
+Comic Neue AVATAR:    -0.0480em width, 0.0261em ink
 EB AVATAR:            +0.0384em width, 0.0184em ink
 EB ToTaL:             -0.0384em width, 0.0294em ink
-Inter WAYFINDER:      +0.0384em width, 0.0171em ink
-Inter 1001:           +0.0384em width, 0.0252em ink
-Inter V2.0:           -0.0360em width, 0.0141em ink
-Inter 0123456789:     +0.0288em width, 0.0263em ink
-EB To:                -0.0264em width, 0.0119em ink
+Inter AVATAR:         -0.0360em width, 0.0201em ink
 ```
 
 In the comparison metric, negative width means the Typst Guarded output is
 wider than InDesign Optical; positive width means Typst Guarded is narrower.
 
-The V8 fast suite measured all 12 selected iteration cases. Libre `WAVY`
-hit one transient InDesign `-609`; rerunning only that case repaired the suite.
-Its current worst cases are Libre `AVATAR` (`0.0552em` score), Libre `ToTaL`
-(`0.0216em`), Inter `ToTaL` (`0.0192em`), Inter `ipsum` (`0.0192em`), and
-Libre `WAVY` (`0.0172em`).
-
-The V8 cross-font metric suite measured all 18 matrix cases as valid. The
-optical cross-font suite then measured the same 18 cases. A focused local
-aperture guard repaired the visible Libre `Goldfish` `G|o` collision, reducing
-that row from `0.0413em` to `0.0149em`. The largest remaining numeric scores
-are Libre `AVATAR` (`0.0552em`), Libre `10.000` (`0.0456em`), EB `AVATAR`
-(`0.0384em`), EB `ToTaL` (`0.0384em`), and Inter `AVATAR` (`0.0360em`).
+The V14 number-focus suite measured five `10.000` rows. Comic Neue improved
+from `0.0984em` to `0.0144em`; Libre Baskerville improved from `0.0456em` to
+`0.0198em`. EB Garamond, Inter, and Pacifico stayed effectively unchanged.
 
 ## Interpretation
 
 The current guarded algorithm is much closer to InDesign Optical than V1, but
 still has targeted failures.
 
-Three patterns stand out after V8:
+Four patterns stand out after V14:
 
 - **Sans context improved**: Inter `OpenType`, `ToTaL`, and `WAVY` are now
   close to InDesign Optical. The run-level V8 pass uses computed sans-like font
@@ -130,9 +144,13 @@ Three patterns stand out after V8:
   but still the largest Inter row in the cross-font sheet.
 - **Libre/EB display caps are now the main failures**: Libre `AVATAR`, EB
   `AVATAR`, and EB `ToTaL` need serif-specific contour safeguards.
-- **Numeric and punctuation cases need their own class**: Libre `10.000` is the
-  strongest current numeric target; it should not be tuned with ordinary letter
-  clamps.
+- **Numeric and punctuation runs are now separate**: the V14 digit-run context
+  tightens long metricless digit runs when the local gaps and font spacing show
+  that ordinary pair guards are too weak. This is dynamic, not a font-name or
+  sample-name exception.
+- **Comic Neue is the main remaining spread test**: after numeric tuning, its
+  `Goldfish`, `ToTaL`, and `AVATAR` rows remain the largest non-serif visual
+  deviations.
 
 Good or near-good controls:
 
@@ -149,5 +167,6 @@ three focused changes:
    upper-lower pairs without making good `Goldfish` rows wider.
 2. Treat Libre `AVATAR`, EB `AVATAR`, and EB `ToTaL` as visual tuning targets,
    not as hard failures.
-3. Add a numeric/punctuation class only if Libre `10.000` remains visibly wrong
-   after closer inspection.
+3. Treat Comic Neue `Goldfish`, Comic Neue `ToTaL`, and Libre `AVATAR` as the
+   next visual tuning targets, while keeping the V14 digit-run improvements
+   locked by tests.
