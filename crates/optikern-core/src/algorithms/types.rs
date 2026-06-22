@@ -78,6 +78,16 @@ pub struct AlgorithmSet {
     pub outputs: Vec<AlgorithmOutput>,
 }
 
+impl AlgorithmSet {
+    pub(crate) fn pair_class(&self) -> PairClass {
+        PairClass::from_clusters(&self.left_cluster, &self.right_cluster)
+    }
+
+    pub(crate) fn has_multi_char_cluster(&self) -> bool {
+        self.left_cluster.chars().count() > 1 || self.right_cluster.chars().count() > 1
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct EvaluationConfig {
     pub profile: ProfileConfig,

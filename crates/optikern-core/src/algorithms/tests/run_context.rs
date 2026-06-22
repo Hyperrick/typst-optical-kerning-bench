@@ -449,6 +449,29 @@ fn script_lower_run_does_not_mark_pacifico_like_mixed_lower_run() {
 }
 
 #[test]
+fn script_ligature_run_opens_connected_multi_char_clusters() {
+    let mut results = vec![
+        guarded_run_result_with_metrics('G', 'o', 0.0, 0.0, 0.0, -0.075),
+        guarded_run_result_with_metrics('o', 'l', 0.0, 0.0, 0.0, -0.078),
+        guarded_run_result_with_metrics('l', 'd', 0.0, -0.010, 0.0, -0.094),
+        guarded_run_result_with_metrics('d', 'f', 0.0, 0.0, 0.018, -0.050),
+        guarded_run_result_with_metrics('f', 's', 0.0, 0.0, 0.0, -0.115),
+        guarded_run_result_with_metrics('s', 'h', 0.0, 0.0, 0.0, -0.074),
+    ];
+    results[3].right_cluster = "fi".to_owned();
+    results[4].left_cluster = "fi".to_owned();
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    apply_run_context_adjustments(&mut results, config);
+
+    assert!(guarded_delta(&results[0]) > 0.012);
+    assert!(guarded_delta(&results[3]) > 0.012);
+    assert!(guarded_delta(&results[5]) > 0.012);
+}
+
+#[test]
 fn script_upper_run_caps_long_connected_openings() {
     let mut results = vec![
         guarded_run_result_with_metrics('A', 'V', 0.0, 0.0, 0.0, 0.021),

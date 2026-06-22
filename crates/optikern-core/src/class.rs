@@ -32,6 +32,13 @@ impl PairClass {
         }
     }
 
+    pub(crate) fn from_clusters(left: &str, right: &str) -> Self {
+        Self {
+            left: ClusterClass::from_cluster(left),
+            right: ClusterClass::from_cluster(right),
+        }
+    }
+
     pub(crate) fn distribution_index(self) -> usize {
         self.left.index() * CLUSTER_CLASS_COUNT + self.right.index()
     }

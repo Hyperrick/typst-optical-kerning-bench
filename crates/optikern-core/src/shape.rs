@@ -9,6 +9,7 @@ use crate::font::FontKit;
 pub struct ShapingOptions {
     pub kerning: bool,
     pub ligatures: bool,
+    pub contextual_alternates: bool,
 }
 
 impl Default for ShapingOptions {
@@ -16,6 +17,7 @@ impl Default for ShapingOptions {
         Self {
             kerning: true,
             ligatures: true,
+            contextual_alternates: true,
         }
     }
 }
@@ -25,6 +27,7 @@ impl ShapingOptions {
         Self {
             kerning: false,
             ligatures: false,
+            contextual_alternates: false,
         }
     }
 
@@ -32,6 +35,7 @@ impl ShapingOptions {
         Self {
             kerning: false,
             ligatures: true,
+            contextual_alternates: true,
         }
     }
 
@@ -43,6 +47,8 @@ impl ShapingOptions {
         if !self.ligatures {
             features.push(Feature::new(Tag::from_bytes(b"liga"), 0, ..));
             features.push(Feature::new(Tag::from_bytes(b"clig"), 0, ..));
+        }
+        if !self.contextual_alternates {
             features.push(Feature::new(Tag::from_bytes(b"calt"), 0, ..));
         }
         features
@@ -177,6 +183,7 @@ pub fn metric_pair_delta_em(font: &FontKit, pair: &str) -> Result<f32> {
         ShapingOptions {
             kerning: true,
             ligatures: false,
+            contextual_alternates: false,
         },
     )?;
     let without_kern = shaped_advance_em(font, pair, ShapingOptions::typst_pair())?;
@@ -191,10 +198,12 @@ pub fn metric_shaped_pair_delta_em(
     let with_options = ShapingOptions {
         kerning: true,
         ligatures,
+        contextual_alternates: ligatures,
     };
     let without_options = ShapingOptions {
         kerning: false,
         ligatures,
+        contextual_alternates: ligatures,
     };
     let with = shape_text(font, &pair.shaping_text, with_options)?;
     let without = shape_text(font, &pair.shaping_text, without_options)?;
@@ -215,6 +224,7 @@ pub fn metric_shaped_run_pair_deltas_em(
         ShapingOptions {
             kerning: true,
             ligatures,
+            contextual_alternates: run.options.contextual_alternates,
         },
     )?;
     Ok(metric_pair_deltas_from_aligned_runs(run, &with))
@@ -345,6 +355,7 @@ mod tests {
             options: ShapingOptions {
                 kerning: false,
                 ligatures: false,
+                contextual_alternates: false,
             },
             glyphs,
         }
@@ -361,6 +372,7 @@ mod tests {
         let features = ShapingOptions {
             kerning: false,
             ligatures: false,
+            contextual_alternates: false,
         }
         .features();
 

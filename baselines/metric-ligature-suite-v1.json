@@ -1,0 +1,913 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Multi-sample metric parity gate before optical tuning.",
+  "pointSize": 100.0,
+  "ligatures": true,
+  "dpi": 300,
+  "metricThresholdEm": 0.02,
+  "inkThresholdEm": 0.02,
+  "caseCount": 36,
+  "validCaseCount": 31,
+  "cases": [
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "Optikern EB Garamond Liga",
+      "fontPath": "renders/font-sandbox/optikern-eb-garamond-regular-static-liga.ttf",
+      "sample": "Goldfish",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.1128,
+        "absoluteWidthDeltaEm": 0.1128,
+        "inkPositionMeanAbsEm": 0.03985233507528789,
+        "status": "baseline-mismatch",
+        "validForOpticalTuning": false
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.043199999999999995,
+        "inkPositionMeanAbsEm": 0.017795733424228993,
+        "segmentCenterMeanAbsEm": 0.015838013804899406
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.1128,
+        "inkPositionMeanAbsEm": 0.03985233507528789,
+        "segmentCenterMeanAbsEm": 0.03957075467517421
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "Optikern EB Garamond Liga",
+      "fontPath": "renders/font-sandbox/optikern-eb-garamond-regular-static-liga.ttf",
+      "sample": "office",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.17279999999999998,
+        "absoluteWidthDeltaEm": 0.17279999999999998,
+        "inkPositionMeanAbsEm": 0.0838189276837226,
+        "status": "baseline-mismatch",
+        "validForOpticalTuning": false
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.1056,
+        "inkPositionMeanAbsEm": 0.054262920003267545,
+        "segmentCenterMeanAbsEm": 0.06506193282960589
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.17279999999999998,
+        "inkPositionMeanAbsEm": 0.0838189276837226,
+        "segmentCenterMeanAbsEm": 0.10417436083102076
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "Optikern EB Garamond Liga",
+      "fontPath": "renders/font-sandbox/optikern-eb-garamond-regular-static-liga.ttf",
+      "sample": "affinity",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.17279999999999998,
+        "absoluteWidthDeltaEm": 0.17279999999999998,
+        "inkPositionMeanAbsEm": 0.10100978819325379,
+        "status": "baseline-mismatch",
+        "validForOpticalTuning": false
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.1032,
+        "inkPositionMeanAbsEm": 0.061449150480086145,
+        "segmentCenterMeanAbsEm": 0.07714592376853989
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.17279999999999998,
+        "inkPositionMeanAbsEm": 0.10100978819325379,
+        "segmentCenterMeanAbsEm": 0.12644492778309516
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "Optikern EB Garamond Liga",
+      "fontPath": "renders/font-sandbox/optikern-eb-garamond-regular-static-liga.ttf",
+      "sample": "final",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.1128,
+        "absoluteWidthDeltaEm": 0.1128,
+        "inkPositionMeanAbsEm": 0.08039941212618144,
+        "status": "baseline-mismatch",
+        "validForOpticalTuning": false
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.043199999999999995,
+        "inkPositionMeanAbsEm": 0.029425413494003787,
+        "segmentCenterMeanAbsEm": 0.03838105837382617
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.1128,
+        "inkPositionMeanAbsEm": 0.08039941212618144,
+        "segmentCenterMeanAbsEm": 0.09768549861666995
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "Optikern EB Garamond Liga",
+      "fontPath": "renders/font-sandbox/optikern-eb-garamond-regular-static-liga.ttf",
+      "sample": "efficient",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.17279999999999998,
+        "absoluteWidthDeltaEm": 0.17279999999999998,
+        "inkPositionMeanAbsEm": 0.10180182927014025,
+        "status": "baseline-mismatch",
+        "validForOpticalTuning": false
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.1032,
+        "inkPositionMeanAbsEm": 0.060553281288371556,
+        "segmentCenterMeanAbsEm": 0.0805296454305183
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.17279999999999998,
+        "inkPositionMeanAbsEm": 0.10180182927014025,
+        "segmentCenterMeanAbsEm": 0.1333667057444551
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "Optikern EB Garamond Liga",
+      "fontPath": "renders/font-sandbox/optikern-eb-garamond-regular-static-liga.ttf",
+      "sample": "fjord",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0031186673055608556,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0031186673055608556,
+        "segmentCenterMeanAbsEm": 0.0009110481549294803
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0031186673055608556,
+        "segmentCenterMeanAbsEm": 0.0009110481549294803
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Optikern Libre Baskerville Liga",
+      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-liga.ttf",
+      "sample": "Goldfish",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0096,
+        "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.0051975857957717595,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.0051975857957717595,
+        "segmentCenterMeanAbsEm": 0.00507907871029311
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.0051975857957717595,
+        "segmentCenterMeanAbsEm": 0.00507907871029311
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Optikern Libre Baskerville Liga",
+      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-liga.ttf",
+      "sample": "office",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0072,
+        "absoluteWidthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.00261812955463573,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.00261812955463573,
+        "segmentCenterMeanAbsEm": 0.0028830051872977547
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.00261812955463573,
+        "segmentCenterMeanAbsEm": 0.0028830051872977547
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Optikern Libre Baskerville Liga",
+      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-liga.ttf",
+      "sample": "affinity",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0072,
+        "absoluteWidthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0038106435555347335,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0038106435555347335,
+        "segmentCenterMeanAbsEm": 0.003214739128632459
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0038106435555347335,
+        "segmentCenterMeanAbsEm": 0.003214739128632459
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Optikern Libre Baskerville Liga",
+      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-liga.ttf",
+      "sample": "final",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0072,
+        "absoluteWidthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.006216297201867527,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.006216297201867527,
+        "segmentCenterMeanAbsEm": 0.003088104860933697
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.006216297201867527,
+        "segmentCenterMeanAbsEm": 0.003088104860933697
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Optikern Libre Baskerville Liga",
+      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-liga.ttf",
+      "sample": "efficient",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0096,
+        "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.0038868950427300582,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.0038868950427300582,
+        "segmentCenterMeanAbsEm": 0.004723329321233598
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.0038868950427300582,
+        "segmentCenterMeanAbsEm": 0.004723329321233598
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Optikern Libre Baskerville Liga",
+      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-liga.ttf",
+      "sample": "fjord",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0048,
+        "absoluteWidthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0014077181712570232,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.004312685032752373,
+        "segmentCenterMeanAbsEm": 0.0022307477631604397
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0014077181712570232,
+        "segmentCenterMeanAbsEm": 0.0016318764452550169
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Optikern Inter Liga",
+      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-liga.ttf",
+      "sample": "Goldfish",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0017632600606631032,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0017632600606631032,
+        "segmentCenterMeanAbsEm": 0.00039387058228108174
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0017632600606631032,
+        "segmentCenterMeanAbsEm": 0.00039387058228108174
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Optikern Inter Liga",
+      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-liga.ttf",
+      "sample": "office",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.003092292521647679,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.003613552820659181,
+        "segmentCenterMeanAbsEm": 0.0013145092676797162
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.003092292521647679,
+        "segmentCenterMeanAbsEm": 0.0010881792591283146
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Optikern Inter Liga",
+      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-liga.ttf",
+      "sample": "affinity",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0072,
+        "absoluteWidthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0037245059232198625,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0032384935998309005,
+        "segmentCenterMeanAbsEm": 0.002353538979014158
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0037245059232198625,
+        "segmentCenterMeanAbsEm": 0.0032958906918557885
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Optikern Inter Liga",
+      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-liga.ttf",
+      "sample": "final",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0029220521501921288,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0029220521501921288,
+        "segmentCenterMeanAbsEm": 0.001176944625022761
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0029220521501921288,
+        "segmentCenterMeanAbsEm": 0.001176944625022761
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Optikern Inter Liga",
+      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-liga.ttf",
+      "sample": "efficient",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0036753318443630677,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0031529973196036663,
+        "segmentCenterMeanAbsEm": 0.0012546275736397318
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0036753318443630677,
+        "segmentCenterMeanAbsEm": 0.0011291826474283055
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Optikern Inter Liga",
+      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-liga.ttf",
+      "sample": "fjord",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.002207518777858014,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0023027700290638655,
+        "segmentCenterMeanAbsEm": 0.0010151267039406867
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.002207518777858014,
+        "segmentCenterMeanAbsEm": 0.0010414612975212093
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico Liga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-liga.ttf",
+      "sample": "Goldfish",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00020160277658723525,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0001880316262995806,
+        "segmentCenterMeanAbsEm": 4.551629710704219e-05
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00020160277658723525,
+        "segmentCenterMeanAbsEm": 7.976466733371126e-05
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico Liga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-liga.ttf",
+      "sample": "office",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00021056105003652712,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00023248756277455973,
+        "segmentCenterMeanAbsEm": 1.673379945509623e-05
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00021056105003652712,
+        "segmentCenterMeanAbsEm": 5.762668779634623e-05
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico Liga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-liga.ttf",
+      "sample": "affinity",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00040834101841470373,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0003457643034027063,
+        "segmentCenterMeanAbsEm": 0.00034409504783379817
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00040834101841470373,
+        "segmentCenterMeanAbsEm": 0.0004055085602965846
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico Liga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-liga.ttf",
+      "sample": "final",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0003410475831100856,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0003410475831100856,
+        "segmentCenterMeanAbsEm": 0.00010317748420497991
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0003410475831100856,
+        "segmentCenterMeanAbsEm": 0.00010317748420497991
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico Liga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-liga.ttf",
+      "sample": "efficient",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00029065609722544317,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.000290682745940403,
+        "segmentCenterMeanAbsEm": 0.00022642908452271513
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00029065609722544317,
+        "segmentCenterMeanAbsEm": 2.9525308444226536e-05
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico Liga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-liga.ttf",
+      "sample": "fjord",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.00037787020080677533,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.00037787020080677533,
+        "segmentCenterMeanAbsEm": 6.85805467731825e-05
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.00037787020080677533,
+        "segmentCenterMeanAbsEm": 6.85805467731825e-05
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster Liga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-liga.ttf",
+      "sample": "Goldfish",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0048,
+        "absoluteWidthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0030419698883959708,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0030419698883959708,
+        "segmentCenterMeanAbsEm": 0.0028365510726003776
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0030419698883959708,
+        "segmentCenterMeanAbsEm": 0.0028365510726003776
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster Liga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-liga.ttf",
+      "sample": "office",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0012751291927502414,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0012751291927502414,
+        "segmentCenterMeanAbsEm": 0.001230321451075224
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0012751291927502414,
+        "segmentCenterMeanAbsEm": 0.001230321451075224
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster Liga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-liga.ttf",
+      "sample": "affinity",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.000541398136247566,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.000541398136247566,
+        "segmentCenterMeanAbsEm": 0.0005413307094067931
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.000541398136247566,
+        "segmentCenterMeanAbsEm": 0.0005413307094067931
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster Liga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-liga.ttf",
+      "sample": "final",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00037623951424164455,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00037623951424164455,
+        "segmentCenterMeanAbsEm": 0.00017746347963998232
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00037623951424164455,
+        "segmentCenterMeanAbsEm": 0.00017746347963998232
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster Liga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-liga.ttf",
+      "sample": "efficient",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0005289687770677062,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0005289687770677062,
+        "segmentCenterMeanAbsEm": 0.0005277716488848455
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0005289687770677062,
+        "segmentCenterMeanAbsEm": 0.0005277716488848455
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster Liga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-liga.ttf",
+      "sample": "fjord",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0016790000730233573,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0016790000730233573,
+        "segmentCenterMeanAbsEm": 0.0016681574303021988
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0016790000730233573,
+        "segmentCenterMeanAbsEm": 0.0016681574303021988
+      }
+    },
+    {
+      "fontId": "comic-neue",
+      "fontFamily": "Optikern Comic Neue Liga",
+      "fontPath": "renders/font-sandbox/optikern-comic-neue-regular-liga.ttf",
+      "sample": "Goldfish",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.002843608361713463,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.002843608361713463,
+        "segmentCenterMeanAbsEm": 0.0009193679600644443
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.002843608361713463,
+        "segmentCenterMeanAbsEm": 0.0009193679600644443
+      }
+    },
+    {
+      "fontId": "comic-neue",
+      "fontFamily": "Optikern Comic Neue Liga",
+      "fontPath": "renders/font-sandbox/optikern-comic-neue-regular-liga.ttf",
+      "sample": "office",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.001983877988416873,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.001192353567804027,
+        "segmentCenterMeanAbsEm": 0.0012563489638144027
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.001983877988416873,
+        "segmentCenterMeanAbsEm": 0.0014499949144119318
+      }
+    },
+    {
+      "fontId": "comic-neue",
+      "fontFamily": "Optikern Comic Neue Liga",
+      "fontPath": "renders/font-sandbox/optikern-comic-neue-regular-liga.ttf",
+      "sample": "affinity",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.004017546721970814,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.004017546721970814,
+        "segmentCenterMeanAbsEm": 0.001517917958095114
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.004017546721970814,
+        "segmentCenterMeanAbsEm": 0.001517917958095114
+      }
+    },
+    {
+      "fontId": "comic-neue",
+      "fontFamily": "Optikern Comic Neue Liga",
+      "fontPath": "renders/font-sandbox/optikern-comic-neue-regular-liga.ttf",
+      "sample": "final",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0048,
+        "absoluteWidthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0024608040090985635,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0024608040090985635,
+        "segmentCenterMeanAbsEm": 0.0018297097228049323
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0024608040090985635,
+        "segmentCenterMeanAbsEm": 0.0018297097228049323
+      }
+    },
+    {
+      "fontId": "comic-neue",
+      "fontFamily": "Optikern Comic Neue Liga",
+      "fontPath": "renders/font-sandbox/optikern-comic-neue-regular-liga.ttf",
+      "sample": "efficient",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.012,
+        "absoluteWidthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.004846412674723987,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.004846412674723987,
+        "segmentCenterMeanAbsEm": 0.0048074679348353465
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.004846412674723987,
+        "segmentCenterMeanAbsEm": 0.0048074679348353465
+      }
+    },
+    {
+      "fontId": "comic-neue",
+      "fontFamily": "Optikern Comic Neue Liga",
+      "fontPath": "renders/font-sandbox/optikern-comic-neue-regular-liga.ttf",
+      "sample": "fjord",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0048,
+        "absoluteWidthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0032514592665962494,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0031608126642275135,
+        "segmentCenterMeanAbsEm": 0.0029916656695504655
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.0032514592665962494,
+        "segmentCenterMeanAbsEm": 0.002987148454643483
+      }
+    }
+  ]
+}

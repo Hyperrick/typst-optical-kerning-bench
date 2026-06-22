@@ -128,6 +128,9 @@ function fontFor(config) {
 function configureText(doc, story, config) {
   var font = fontFor(config);
   var ligatures = Boolean(config.ligatures);
+  var contextualAlternates = config.contextualAlternates === undefined
+    ? ligatures
+    : Boolean(config.contextualAlternates);
   story.appliedFont = font;
   story.pointSize = Number(config.pointSize || 12);
   story.kerningMethod = kerningMethod(config.kerning || "optical");
@@ -140,15 +143,15 @@ function configureText(doc, story, config) {
   } catch (error2) {}
   try {
     story.texts[0].opentypeFeatures = ligatures
-      ? [["liga", 1], ["clig", 1]]
-      : [["liga", 0], ["clig", 0]];
+      ? [["liga", 1], ["clig", 1], ["calt", contextualAlternates ? 1 : 0]]
+      : [["liga", 0], ["clig", 0], ["calt", contextualAlternates ? 1 : 0]];
   } catch (error3) {}
-  applyOpenTypeFlags(story, ligatures);
+  applyOpenTypeFlags(story, ligatures, contextualAlternates);
   try {
-    applyOpenTypeFlags(story.texts[0], ligatures);
+    applyOpenTypeFlags(story.texts[0], ligatures, contextualAlternates);
   } catch (error4) {}
   try {
-    applyOpenTypeFlags(story.characters.everyItem(), ligatures);
+    applyOpenTypeFlags(story.characters.everyItem(), ligatures, contextualAlternates);
   } catch (error5) {}
   if (!ligatures) {
     disableLigaturesViaMenu(story);
@@ -158,20 +161,20 @@ function configureText(doc, story, config) {
   story.verticalScale = 100;
   story.hyphenation = false;
   story.justification = Justification.LEFT_ALIGN;
-  applyBenchmarkCharacterStyle(doc, story, ligatures);
+  applyBenchmarkCharacterStyle(doc, story, ligatures, contextualAlternates);
   return font;
 }
 
-function applyBenchmarkCharacterStyle(doc, story, ligatures) {
+function applyBenchmarkCharacterStyle(doc, story, ligatures, contextualAlternates) {
   try {
     var style = doc.characterStyles.add({name: "Optikern Character Settings"});
     style.ligatures = true;
     style.ligatures = ligatures;
     style.otfDiscretionaryLigature = false;
-    style.otfContextualAlternate = ligatures;
+    style.otfContextualAlternate = contextualAlternates;
     story.texts[0].appliedCharacterStyle = style;
-    applyOpenTypeFlags(story.texts[0], ligatures);
-    applyOpenTypeFlags(story.characters.everyItem(), ligatures);
+    applyOpenTypeFlags(story.texts[0], ligatures, contextualAlternates);
+    applyOpenTypeFlags(story.characters.everyItem(), ligatures, contextualAlternates);
   } catch (error) {}
 }
 
@@ -188,12 +191,12 @@ function disableLigaturesViaMenu(story) {
   }
 }
 
-function applyOpenTypeFlags(target, ligatures) {
+function applyOpenTypeFlags(target, ligatures, contextualAlternates) {
   try {
     target.properties = {
       ligatures: ligatures,
       otfDiscretionaryLigature: false,
-      otfContextualAlternate: ligatures
+      otfContextualAlternate: contextualAlternates
     };
   } catch (error) {}
 }
@@ -325,6 +328,7 @@ function build(config) {
     pointSize: Number(config.pointSize || 12),
     kerning: String(config.kerning || "optical"),
     ligatures: Boolean(config.ligatures),
+    contextualAlternates: Boolean(config.contextualAlternates),
     paddingPt: paddingPt,
     pageBoundsPt: [0, 0, heightPt, widthPt],
     inkBoundsPt: [paddingPt, paddingPt, heightPt - paddingPt, widthPt - paddingPt],

@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result, anyhow};
 use optikern_core::{
-    Algorithm, AlgorithmOutput, EvaluationConfig, FontKit, ShapingOptions,
+    Algorithm, AlgorithmOutput, EvaluationConfig, FontKit, ShapedRun, ShapingOptions,
     evaluate_shaped_run_with_config, shape_text,
 };
 use serde::Serialize;
@@ -35,8 +35,10 @@ pub fn run(
         ShapingOptions {
             kerning: false,
             ligatures,
+            contextual_alternates: ligatures,
         },
     )?;
+    let fragmented_render_safe = fragmented_shape_matches(&font, &run)?;
 
     let mut pairs = Vec::new();
     for result in evaluate_shaped_run_with_config(&font, &run, config, ligatures)? {
@@ -66,6 +68,8 @@ pub fn run(
         font_path: font_path.display().to_string(),
         text: text.to_owned(),
         ligatures,
+        contextual_alternates: run.options.contextual_alternates,
+        fragmented_render_safe,
         pairs,
     };
     println!("{}", serde_json::to_string_pretty(&output)?);
@@ -80,6 +84,25 @@ fn resolved_font_path(root: &Path, path: &Path) -> PathBuf {
     }
 }
 
+fn fragmented_shape_matches(font: &FontKit, run: &ShapedRun) -> Result<bool> {
+    let mut fragmented = Vec::new();
+    for glyph in &run.glyphs {
+        let shaped = shape_text(font, &glyph.cluster_text, run.options)?;
+        fragmented.extend(shaped.glyphs);
+    }
+
+    if fragmented.len() != run.glyphs.len() {
+        return Ok(false);
+    }
+
+    Ok(run.glyphs.iter().zip(fragmented.iter()).all(|(full, part)| {
+        full.glyph_id == part.glyph_id
+            && (full.x_advance_em - part.x_advance_em).abs() < 0.0005
+            && (full.x_offset_em - part.x_offset_em).abs() < 0.0005
+            && (full.y_offset_em - part.y_offset_em).abs() < 0.0005
+    }))
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct SampleDeltaReport {
@@ -89,6 +112,8 @@ struct SampleDeltaReport {
     font_path: String,
     text: String,
     ligatures: bool,
+    contextual_alternates: bool,
+    fragmented_render_safe: bool,
     pairs: Vec<SamplePairDelta>,
 }
 

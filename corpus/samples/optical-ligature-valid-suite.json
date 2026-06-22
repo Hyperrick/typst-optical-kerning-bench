@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "name": "ligature-valid",
+  "description": "Optical ligature comparison suite containing only cases that passed the ligature metric parity gate.",
+  "cases": [
+    {
+      "fontId": "libre-baskerville",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "inter",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "office"
+    },
+    {
+      "fontId": "inter",
+      "sample": "office"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "office"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "office"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "office"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "affinity"
+    },
+    {
+      "fontId": "inter",
+      "sample": "affinity"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "affinity"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "affinity"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "affinity"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "final"
+    },
+    {
+      "fontId": "inter",
+      "sample": "final"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "final"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "final"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "final"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "efficient"
+    },
+    {
+      "fontId": "inter",
+      "sample": "efficient"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "efficient"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "efficient"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "efficient"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "inter",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "fjord"
+    }
+  ]
+}

@@ -12,6 +12,7 @@ const CONNECTED_JOIN_GAP_EM: f32 = -0.020;
 const CONNECTED_JOIN_OPENING_EM: f32 = 0.030;
 const CONNECTED_JOIN_MIN_POSITIVE_SUM_EM: f32 = 0.080;
 const SCRIPT_MIXED_MIN_PAIRS: usize = 2;
+const SCRIPT_LIGATURE_RUN_MIN_PAIRS: usize = 3;
 const SCRIPT_RESIDUAL_MIN_LOWER_PAIRS: usize = 2;
 const SCRIPT_RESIDUAL_SEVERE_DELTA_EM: f32 = -0.080;
 const SCRIPT_LOWER_RUN_MIN_PAIRS: usize = 5;
@@ -28,7 +29,7 @@ pub(super) fn apply_run_context_adjustments(
     }
 
     for result in results.iter_mut() {
-        let pair_class = PairClass::from_chars(result.left, result.right);
+        let pair_class = result.pair_class();
         let Some(output) = result
             .outputs
             .iter_mut()
@@ -98,6 +99,17 @@ pub(super) fn apply_run_context_adjustments(
         );
         delta = normalized_delta(
             delta
+                + script_ligature_run_delta(
+                    delta,
+                    output.metric_delta_em,
+                    output.gap_min_em,
+                    pair_class,
+                    context,
+                    config,
+                ),
+        );
+        delta = normalized_delta(
+            delta
                 + script_upper_run_delta(
                     delta,
                     output.metric_delta_em,
@@ -121,6 +133,7 @@ pub(super) struct RunContext {
     pub(super) opened_connected_letter_pairs: usize,
     pub(super) positive_connected_opening_em: f32,
     pub(super) script_mixed_case_like: bool,
+    pub(super) script_ligature_run_like: bool,
     pub(super) script_lower_run_like: bool,
     pub(super) script_upper_run_like: bool,
     pub(super) mixed_case_pairs: usize,
@@ -131,6 +144,8 @@ pub(super) struct RunContext {
     pub(super) strong_upper_metric_pairs: usize,
     pub(super) strong_mixed_metric_pairs: usize,
     pub(super) lower_pairs: usize,
+    pub(super) multi_char_letter_pairs: usize,
+    pub(super) connected_multi_char_letter_pairs: usize,
     pub(super) metricless_lower_pairs: usize,
     pub(super) connected_lower_pairs: usize,
     pub(super) opening_lower_pairs: usize,
@@ -146,7 +161,7 @@ impl RunContext {
         };
 
         for result in results {
-            let class = PairClass::from_chars(result.left, result.right);
+            let class = result.pair_class();
             let Some(output) = result
                 .outputs
                 .iter()
@@ -159,6 +174,12 @@ impl RunContext {
                 context.letter_pairs += 1;
                 if class.is_upper_lower() || class.is_lower_upper() {
                     context.mixed_case_pairs += 1;
+                }
+                if result.has_multi_char_cluster() {
+                    context.multi_char_letter_pairs += 1;
+                    if output.gap_min_em < CONNECTED_JOIN_GAP_EM {
+                        context.connected_multi_char_letter_pairs += 1;
+                    }
                 }
                 if class.is_lower_lower() {
                     context.lower_pairs += 1;
@@ -218,6 +239,12 @@ impl RunContext {
         context.script_mixed_case_like = context.mixed_case_pairs >= SCRIPT_MIXED_MIN_PAIRS
             && !context.sans_like
             && script_spacing_profile(config);
+        context.script_ligature_run_like = context.letter_pairs >= SCRIPT_LIGATURE_RUN_MIN_PAIRS
+            && context.multi_char_letter_pairs > 0
+            && context.connected_letter_pairs >= context.letter_pairs.saturating_sub(1)
+            && context.connected_multi_char_letter_pairs > 0
+            && !context.sans_like
+            && script_spacing_profile(config);
         context.script_lower_run_like = context.lower_pairs >= SCRIPT_LOWER_RUN_MIN_PAIRS
             && context.metricless_lower_pairs == context.lower_pairs
             && context.connected_lower_pairs >= context.lower_pairs.saturating_sub(1)
@@ -237,6 +264,7 @@ impl RunContext {
     fn has_adjustments(self, config: EvaluationConfig) -> bool {
         self.connected_script_like
             || self.script_mixed_case_like
+            || self.script_ligature_run_like
             || self.script_lower_run_like
             || self.script_upper_run_like
             || self.digit_run.has_adjustments(self.sans_like, config)
@@ -260,7 +288,7 @@ fn apply_script_residual_balancer(
     }
 
     for result in results {
-        let pair_class = PairClass::from_chars(result.left, result.right);
+        let pair_class = result.pair_class();
         let Some(output) = result
             .outputs
             .iter_mut()
@@ -304,7 +332,7 @@ impl ScriptResidualBalance {
 
         let mut balance = Self::default();
         for result in results {
-            let pair_class = PairClass::from_chars(result.left, result.right);
+            let pair_class = result.pair_class();
             let Some(output) = result
                 .outputs
                 .iter()
@@ -458,6 +486,30 @@ pub(super) fn script_lower_run_delta(
     }
 }
 
+pub(super) fn script_ligature_run_delta(
+    adjusted_delta: f32,
+    metric_delta: f32,
+    gap_min_em: f32,
+    pair_class: PairClass,
+    context: RunContext,
+    config: EvaluationConfig,
+) -> f32 {
+    if !context.script_ligature_run_like
+        || !is_lower_involved_letter_pair(pair_class)
+        || gap_min_em >= CONNECTED_JOIN_GAP_EM
+        || metric_delta < -script_ligature_metric_floor(config)
+    {
+        return 0.0;
+    }
+
+    let target = script_ligature_run_opening_amount(config);
+    if adjusted_delta < target {
+        normalized_delta(target - adjusted_delta)
+    } else {
+        0.0
+    }
+}
+
 pub(super) fn script_upper_run_delta(
     adjusted_delta: f32,
     metric_delta: f32,
@@ -519,6 +571,12 @@ fn script_residual_lower_compaction_amount(config: EvaluationConfig) -> f32 {
 }
 fn script_lower_run_compaction_amount(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.065).clamp(0.008, 0.012)
+}
+fn script_ligature_metric_floor(config: EvaluationConfig) -> f32 {
+    (config.target_gap_em * 0.14).clamp(0.020, 0.028)
+}
+fn script_ligature_run_opening_amount(config: EvaluationConfig) -> f32 {
+    (config.target_gap_em * 0.095).clamp(0.012, 0.018)
 }
 fn script_upper_run_opening_cap(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.12).clamp(0.018, 0.026)

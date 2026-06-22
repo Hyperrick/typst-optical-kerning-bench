@@ -6,6 +6,10 @@ on run argv
 	set jsxFile to POSIX file jsxPath as alias
 	tell application id "com.adobe.InDesign"
 		close every document saving no
-		do script jsxFile language javascript with arguments scriptArgs
+		if (count of scriptArgs) is 0 then
+			do script jsxFile language javascript
+		else
+			do script jsxFile language javascript with arguments scriptArgs
+		end if
 	end tell
 end run

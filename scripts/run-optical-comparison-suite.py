@@ -213,6 +213,10 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
         comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
         entry["comparisons"] = comparison["comparisons"]
         entry["guardedDeltas"] = json.loads(deltas_path.read_text(encoding="utf-8"))
+        entry["fragmentedRenderSafe"] = entry["guardedDeltas"].get(
+            "fragmentedRenderSafe",
+            True,
+        )
         entry["images"] = {
             "metricOverlay": relative_to_out(case_dir / "overlays/metric-parity.png", out),
             "indesignOptical": relative_to_out(case_dir / "crops/indesign-optical-ink.png", out),
@@ -249,6 +253,7 @@ def compact(entry: dict) -> dict:
         "fontPath": entry["fontPath"],
         "sample": entry["sample"],
         "metricGate": entry["metricGate"],
+        "fragmentedRenderSafe": entry.get("fragmentedRenderSafe"),
         "opticalScore": entry["opticalScore"],
         "deltas": compact_deltas(entry.get("guardedDeltas", {})),
     }
@@ -407,6 +412,13 @@ def write_contact_sheet(out: Path, report: dict) -> None:
             fill=(70, 70, 70),
             font=small,
         )
+        if entry.get("fragmentedRenderSafe") is False:
+            draw.text(
+                (16, y + 98),
+                "warning: #h render changes shaped glyphs",
+                fill=(140, 40, 30),
+                font=small,
+            )
         images = entry["images"]
         for col_index, key in enumerate(["indesignOptical", "typstGuarded", "opticalOverlay"]):
             paste_center(
