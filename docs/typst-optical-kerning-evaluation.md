@@ -1,6 +1,23 @@
 # Optical Kerning Evaluation For Typst
 
-Status: working draft for maintainers and typography reviewers.
+Status: review draft for maintainers and typography reviewers.
+
+## Maintainer Summary
+
+This project is a reproducible evaluation harness for optical kerning
+experiments in Typst-like constraints. The current result is not a direct Typst
+patch. It is evidence for an implementation direction:
+
+- shape text first, including ligature substitution,
+- compute pair deltas from font outlines,
+- keep metric kerning as a prior,
+- add optical corrections only when dynamic font-local evidence says a pair or
+  run is an outlier,
+- compare rendered output against an industry publishing reference.
+
+The current V24 candidate improves the ligature-capable suite while leaving the
+established no-ligature suite unchanged. The code path remains deterministic,
+Rust-first, outline-based, and cacheable.
 
 ## Abstract
 
@@ -15,6 +32,8 @@ kerning, outline-derived whitespace profiles, local collision guards, and
 word-level run context. It is evaluated against scripted InDesign Optical
 exports and Typst-rendered candidates after first proving that InDesign Metrics
 and Typst Metrics render the same shaped text closely enough to compare.
+
+![Ligature-capable suite excerpt](figures/v24-ligature-sheet-excerpt.png)
 
 ## Motivation
 
@@ -51,6 +70,12 @@ proposal becomes much easier to evaluate when examples show:
 - Typst Guarded Optical,
 - and an overlay with numeric differences.
 
+Overlay colors:
+
+- cyan: InDesign Optical,
+- magenta: Typst Guarded Optical,
+- black: overlap.
+
 ## Evaluation Pipeline
 
 The suite intentionally compares rendered output, not only internal pair values.
@@ -74,6 +99,11 @@ Current primary metrics:
 - `segmentCenterMeanAbsEm`: center difference of separated glyph/cluster
   segments where segmentation is reliable.
 - `scoreEm`: max of the relevant visual error metrics for ranking failures.
+
+The raster comparison is deliberately outside the candidate layout algorithm.
+It is used only for evaluation. A Typst implementation would use shaped glyph
+positions, font metrics, cached outlines, and profile samples in the layout
+path.
 
 ## Font And Sample Coverage
 
@@ -108,6 +138,8 @@ The important rule is that ligature examples are evaluated after shaping. If a
 font substitutes `fi`, the algorithm evaluates `d|fi` and `fi|s`; it does not
 kern inside the ligature glyph. If ligatures are disabled, `f|i` becomes an
 ordinary adjacent pair again.
+
+![No-ligature suite excerpt](figures/v24-no-ligature-sheet-excerpt.png)
 
 ## Algorithm Shape
 
@@ -179,8 +211,18 @@ width: +0.0288em -> +0.0168em
 ink:   0.0081em -> 0.0067em
 ```
 
+![V24 Libre Baskerville final](figures/v24-libre-final-ligature.png)
+
 The no-ligature suite is unchanged, which is important evidence that the
 ligature-specific rule does not destabilize established no-ligature behavior.
+
+![No-ligature control](figures/v24-eb-total-no-ligature-control.png)
+
+The no-ligature control is intentionally not perfect. It shows the current
+largest remaining no-ligature score, EB Garamond `ToTaL`, and demonstrates that
+V24 did not silently change this established suite. This is useful when
+reviewing future changes: the benchmark should improve targeted shape classes
+without making unrelated controls drift.
 
 ## Reproduction Commands
 
@@ -229,6 +271,24 @@ The public Typst API could later be discussed separately, for example:
 The benchmark is deliberately not an API proposal yet. Its value is to make the
 behavioral tradeoffs visible before an implementation proposal is made.
 
+## Evidence Map
+
+The following files are the best starting points for review:
+
+- `docs/algorithms.md`: current heuristic and guard notes.
+- `docs/current-findings.md`: chronological benchmark findings through V24.
+- `docs/metric-parity-suite.md`: why metric parity is a hard gate.
+- `docs/indesign-baseline.md`: how InDesign documents are constructed.
+- `docs/glyph-shape-parity.md`: how font/rendering mismatches are separated
+  from kerning mismatches.
+- `baselines/optical-ligature-suite-v24.json`: compact V24 ligature evidence.
+- `baselines/optical-comparison-suite-five-font-v24.json`: compact V24
+  no-ligature evidence.
+
+The large rendered artifacts under `renders/` are intentionally generated
+outputs. They can be reproduced from the commands above; selected small figures
+are committed under `docs/figures/` for easier review.
+
 ## Remaining Work
 
 - Broaden the font corpus while keeping the parity gates strict.
@@ -240,4 +300,3 @@ behavioral tradeoffs visible before an implementation proposal is made.
   images from the V24 contact sheets.
 - Decide which result tables and overlays should be committed, released, or
   generated in CI.
-
