@@ -201,7 +201,7 @@ fn script_mixed_case_caps_connected_openings() {
     config.profile.x_height = 0.48;
     config.profile.cap_height = 0.78;
 
-    let delta = script_mixed_case_delta(0.055, -0.063, 0.0, class, context, config);
+    let delta = script_mixed_case_delta(0.055, -0.063, 0.0, 0.0, class, context, config);
 
     assert!(delta < -0.045);
 }
@@ -221,9 +221,49 @@ fn script_mixed_case_tightens_metricless_mixed_pairs() {
     config.profile.x_height = 0.48;
     config.profile.cap_height = 0.78;
 
-    let delta = script_mixed_case_delta(-0.013, 0.124, 0.0, class, context, config);
+    let delta = script_mixed_case_delta(-0.013, 0.124, 0.0, -0.060, class, context, config);
 
     assert!(delta < -0.025);
+}
+
+#[test]
+fn script_mixed_case_preserves_metric_when_profile_is_looser() {
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        script_mixed_case_like: true,
+        mixed_case_pairs: 2,
+        ..RunContext::default()
+    };
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    let delta = script_mixed_case_delta(-0.090, 0.264, -0.090, -0.048, class, context, config);
+
+    assert_eq!(delta, 0.0);
+}
+
+#[test]
+fn script_mixed_case_extends_metric_when_profile_is_tighter() {
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        script_mixed_case_like: true,
+        mixed_case_pairs: 2,
+        ..RunContext::default()
+    };
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    let delta = script_mixed_case_delta(-0.030, 0.282, -0.030, -0.045, class, context, config);
+
+    assert!(delta < -0.010);
 }
 
 #[test]
@@ -243,6 +283,7 @@ fn script_mixed_case_ignores_sans_contexts() {
         -0.013,
         0.124,
         0.0,
+        -0.060,
         class,
         context,
         test_config(0.170, 0.050),

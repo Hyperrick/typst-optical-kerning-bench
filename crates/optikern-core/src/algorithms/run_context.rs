@@ -41,6 +41,7 @@ pub(super) fn apply_run_context_adjustments(
                     delta,
                     output.gap_min_em,
                     output.metric_delta_em,
+                    output.optical_delta_em,
                     pair_class,
                     context,
                     config,
@@ -350,6 +351,7 @@ pub(super) fn script_mixed_case_delta(
     adjusted_delta: f32,
     gap_min_em: f32,
     metric_delta: f32,
+    optical_delta: f32,
     pair_class: PairClass,
     context: RunContext,
     config: EvaluationConfig,
@@ -369,7 +371,11 @@ pub(super) fn script_mixed_case_delta(
     }
 
     let target = if metric_delta < -dead_zone() {
-        (metric_delta - 0.014).max(-0.125)
+        if optical_delta > metric_delta {
+            metric_delta
+        } else {
+            (metric_delta - 0.014).max(-0.125)
+        }
     } else {
         -script_mixed_tightening_amount(config)
     };
