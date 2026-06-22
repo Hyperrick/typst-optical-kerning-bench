@@ -1,23 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "fast",
-  "description": "Small optical comparison loop for algorithm iteration. Keeps the existing single-case InDesign render path and selects known failures plus controls.",
+  "description": "Small optical comparison loop for algorithm iteration. Keeps the existing single-case InDesign render path and selects current cross-font failures plus controls.",
   "cases": [
-    {
-      "fontId": "inter",
-      "sample": "OpenType",
-      "group": "failure"
-    },
-    {
-      "fontId": "libre-baskerville",
-      "sample": "ToTaL",
-      "group": "failure"
-    },
-    {
-      "fontId": "libre-baskerville",
-      "sample": "WAVY",
-      "group": "failure"
-    },
     {
       "fontId": "libre-baskerville",
       "sample": "AVATAR",
@@ -25,28 +10,18 @@
     },
     {
       "fontId": "libre-baskerville",
-      "sample": "AV",
-      "group": "failure"
-    },
-    {
-      "fontId": "inter",
-      "sample": "valley",
-      "group": "failure"
-    },
-    {
-      "fontId": "inter",
-      "sample": "ipsum",
+      "sample": "10.000",
       "group": "failure"
     },
     {
       "fontId": "eb-garamond",
-      "sample": "AV",
-      "group": "control"
+      "sample": "ToTaL",
+      "group": "failure"
     },
     {
-      "fontId": "eb-garamond",
-      "sample": "WA",
-      "group": "control"
+      "fontId": "inter",
+      "sample": "AVATAR",
+      "group": "failure"
     },
     {
       "fontId": "eb-garamond",
@@ -54,13 +29,23 @@
       "group": "control"
     },
     {
-      "fontId": "inter",
-      "sample": "LANDMARK",
+      "fontId": "libre-baskerville",
+      "sample": "WAVY",
       "group": "control"
     },
     {
       "fontId": "inter",
-      "sample": "10.000",
+      "sample": "Goldfish",
+      "group": "control"
+    },
+    {
+      "fontId": "inter",
+      "sample": "OpenType",
+      "group": "control"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "WAVY",
       "group": "control"
     }
   ]

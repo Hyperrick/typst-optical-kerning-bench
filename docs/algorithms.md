@@ -112,6 +112,32 @@ right glyph is round-like and the nearest contour distance is already critical.
 This fixes the Libre Baskerville `G|o` collision without naming the font or
 sample.
 
+## Guarded Constraint Model
+
+The guarded candidate is intentionally not a single lightweight heuristic. It is
+a small decision pipeline that separates responsibilities:
+
+1. A metric-prior base delta decides the first candidate from metric kerning and
+   outline-profile spacing.
+2. Hard bounds protect against unsafe movement. These bounds can require at
+   least the metric delta, require no tightening when apertures are already
+   critical, open local collisions, or cap false diagonal openings back to zero.
+3. Additive tightening targets handle safe optical improvements such as
+   round-to-overhang gaps, uppercase punctuation, digit side shapes, and
+   sans-like lowercase/run-context spacing.
+
+This is implemented as a `DeltaPlan`: each rule no longer mutates an
+unstructured `adjusted += ...` value. Instead, rules either tighten the desired
+delta, raise the lower bound, or lower the upper bound. The final delta is
+clamped and normalized once. The important behavior from earlier iterations is
+preserved: safe tightening targets may still stack sequentially, but safety
+bounds remain centralized and can override optical nudges.
+
+This shape is closer to what a Typst-side implementation would need: the
+algorithm stays deterministic, cacheable, and inspectable, while still admitting
+that optical kerning needs several interacting guards rather than one universal
+formula.
+
 ## Typst Compatibility Constraints
 
 These implementations deliberately favor:

@@ -4,6 +4,7 @@ use crate::outline::{Bounds, GlyphOutline, LineSegment, Point};
 use crate::profile::{GapStats, ProfileConfig};
 
 use super::basic::metric_prior_hybrid_for_class;
+use super::constraints::DeltaPlan;
 use super::geometry::{PairGeometry, Side, SideFeatures, top_left_overhang};
 use super::guarded::{
     collision_opening_delta, guarded_profile_hybrid, punctuation_spacing_delta,
@@ -14,6 +15,7 @@ use super::run_context::{RunContext, sans_run_context_delta};
 use super::{Algorithm, EvaluationConfig};
 
 mod basic;
+mod constraints;
 mod geometry;
 mod guarded;
 mod run_context;

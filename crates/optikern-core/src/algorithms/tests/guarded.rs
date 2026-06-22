@@ -350,3 +350,32 @@ fn sans_lowercase_compaction_does_not_apply_to_serif_profile() {
     let delta = sans_lowercase_compaction_delta(0.0, -0.012, 0.0, stats, config, class);
     assert_eq!(delta, 0.0);
 }
+
+#[test]
+fn guarded_hybrid_stacks_safe_lowercase_tightening() {
+    let stats = GapStats {
+        min_gap: 0.148,
+        weighted_mean_gap: 0.282,
+        robust_mean_gap: 0.203,
+        mad: 0.058,
+        samples: 41,
+    };
+    let mut config = test_config(0.217, 0.049);
+    config.profile.x_height = 0.75;
+    config.profile.cap_height = 1.0;
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+
+    let delta = guarded_profile_hybrid(
+        -0.0195,
+        0.0,
+        0.0,
+        stats,
+        config,
+        class,
+        PairGeometry::default(),
+    );
+    assert!(delta < -0.045);
+}

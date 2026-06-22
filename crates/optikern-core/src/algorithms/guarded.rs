@@ -2,8 +2,11 @@ use crate::class::PairClass;
 use crate::profile::GapStats;
 
 use super::basic::metric_prior_hybrid_for_class;
+use super::constraints::{DeltaPlan, KerningFacts};
 use super::geometry::PairGeometry;
-use super::math::{dead_zone, normalized_delta};
+use super::math::dead_zone;
+#[cfg(test)]
+use super::math::normalized_delta;
 use super::run_context::sans_like_spacing_profile;
 use super::types::EvaluationConfig;
 
@@ -20,136 +23,99 @@ pub(super) fn guarded_profile_hybrid(
         return metric_delta;
     }
 
-    let proposed = metric_prior_hybrid_for_class(metric_delta, optical_delta, pair_class);
-    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
-    let mut adjusted = if proposed > 0.0 && metric_delta.abs() < dead_zone() {
-        if nearest_delta > nearest_guard {
+    let facts = KerningFacts {
+        metric_delta,
+        optical_delta,
+        nearest_delta,
+        stats,
+        config,
+        pair_class,
+        pair_geometry,
+    };
+    let mut plan = DeltaPlan::new(base_guarded_delta(facts));
+    apply_guard_bounds(facts, &mut plan);
+    add_tightening_targets(facts, &mut plan);
+    plan.finish()
+}
+
+fn base_guarded_delta(facts: KerningFacts) -> f32 {
+    let proposed =
+        metric_prior_hybrid_for_class(facts.metric_delta, facts.optical_delta, facts.pair_class);
+    if proposed > 0.0 && facts.metric_delta.abs() < dead_zone() {
+        if facts.nearest_delta > facts.nearest_guard() {
             proposed
         } else {
             0.0
         }
     } else {
         proposed
-    };
+    }
+}
 
-    if adjusted < 0.0
-        && !pair_class.allows_tight_nearest_override()
-        && (aperture_risk(stats, config) || nearest_delta > nearest_guard)
+fn apply_guard_bounds(facts: KerningFacts, plan: &mut DeltaPlan) {
+    let desired = plan.desired_delta();
+    if desired < 0.0
+        && !facts.pair_class.allows_tight_nearest_override()
+        && (aperture_risk(facts.stats, facts.config) || facts.nearest_delta > facts.nearest_guard())
     {
-        adjusted = if metric_delta.abs() >= dead_zone() {
-            metric_delta
+        plan.require_at_least(if facts.metric_delta.abs() >= dead_zone() {
+            facts.metric_delta
         } else {
             0.0
+        });
+    }
+
+    if let Some(bound) = metricless_upper_lower_aperture_lower_bound(facts, desired) {
+        plan.require_at_least(bound);
+    }
+    if let Some(bound) = collision_opening_lower_bound(facts, desired) {
+        plan.require_at_least(bound);
+    }
+    if suppress_false_diagonal_opening_target(facts, desired) {
+        plan.limit_to_at_most(0.0);
+    }
+}
+
+fn add_tightening_targets(facts: KerningFacts, plan: &mut DeltaPlan) {
+    for target in [
+        lower_upper_overhang_target,
+        side_shape_target,
+        punctuation_spacing_target,
+        wide_serif_display_target,
+        sans_lowercase_compaction_target,
+        spacing_compaction_target,
+    ] {
+        let Some(target) = target(facts, plan.desired_delta()) else {
+            continue;
         };
+        plan.tighten_to(target);
     }
-
-    adjusted += metricless_upper_lower_aperture_guard_delta(
-        metric_delta,
-        adjusted,
-        nearest_delta,
-        stats,
-        config,
-        pair_class,
-        pair_geometry,
-    );
-    adjusted += lower_upper_overhang_delta(
-        metric_delta,
-        optical_delta,
-        adjusted,
-        nearest_delta,
-        stats,
-        config,
-        pair_class,
-        pair_geometry,
-    );
-    adjusted += side_shape_delta(
-        metric_delta,
-        adjusted,
-        nearest_delta,
-        stats,
-        config,
-        pair_class,
-        pair_geometry,
-    );
-    adjusted += collision_opening_delta(adjusted, nearest_delta, stats, config, pair_class);
-    adjusted += punctuation_spacing_delta(
-        metric_delta,
-        adjusted,
-        nearest_delta,
-        stats,
-        config,
-        pair_class,
-    );
-    adjusted = suppress_false_diagonal_opening(
-        adjusted,
-        metric_delta,
-        stats,
-        config,
-        pair_class,
-        pair_geometry,
-    );
-    adjusted += wide_serif_display_delta(
-        metric_delta,
-        adjusted,
-        nearest_delta,
-        stats,
-        config,
-        pair_class,
-        pair_geometry,
-    );
-    adjusted += sans_lowercase_compaction_delta(
-        metric_delta,
-        adjusted,
-        nearest_delta,
-        stats,
-        config,
-        pair_class,
-    );
-
-    normalized_delta(
-        adjusted
-            + spacing_compaction_delta(
-                metric_delta,
-                adjusted,
-                nearest_delta,
-                stats,
-                config,
-                pair_class,
-            ),
-    )
 }
 
-fn metricless_upper_lower_aperture_guard_delta(
-    metric_delta: f32,
-    adjusted_delta: f32,
-    nearest_delta: f32,
-    stats: GapStats,
-    config: EvaluationConfig,
-    pair_class: PairClass,
-    pair_geometry: PairGeometry,
-) -> f32 {
-    if !pair_class.is_upper_lower()
-        || metric_delta.abs() >= dead_zone()
-        || adjusted_delta >= -dead_zone()
-        || !pair_geometry.right_left_side.is_round_like()
+fn metricless_upper_lower_aperture_lower_bound(
+    facts: KerningFacts,
+    desired_delta: f32,
+) -> Option<f32> {
+    if !facts.pair_class.is_upper_lower()
+        || facts.metric_delta.abs() >= dead_zone()
+        || desired_delta >= -dead_zone()
+        || !facts.pair_geometry.right_left_side.is_round_like()
     {
-        return 0.0;
+        return None;
     }
 
-    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
-    let safe_min = (config.target_gap_em * 0.42).clamp(0.070, 0.120);
-    if nearest_delta <= nearest_guard && !aperture_risk(stats, config) {
-        return 0.0;
+    let safe_min = (facts.config.target_gap_em * 0.42).clamp(0.070, 0.120);
+    if facts.nearest_delta <= facts.nearest_guard() && !aperture_risk(facts.stats, facts.config) {
+        return None;
     }
-    if stats.min_gap > safe_min {
-        return 0.0;
+    if facts.stats.min_gap > safe_min {
+        return None;
     }
 
-    let lower_bound = -(config.gap_mad_em * 1.05).clamp(0.045, 0.065);
-    let target = adjusted_delta.max(lower_bound);
-    normalized_delta(target - adjusted_delta)
+    Some(-(facts.config.gap_mad_em * 1.05).clamp(0.045, 0.065))
 }
 
+#[cfg(test)]
 pub(super) fn suppress_false_diagonal_opening(
     adjusted_delta: f32,
     metric_delta: f32,
@@ -158,27 +124,39 @@ pub(super) fn suppress_false_diagonal_opening(
     pair_class: PairClass,
     pair_geometry: PairGeometry,
 ) -> f32 {
-    if adjusted_delta <= 0.0 || metric_delta > dead_zone() || !pair_class.is_upper_upper() {
-        return adjusted_delta;
-    }
-
-    if config.target_gap_em < 0.255 || config.profile.x_height / config.profile.cap_height > 0.72 {
-        return adjusted_delta;
-    }
-
-    if !pair_geometry.has_diagonal_pair() {
-        return adjusted_delta;
-    }
-
-    let spread = (config.gap_mad_em * 1.35).clamp(0.035, 0.14);
-    let upper = config.target_gap_em + spread;
-    if stats.min_gap > -0.020 && stats.robust_mean_gap > upper {
+    let facts = KerningFacts {
+        metric_delta,
+        optical_delta: 0.0,
+        nearest_delta: 0.0,
+        stats,
+        config,
+        pair_class,
+        pair_geometry,
+    };
+    if suppress_false_diagonal_opening_target(facts, adjusted_delta) {
         0.0
     } else {
         adjusted_delta
     }
 }
 
+fn suppress_false_diagonal_opening_target(facts: KerningFacts, _desired_delta: f32) -> bool {
+    if facts.metric_delta > dead_zone() || !facts.pair_class.is_upper_upper() {
+        return false;
+    }
+
+    if facts.config.target_gap_em < 0.255
+        || facts.config.profile.x_height / facts.config.profile.cap_height > 0.72
+    {
+        return false;
+    }
+
+    facts.pair_geometry.has_diagonal_pair()
+        && facts.stats.min_gap > -0.020
+        && facts.stats.robust_mean_gap > facts.spread_upper()
+}
+
+#[cfg(test)]
 pub(super) fn wide_serif_display_delta(
     metric_delta: f32,
     adjusted_delta: f32,
@@ -188,83 +166,88 @@ pub(super) fn wide_serif_display_delta(
     pair_class: PairClass,
     pair_geometry: PairGeometry,
 ) -> f32 {
-    if config.target_gap_em < 0.255 || config.profile.x_height / config.profile.cap_height > 0.72 {
-        return 0.0;
+    let facts = KerningFacts {
+        metric_delta,
+        optical_delta: 0.0,
+        nearest_delta,
+        stats,
+        config,
+        pair_class,
+        pair_geometry,
+    };
+    if let Some(target) = wide_serif_display_target(facts, adjusted_delta) {
+        normalized_delta(target - adjusted_delta)
+    } else {
+        0.0
     }
-
-    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
-    let safe_min = (config.target_gap_em * 0.48).clamp(0.11, 0.16);
-    if nearest_delta > nearest_guard || stats.min_gap <= safe_min || aperture_risk(stats, config) {
-        return 0.0;
-    }
-
-    if pair_class.is_upper_upper() {
-        return serif_diagonal_upper_delta(
-            metric_delta,
-            adjusted_delta,
-            stats,
-            config,
-            pair_geometry,
-        );
-    }
-
-    if pair_class.is_upper_lower() || pair_class.is_lower_upper() {
-        return serif_mixed_case_delta(metric_delta, adjusted_delta, stats, config, pair_geometry);
-    }
-
-    0.0
 }
 
-fn serif_diagonal_upper_delta(
-    metric_delta: f32,
-    adjusted_delta: f32,
-    stats: GapStats,
-    config: EvaluationConfig,
-    pair_geometry: PairGeometry,
-) -> f32 {
-    if !pair_geometry.has_diagonal_pair() || metric_delta < -0.105 || adjusted_delta < -0.120 {
-        return 0.0;
+fn wide_serif_display_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
+    if facts.config.target_gap_em < 0.255
+        || facts.config.profile.x_height / facts.config.profile.cap_height > 0.72
+    {
+        return None;
     }
 
-    let spread = (config.gap_mad_em * 1.35).clamp(0.035, 0.14);
-    let upper = config.target_gap_em + spread;
-    let gap_bonus = ((stats.robust_mean_gap - upper).max(0.0) * 0.18).clamp(0.0, 0.014);
-    let base = if metric_delta.abs() < dead_zone() {
+    let safe_min = (facts.config.target_gap_em * 0.48).clamp(0.11, 0.16);
+    if facts.nearest_delta > facts.nearest_guard()
+        || facts.stats.min_gap <= safe_min
+        || aperture_risk(facts.stats, facts.config)
+    {
+        return None;
+    }
+
+    if facts.pair_class.is_upper_upper() {
+        return serif_diagonal_upper_target(facts, desired_delta);
+    }
+
+    if facts.pair_class.is_upper_lower() || facts.pair_class.is_lower_upper() {
+        return serif_mixed_case_target(facts, desired_delta);
+    }
+
+    None
+}
+
+fn serif_diagonal_upper_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
+    if !facts.pair_geometry.has_diagonal_pair()
+        || facts.metric_delta < -0.105
+        || desired_delta < -0.120
+    {
+        return None;
+    }
+
+    let gap_bonus =
+        ((facts.stats.robust_mean_gap - facts.spread_upper()).max(0.0) * 0.18).clamp(0.0, 0.014);
+    let base = if facts.metric_delta.abs() < dead_zone() {
         0.030
     } else {
         0.022
     };
-    let target = (adjusted_delta.min(metric_delta.min(0.0)) - base - gap_bonus)
-        .clamp(-0.125, adjusted_delta);
-    normalized_delta(target - adjusted_delta)
+    let target = (desired_delta.min(facts.metric_delta.min(0.0)) - base - gap_bonus)
+        .clamp(-0.125, desired_delta);
+    (target < desired_delta).then_some(target)
 }
 
-fn serif_mixed_case_delta(
-    metric_delta: f32,
-    adjusted_delta: f32,
-    stats: GapStats,
-    config: EvaluationConfig,
-    pair_geometry: PairGeometry,
-) -> f32 {
-    if metric_delta > -dead_zone() || adjusted_delta < -0.135 {
-        return 0.0;
+fn serif_mixed_case_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
+    if facts.metric_delta > -dead_zone() || desired_delta < -0.135 {
+        return None;
     }
 
-    let has_round_or_overhang = pair_geometry.left_right_side.is_round_like()
-        || pair_geometry.right_left_side.is_round_like()
-        || pair_geometry.right_top_left_overhang > 0.10;
+    let has_round_or_overhang = facts.pair_geometry.left_right_side.is_round_like()
+        || facts.pair_geometry.right_left_side.is_round_like()
+        || facts.pair_geometry.right_top_left_overhang > 0.10;
     if !has_round_or_overhang {
-        return 0.0;
+        return None;
     }
 
-    let spread = (config.gap_mad_em * 1.35).clamp(0.035, 0.14);
-    let upper = config.target_gap_em + spread;
-    let gap_bonus = ((stats.robust_mean_gap - upper).max(0.0) * 0.16).clamp(0.0, 0.014);
+    let gap_bonus =
+        ((facts.stats.robust_mean_gap - facts.spread_upper()).max(0.0) * 0.16).clamp(0.0, 0.014);
     let target =
-        (adjusted_delta.min(metric_delta) - 0.018 - gap_bonus).clamp(-0.140, adjusted_delta);
-    normalized_delta(target - adjusted_delta)
+        (desired_delta.min(facts.metric_delta) - 0.018 - gap_bonus).clamp(-0.140, desired_delta);
+    (target < desired_delta).then_some(target)
 }
 
+#[cfg(test)]
 pub(super) fn sans_lowercase_compaction_delta(
     metric_delta: f32,
     adjusted_delta: f32,
@@ -273,35 +256,55 @@ pub(super) fn sans_lowercase_compaction_delta(
     config: EvaluationConfig,
     pair_class: PairClass,
 ) -> f32 {
-    if !sans_like_spacing_profile(config) {
-        return 0.0;
+    let facts = KerningFacts {
+        metric_delta,
+        optical_delta: 0.0,
+        nearest_delta,
+        stats,
+        config,
+        pair_class,
+        pair_geometry: PairGeometry::default(),
+    };
+    if let Some(target) = sans_lowercase_compaction_target(facts, adjusted_delta) {
+        normalized_delta(target - adjusted_delta)
+    } else {
+        0.0
+    }
+}
+
+fn sans_lowercase_compaction_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
+    if !sans_like_spacing_profile(facts.config) {
+        return None;
     }
 
-    if !(pair_class.is_lower_lower() || pair_class.is_upper_lower()) {
-        return 0.0;
+    if !(facts.pair_class.is_lower_lower() || facts.pair_class.is_upper_lower()) {
+        return None;
     }
 
-    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
-    let safe_min = (config.target_gap_em * 0.36).clamp(0.070, 0.100);
-    if nearest_delta > nearest_guard || stats.min_gap <= safe_min || aperture_risk(stats, config) {
-        return 0.0;
+    let safe_min = (facts.config.target_gap_em * 0.36).clamp(0.070, 0.100);
+    if facts.nearest_delta > facts.nearest_guard()
+        || facts.stats.min_gap <= safe_min
+        || aperture_risk(facts.stats, facts.config)
+    {
+        return None;
     }
 
-    if pair_class.is_lower_lower() && metric_delta.abs() >= 0.025 {
-        return 0.0;
+    if facts.pair_class.is_lower_lower() && facts.metric_delta.abs() >= 0.025 {
+        return None;
     }
 
-    let amount = if pair_class.is_upper_lower() && metric_delta < -dead_zone() {
+    let amount = if facts.pair_class.is_upper_lower() && facts.metric_delta < -dead_zone() {
         0.030
-    } else if pair_class.is_upper_lower() {
+    } else if facts.pair_class.is_upper_lower() {
         0.020
     } else {
         0.018
     };
-    let target = (adjusted_delta - amount).clamp(-0.105, adjusted_delta);
-    normalized_delta(target - adjusted_delta)
+    let target = (desired_delta - amount).clamp(-0.105, desired_delta);
+    (target < desired_delta).then_some(target)
 }
 
+#[cfg(test)]
 pub(super) fn side_shape_delta(
     metric_delta: f32,
     adjusted_delta: f32,
@@ -311,49 +314,58 @@ pub(super) fn side_shape_delta(
     pair_class: PairClass,
     pair_geometry: PairGeometry,
 ) -> f32 {
-    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
-
-    if pair_class.is_upper_lower()
-        && metric_delta < -dead_zone()
-        && pair_geometry.right_left_side.roundness > 0.040
-        && nearest_delta <= nearest_guard
-    {
-        let spread = (config.gap_mad_em * 1.35).clamp(0.035, 0.14);
-        let upper = config.target_gap_em + spread;
-        if stats.robust_mean_gap > upper + 0.012 {
-            let target = (metric_delta * 0.94).clamp(metric_delta, adjusted_delta);
-            return normalized_delta(target - adjusted_delta);
-        }
-    }
-
-    if !pair_class.has_digit() {
-        return 0.0;
-    }
-
-    let safe_min = if pair_class.is_digit_digit() {
-        (config.target_gap_em * 0.24).clamp(0.045, 0.075)
-    } else {
-        (config.target_gap_em * 0.32).clamp(0.060, 0.105)
+    let facts = KerningFacts {
+        metric_delta,
+        optical_delta: 0.0,
+        nearest_delta,
+        stats,
+        config,
+        pair_class,
+        pair_geometry,
     };
-    if nearest_delta > nearest_guard || stats.min_gap <= safe_min {
+    if let Some(target) = side_shape_target(facts, adjusted_delta) {
+        normalized_delta(target - adjusted_delta)
+    } else {
         return 0.0;
     }
+}
 
-    let target = if pair_class.is_digit_digit() {
-        digit_digit_target(pair_geometry)
-    } else if pair_class.is_digit_punctuation() || pair_class.is_punctuation_digit() {
-        digit_punctuation_target(pair_geometry)
+fn side_shape_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
+    if facts.pair_class.is_upper_lower()
+        && facts.metric_delta < -dead_zone()
+        && facts.pair_geometry.right_left_side.roundness > 0.040
+        && facts.nearest_delta <= facts.nearest_guard()
+        && facts.stats.robust_mean_gap > facts.spread_upper() + 0.012
+    {
+        let target = (facts.metric_delta * 0.94).clamp(facts.metric_delta, desired_delta);
+        return (target < desired_delta).then_some(target);
+    }
+
+    if !facts.pair_class.has_digit() {
+        return None;
+    }
+
+    let safe_min = if facts.pair_class.is_digit_digit() {
+        (facts.config.target_gap_em * 0.24).clamp(0.045, 0.075)
+    } else {
+        (facts.config.target_gap_em * 0.32).clamp(0.060, 0.105)
+    };
+    if facts.nearest_delta > facts.nearest_guard() || facts.stats.min_gap <= safe_min {
+        return None;
+    }
+
+    let target = if facts.pair_class.is_digit_digit() {
+        digit_digit_target(facts.pair_geometry)
+    } else if facts.pair_class.is_digit_punctuation() || facts.pair_class.is_punctuation_digit() {
+        digit_punctuation_target(facts.pair_geometry)
     } else {
         0.0
     };
 
-    if target >= adjusted_delta {
-        return 0.0;
-    }
-
-    normalized_delta(target - adjusted_delta)
+    (target < desired_delta).then_some(target)
 }
 
+#[cfg(test)]
 pub(super) fn collision_opening_delta(
     adjusted_delta: f32,
     nearest_delta: f32,
@@ -361,24 +373,38 @@ pub(super) fn collision_opening_delta(
     config: EvaluationConfig,
     pair_class: PairClass,
 ) -> f32 {
-    if !pair_class.allows_collision_opening() {
-        return 0.0;
+    let facts = KerningFacts {
+        metric_delta: 0.0,
+        optical_delta: 0.0,
+        nearest_delta,
+        stats,
+        config,
+        pair_class,
+        pair_geometry: PairGeometry::default(),
+    };
+    if let Some(bound) = collision_opening_lower_bound(facts, adjusted_delta) {
+        normalized_delta(bound - adjusted_delta)
+    } else {
+        0.0
     }
-
-    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
-    if stats.min_gap > 0.0 || nearest_delta <= nearest_guard {
-        return 0.0;
-    }
-
-    let penetration = (-stats.min_gap).max(0.0);
-    let target = (nearest_delta * 0.78 + penetration * 0.22).clamp(nearest_guard, 0.055);
-    if target <= adjusted_delta {
-        return 0.0;
-    }
-
-    normalized_delta(target - adjusted_delta)
 }
 
+fn collision_opening_lower_bound(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
+    if !facts.pair_class.allows_collision_opening() {
+        return None;
+    }
+
+    if facts.stats.min_gap > 0.0 || facts.nearest_delta <= facts.nearest_guard() {
+        return None;
+    }
+
+    let penetration = (-facts.stats.min_gap).max(0.0);
+    let target =
+        (facts.nearest_delta * 0.78 + penetration * 0.22).clamp(facts.nearest_guard(), 0.055);
+    (target > desired_delta).then_some(target)
+}
+
+#[cfg(test)]
 pub(super) fn punctuation_spacing_delta(
     metric_delta: f32,
     adjusted_delta: f32,
@@ -387,23 +413,39 @@ pub(super) fn punctuation_spacing_delta(
     config: EvaluationConfig,
     pair_class: PairClass,
 ) -> f32 {
-    if !pair_class.is_upper_punctuation() || metric_delta >= -dead_zone() {
-        return 0.0;
+    let facts = KerningFacts {
+        metric_delta,
+        optical_delta: 0.0,
+        nearest_delta,
+        stats,
+        config,
+        pair_class,
+        pair_geometry: PairGeometry::default(),
+    };
+    if let Some(target) = punctuation_spacing_target(facts, adjusted_delta) {
+        normalized_delta(target - adjusted_delta)
+    } else {
+        0.0
+    }
+}
+
+fn punctuation_spacing_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
+    if !facts.pair_class.is_upper_punctuation() || facts.metric_delta >= -dead_zone() {
+        return None;
     }
 
-    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
-    let safe_min = (config.target_gap_em * 0.65).clamp(0.12, 0.18);
-    if nearest_delta > nearest_guard || stats.min_gap <= safe_min {
-        return 0.0;
+    let safe_min = (facts.config.target_gap_em * 0.65).clamp(0.12, 0.18);
+    if facts.nearest_delta > facts.nearest_guard() || facts.stats.min_gap <= safe_min {
+        return None;
     }
 
-    let base = (config.gap_mad_em * 0.46).clamp(0.018, 0.035);
-    let gap_excess = (stats.robust_mean_gap - config.target_gap_em).max(0.0);
+    let base = (facts.config.gap_mad_em * 0.46).clamp(0.018, 0.035);
+    let gap_excess = (facts.stats.robust_mean_gap - facts.config.target_gap_em).max(0.0);
     let gap_bonus = (gap_excess * 0.12).clamp(0.0, 0.014);
     let target =
-        (metric_delta.min(adjusted_delta) - base - gap_bonus).clamp(-0.120, adjusted_delta);
+        (facts.metric_delta.min(desired_delta) - base - gap_bonus).clamp(-0.120, desired_delta);
 
-    normalized_delta(target - adjusted_delta)
+    (target < desired_delta).then_some(target)
 }
 
 fn digit_digit_target(pair_geometry: PairGeometry) -> f32 {
@@ -436,56 +478,47 @@ fn digit_punctuation_target(pair_geometry: PairGeometry) -> f32 {
     }
 }
 
-fn lower_upper_overhang_delta(
-    metric_delta: f32,
-    optical_delta: f32,
-    adjusted_delta: f32,
-    nearest_delta: f32,
-    stats: GapStats,
-    config: EvaluationConfig,
-    pair_class: PairClass,
-    pair_geometry: PairGeometry,
-) -> f32 {
-    if !pair_class.is_lower_upper()
-        || metric_delta.abs() >= dead_zone()
-        || optical_delta >= -dead_zone()
-        || adjusted_delta <= -0.090
+fn lower_upper_overhang_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
+    if !facts.pair_class.is_lower_upper()
+        || facts.metric_delta.abs() >= dead_zone()
+        || facts.optical_delta >= -dead_zone()
+        || desired_delta <= -0.090
     {
-        return 0.0;
+        return None;
     }
 
-    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
-    let safe_min = (config.target_gap_em * 0.58).clamp(0.10, 0.18);
-    if nearest_delta > nearest_guard || stats.min_gap <= safe_min || aperture_risk(stats, config) {
-        return 0.0;
+    let safe_min = (facts.config.target_gap_em * 0.58).clamp(0.10, 0.18);
+    if facts.nearest_delta > facts.nearest_guard()
+        || facts.stats.min_gap <= safe_min
+        || aperture_risk(facts.stats, facts.config)
+    {
+        return None;
     }
 
-    let overhang = pair_geometry.right_top_left_overhang;
+    let overhang = facts.pair_geometry.right_top_left_overhang;
     if overhang <= 0.10 {
-        return 0.0;
+        return None;
     }
 
-    let spread = (config.gap_mad_em * 1.35).clamp(0.035, 0.14);
-    let upper = config.target_gap_em + spread;
-    let gap_excess = (stats.robust_mean_gap - upper).max(0.0);
+    let gap_excess = (facts.stats.robust_mean_gap - facts.spread_upper()).max(0.0);
     let shape_bonus = ((overhang - 0.10) * 0.24).clamp(0.0, 0.040);
     let gap_bonus = (gap_excess * 0.40).clamp(0.0, 0.030);
-    let round_bonus = if pair_geometry.left_right_side.is_round_like() && overhang > 0.18 {
+    let round_bonus = if facts.pair_geometry.left_right_side.is_round_like() && overhang > 0.18 {
         let curvature_bonus =
-            ((pair_geometry.left_right_side.roundness - 0.030) * 0.70).clamp(0.0, 0.024);
+            ((facts.pair_geometry.left_right_side.roundness - 0.030) * 0.70).clamp(0.0, 0.024);
         let overhang_bonus = ((overhang - 0.18) * 0.16).clamp(0.0, 0.020);
         (curvature_bonus + overhang_bonus).clamp(0.0, 0.034)
     } else {
         0.0
     };
-    let lower_bound = if pair_geometry.left_right_side.is_round_like() && overhang > 0.18 {
+    let lower_bound = if facts.pair_geometry.left_right_side.is_round_like() && overhang > 0.18 {
         -0.120
     } else {
         -0.095
     };
     let target =
-        (adjusted_delta - shape_bonus - gap_bonus - round_bonus).clamp(lower_bound, adjusted_delta);
-    normalized_delta(target - adjusted_delta)
+        (desired_delta - shape_bonus - gap_bonus - round_bonus).clamp(lower_bound, desired_delta);
+    (target < desired_delta).then_some(target)
 }
 
 fn aperture_risk(stats: GapStats, config: EvaluationConfig) -> bool {
@@ -501,36 +534,28 @@ fn aperture_risk(stats: GapStats, config: EvaluationConfig) -> bool {
     stats.min_gap <= close_min && stats.robust_mean_gap > upper && mean_to_min_ratio >= 3.2
 }
 
-fn spacing_compaction_delta(
-    metric_delta: f32,
-    adjusted_delta: f32,
-    nearest_delta: f32,
-    stats: GapStats,
-    config: EvaluationConfig,
-    pair_class: PairClass,
-) -> f32 {
-    if !pair_class.allows_safe_compaction() {
-        return 0.0;
+fn spacing_compaction_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
+    if !facts.pair_class.allows_safe_compaction() {
+        return None;
     }
 
-    if adjusted_delta.abs() >= 0.045 {
-        return 0.0;
+    if desired_delta.abs() >= 0.045 {
+        return None;
     }
 
-    if adjusted_delta < -dead_zone() && metric_delta.abs() < dead_zone() {
-        return 0.0;
+    if desired_delta < -dead_zone() && facts.metric_delta.abs() < dead_zone() {
+        return None;
     }
 
-    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
-    if nearest_delta > nearest_guard || aperture_risk(stats, config) {
-        return 0.0;
+    if facts.nearest_delta > facts.nearest_guard() || aperture_risk(facts.stats, facts.config) {
+        return None;
     }
 
-    let safe_min = (config.target_gap_em * 0.22).clamp(0.045, 0.065);
-    if stats.min_gap <= safe_min {
-        return 0.0;
+    let safe_min = (facts.config.target_gap_em * 0.22).clamp(0.045, 0.065);
+    if facts.stats.min_gap <= safe_min {
+        return None;
     }
 
-    let amount = (config.gap_mad_em * 0.25).clamp(0.008, 0.016);
-    -amount
+    let amount = (facts.config.gap_mad_em * 0.25).clamp(0.008, 0.016);
+    Some(desired_delta - amount)
 }
