@@ -187,18 +187,18 @@
       },
       "opticalScore": {
         "status": "measured",
-        "scoreEm": 0.027926412970104775,
-        "absoluteWidthDeltaEm": 0.0072,
-        "widthDeltaEm": 0.0072,
-        "inkPositionMeanAbsEm": 0.027926412970104775,
-        "segmentCenterMeanAbsEm": null
+        "scoreEm": 0.02531786255158356,
+        "absoluteWidthDeltaEm": 0.012,
+        "widthDeltaEm": -0.012,
+        "inkPositionMeanAbsEm": 0.02531786255158356,
+        "segmentCenterMeanAbsEm": 0.0005715361965884085
       },
       "deltas": [
         {
           "display": "A|V",
           "leftGlyphId": 4,
           "rightGlyphId": 183,
-          "deltaEm": 0.0,
+          "deltaEm": 0.018772129,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": 0.0
         },
@@ -823,18 +823,18 @@
       },
       "opticalScore": {
         "status": "measured",
-        "scoreEm": 0.027926412970104775,
-        "absoluteWidthDeltaEm": 0.0072,
-        "widthDeltaEm": 0.0072,
-        "inkPositionMeanAbsEm": 0.027926412970104775,
-        "segmentCenterMeanAbsEm": null
+        "scoreEm": 0.02531786255158356,
+        "absoluteWidthDeltaEm": 0.012,
+        "widthDeltaEm": -0.012,
+        "inkPositionMeanAbsEm": 0.02531786255158356,
+        "segmentCenterMeanAbsEm": 0.0005715361965884085
       },
       "deltas": [
         {
           "display": "A|V",
           "leftGlyphId": 4,
           "rightGlyphId": 183,
-          "deltaEm": 0.0,
+          "deltaEm": 0.018772129,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": 0.0
         },

@@ -472,6 +472,50 @@ fn script_upper_run_keeps_short_upper_runs() {
 }
 
 #[test]
+fn script_upper_run_opens_near_metricless_upper_gaps() {
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Upper,
+    };
+    let context = RunContext {
+        script_upper_run_like: true,
+        upper_pairs: 5,
+        metricless_upper_pairs: 5,
+        connected_upper_pairs: 2,
+        opened_connected_upper_pairs: 2,
+        ..RunContext::default()
+    };
+    let mut config = test_config(0.182, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    let delta = script_upper_run_delta(0.0, 0.0, 0.021, class, context, config);
+
+    assert!(delta > 0.018);
+    assert!(delta < 0.022);
+}
+
+#[test]
+fn script_upper_run_keeps_comfortable_metricless_upper_gaps() {
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Upper,
+    };
+    let context = RunContext {
+        script_upper_run_like: true,
+        upper_pairs: 5,
+        metricless_upper_pairs: 5,
+        connected_upper_pairs: 2,
+        opened_connected_upper_pairs: 2,
+        ..RunContext::default()
+    };
+
+    let delta = script_upper_run_delta(0.0, 0.0, 0.060, class, context, test_config(0.182, 0.050));
+
+    assert_eq!(delta, 0.0);
+}
+
+#[test]
 fn script_upper_run_keeps_upper_runs_without_openings() {
     let class = PairClass {
         left: ClusterClass::Upper,

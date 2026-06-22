@@ -467,18 +467,27 @@ pub(super) fn script_upper_run_delta(
     if !context.script_upper_run_like
         || !pair_class.is_upper_upper()
         || metric_delta.abs() >= dead_zone()
-        || gap_min_em >= CONNECTED_JOIN_GAP_EM
-        || adjusted_delta <= CONNECTED_JOIN_OPENING_EM
     {
         return 0.0;
     }
 
-    let target = script_upper_run_opening_cap(config);
-    if target < adjusted_delta {
-        normalized_delta(target - adjusted_delta)
-    } else {
-        0.0
+    if gap_min_em < CONNECTED_JOIN_GAP_EM && adjusted_delta > CONNECTED_JOIN_OPENING_EM {
+        let target = script_upper_run_opening_cap(config);
+        return if target < adjusted_delta {
+            normalized_delta(target - adjusted_delta)
+        } else {
+            0.0
+        };
     }
+
+    if adjusted_delta.abs() < dead_zone()
+        && gap_min_em >= 0.0
+        && gap_min_em <= script_upper_run_near_gap_limit(config)
+    {
+        return script_upper_run_near_gap_opening(config);
+    }
+
+    0.0
 }
 
 fn clamp_tightening(adjusted_delta: f32, amount: f32, lower_bound: f32) -> f32 {
@@ -524,6 +533,14 @@ fn script_lower_run_compaction_amount(config: EvaluationConfig) -> f32 {
 
 fn script_upper_run_opening_cap(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.12).clamp(0.018, 0.026)
+}
+
+fn script_upper_run_near_gap_limit(config: EvaluationConfig) -> f32 {
+    (config.target_gap_em * 0.14).clamp(0.018, 0.032)
+}
+
+fn script_upper_run_near_gap_opening(config: EvaluationConfig) -> f32 {
+    (config.target_gap_em * 0.11).clamp(0.016, 0.022)
 }
 
 fn script_spacing_profile(config: EvaluationConfig) -> bool {
