@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "guarded-v6-multifont-100pt-no-ligatures",
+  "sampleManifest": "corpus/samples/guarded-v1-review.json",
+  "settings": {
+    "pointSize": 100,
+    "ligatures": false,
+    "dpi": 300
+  },
+  "fonts": [
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "renderSummary": "renders/guarded-v6-review/eb-garamond-100pt-no-ligatures/summary.json",
+      "okCount": 32,
+      "sampleCount": 32,
+      "metricParityAvgAbsWidthEm": 0.0015,
+      "metricParityMaxAbsWidthEm": 0.0072,
+      "opticalAvgAbsWidthEm": 0.0185,
+      "opticalMaxAbsWidthEm": 0.0624,
+      "inkAvgAbsEm": 0.0115,
+      "inkMaxAbsEm": 0.0303
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "renderSummary": "renders/guarded-v6-review/libre-baskerville-100pt-no-ligatures/summary.json",
+      "okCount": 32,
+      "sampleCount": 32,
+      "metricParityAvgAbsWidthEm": 0.0103,
+      "metricParityMaxAbsWidthEm": 0.1032,
+      "opticalAvgAbsWidthEm": 0.0433,
+      "opticalMaxAbsWidthEm": 0.1152,
+      "inkAvgAbsEm": 0.0259,
+      "inkMaxAbsEm": 0.0830
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "renderSummary": "renders/guarded-v6-review/inter-100pt-no-ligatures/summary.json",
+      "okCount": 32,
+      "sampleCount": 32,
+      "metricParityAvgAbsWidthEm": 0.1672,
+      "metricParityMaxAbsWidthEm": 0.4416,
+      "opticalAvgAbsWidthEm": 0.1048,
+      "opticalMaxAbsWidthEm": 0.3624,
+      "inkAvgAbsEm": 0.0554,
+      "inkMaxAbsEm": 0.2065,
+      "interpretation": "Not valid for algorithm ranking until Typst Metric and InDesign Metrics font parity is fixed."
+    }
+  ],
+  "notes": [
+    "EB Garamond is the cleanest current baseline because Typst Metric and InDesign Metrics match closely.",
+    "Libre Baskerville is usable but has at least one metric-parity outlier.",
+    "Inter currently shows a large metric-parity mismatch, so the optical comparison is dominated by font/rendering setup rather than algorithm quality."
+  ]
+}

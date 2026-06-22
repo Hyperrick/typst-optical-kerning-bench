@@ -1,7 +1,8 @@
 # Current Findings
 
 Generated on 2026-06-22 from the pinned corpus after dynamic font calibration,
-Rustybuzz glyph-run shaping, and the guarded V5 contact-zone pass.
+Rustybuzz glyph-run shaping, the guarded V5 contact-zone pass, and V6
+measurement upgrades.
 
 ## Commands
 
@@ -10,6 +11,7 @@ cargo run -p optikern-cli -- bench
 cargo run -p optikern-cli -- report
 cargo run -p optikern-cli -- render-indesign --run
 scripts/run-guarded-review-batch.py --output renders/guarded-v5-review/eb-garamond-100pt-no-ligatures
+scripts/run-guarded-review-batch.py --output renders/guarded-v6-review/eb-garamond-100pt-no-ligatures
 cargo test
 ```
 
@@ -23,6 +25,8 @@ cargo test
   baseline PDFs with matching JSON sidecars.
 - `renders/guarded-v5-review/eb-garamond-100pt-no-ligatures/contact-sheet.png`:
   cropped InDesign Optical, Typst Guarded, and overlay rows for the V5 review.
+- `renders/guarded-v6-review/*/summary.json`: V6 reviews with width,
+  ink-position, segment-center, and metric-parity measurements.
 
 Generated artifacts live in ignored output folders. Re-run the commands above to
 reproduce them.
@@ -61,11 +65,19 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   InDesign Optical improved from `0.0235em` to `0.0184em`.
 - `T.`, `P.`, `WAYFINDER`, `ToTaL`, and `WAVY` improved in the V5 review, with
   no measured regression in that batch.
+- V6 adds glyph-position-style diagnostics through rendered PNG ink
+  distributions. EB Garamond remains essentially neutral by width
+  (`0.0184em` to `0.0185em`) while exposing internal position error.
+- Damped class-local calibration improved `AVATAR` but regressed `VA` and
+  `WAVY` slightly; the stronger class-local replacement was rejected.
+- Multi-font review shows a baseline problem: Inter has large Typst Metric vs
+  InDesign Metrics mismatch (`0.1672em` average), so it is not yet valid for
+  optical algorithm tuning.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 
 ## Next Question
 
-The next benchmark layer should separate width error from per-glyph position
-error. Total word width can look close while one internal pair is wrong, and the
-reverse is also possible.
+The next benchmark layer should fix font/rendering parity for non-EB fonts
+before using those fonts as tuning targets. In particular, Inter needs metric
+parity debugging before its InDesign Optical differences can be trusted.

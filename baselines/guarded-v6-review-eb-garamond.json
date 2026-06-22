@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "baselineId": "guarded-v6-review-eb-garamond-100pt-no-ligatures",
+  "status": "glyph-position-metrics-and-damped-class-calibration",
+  "algorithm": "guarded-profile-hybrid",
+  "sampleManifest": "corpus/samples/guarded-v1-review.json",
+  "renderSummary": "renders/guarded-v6-review/eb-garamond-100pt-no-ligatures/summary.json",
+  "settings": {
+    "fontId": "eb-garamond",
+    "fontFamily": "EB Garamond",
+    "pointSize": 100,
+    "ligatures": false,
+    "dpi": 300
+  },
+  "runStatus": {
+    "sampleCount": 32,
+    "okCount": 32,
+    "errorCount": 0
+  },
+  "comparisonToGuardedV5": {
+    "avgAbsWidthEmV5": 0.0184,
+    "avgAbsWidthEmV6": 0.0185,
+    "maxAbsWidthEmV5": 0.0624,
+    "maxAbsWidthEmV6": 0.0624
+  },
+  "newPositionMetrics": {
+    "avgInkPositionAbsEm": 0.0115,
+    "maxInkPositionAbsEm": 0.0303,
+    "avgSegmentCenterAbsEm": 0.0122,
+    "maxSegmentCenterAbsEm": 0.0326
+  },
+  "metricParity": {
+    "avgAbsWidthEm": 0.0015,
+    "maxAbsWidthEm": 0.0072
+  },
+  "strongestImprovements": [
+    {"id": "word-avatar", "text": "AVATAR", "v5WidthDeltaEm": 0.0528, "v6WidthDeltaEm": 0.0384},
+    {"id": "word-water", "text": "water", "v5WidthDeltaEm": -0.0240, "v6WidthDeltaEm": -0.0216},
+    {"id": "pair-p-period", "text": "P.", "v5WidthDeltaEm": -0.0024, "v6WidthDeltaEm": 0.0000}
+  ],
+  "strongestRegressions": [
+    {"id": "pair-va", "text": "VA", "v5WidthDeltaEm": -0.0096, "v6WidthDeltaEm": -0.0216},
+    {"id": "word-wavy", "text": "WAVY", "v5WidthDeltaEm": -0.0096, "v6WidthDeltaEm": -0.0144},
+    {"id": "pair-av", "text": "AV", "v5WidthDeltaEm": -0.0024, "v6WidthDeltaEm": -0.0072}
+  ],
+  "notes": [
+    "V6 adds ink-position and segment-center metrics to every PNG comparison.",
+    "Class-local gap calibration is computed per font but applied only as a small 22% blend for uppercase, digit, and punctuation classes.",
+    "A full class-local replacement was tested first and rejected because it regressed EB Garamond numbers and uppercase pairs.",
+    "EB Garamond V6 is effectively neutral against V5 by width, while adding stronger diagnostics for internal glyph positioning."
+  ]
+}

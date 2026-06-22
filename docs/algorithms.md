@@ -81,6 +81,18 @@ cacheable.
 - `safe-fallback-only`: preserves metric kerning if it exists; otherwise uses
   the robust optical outlier correction. Monospaced fonts are preserved.
 
+## V6 Calibration Notes
+
+The core now computes class-local gap distributions per font for broad classes
+such as uppercase-uppercase, digit-digit, and uppercase-punctuation. These
+values are not allowed to fully replace the global font distribution. A full
+replacement was tested and rejected because it over-widened EB Garamond numbers
+and uppercase pairs.
+
+The committed V6 behavior blends eligible class-local values into the global
+distribution at a low weight. This keeps the signal available for tuning while
+preserving the more stable V5 behavior.
+
 ## Typst Compatibility Constraints
 
 These implementations deliberately favor:

@@ -179,6 +179,20 @@ def width_delta(entry: dict, key: str) -> str:
     return f"{px:+.0f}px / {em:+.4f}em"
 
 
+def position_delta(entry: dict, key: str) -> str:
+    comparisons = entry.get("comparisons", {})
+    data = comparisons.get(key)
+    if not data:
+        return "-"
+    ink_px = data.get("inkPositionMeanAbsPx")
+    ink_em = data.get("inkPositionMeanAbsEm")
+    seg_em = data.get("segmentCenterMeanAbsEm")
+    if ink_px is None or ink_em is None:
+        return "-"
+    segment = "n/a" if seg_em is None else f"{seg_em:.4f}em"
+    return f"ink {ink_px:.1f}px / {ink_em:.4f}em; segments {segment}"
+
+
 def write_html(out: Path, report: dict) -> None:
     rows = []
     for entry in report["samples"]:
@@ -188,7 +202,7 @@ def write_html(out: Path, report: dict) -> None:
                 f"<td>{html.escape(entry['id'])}</td>"
                 f"<td>{html.escape(entry['category'])}</td>"
                 f"<td><code>{html.escape(entry['text'])}</code></td>"
-                "<td colspan=\"5\">render failed; see log</td>"
+                "<td colspan=\"6\">render failed; see log</td>"
                 "</tr>"
             )
             continue
@@ -200,6 +214,7 @@ def write_html(out: Path, report: dict) -> None:
             f"<td><code>{html.escape(entry['text'])}</code></td>"
             f"<td>{html.escape(width_delta(entry, 'metricParity'))}</td>"
             f"<td>{html.escape(width_delta(entry, 'opticalVsGuarded'))}</td>"
+            f"<td>{html.escape(position_delta(entry, 'opticalVsGuarded'))}</td>"
             f"<td><img src=\"{relative_link(images['indesignOptical'])}\" alt=\"InDesign Optical\"></td>"
             f"<td><img src=\"{relative_link(images['typstGuarded'])}\" alt=\"Typst Guarded\"></td>"
             f"<td><img src=\"{relative_link(images['opticalOverlay'])}\" alt=\"Overlay\"></td>"
@@ -265,6 +280,7 @@ def write_html(out: Path, report: dict) -> None:
         <th>Text</th>
         <th>Metric parity</th>
         <th>Optical vs Guarded</th>
+        <th>Ink position</th>
         <th>InDesign Optical</th>
         <th>Typst Guarded</th>
         <th>Overlay</th>
@@ -332,6 +348,12 @@ def write_contact_sheet(out: Path, report: dict) -> None:
         draw.text(
             (24, y + 74),
             width_delta(entry, "opticalVsGuarded"),
+            font=typeface,
+            fill=(80, 80, 80, 255),
+        )
+        draw.text(
+            (24, y + 100),
+            position_delta(entry, "opticalVsGuarded"),
             font=typeface,
             fill=(80, 80, 80, 255),
         )

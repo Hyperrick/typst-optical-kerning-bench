@@ -255,6 +255,7 @@ def overlay(ref_key, cand_key, output):
                     else (220, 0, 170, 255)
                 )
     canvas.save(output)
+    position = ink_position_metrics(ref, cand_scaled)
     return {
         "path": str(output),
         "referencePx": [ref.width, ref.height],
@@ -263,6 +264,112 @@ def overlay(ref_key, cand_key, output):
         "heightScale": scale,
         "widthDeltaPx": ref.width - cand_scaled.width,
         "widthDeltaEm": (ref.width - cand_scaled.width) / (point_size * dpi / 72),
+        "inkPositionMeanAbsPx": position["inkPositionMeanAbsPx"],
+        "inkPositionMeanAbsEm": position["inkPositionMeanAbsPx"] / (point_size * dpi / 72),
+        "inkPositionMaxCdfDelta": position["inkPositionMaxCdfDelta"],
+        "segmentCountReference": position["segmentCountReference"],
+        "segmentCountCandidate": position["segmentCountCandidate"],
+        "segmentCenterMeanAbsPx": position["segmentCenterMeanAbsPx"],
+        "segmentCenterMeanAbsEm": (
+            None
+            if position["segmentCenterMeanAbsPx"] is None
+            else position["segmentCenterMeanAbsPx"] / (point_size * dpi / 72)
+        ),
+        "segmentCenterMaxAbsPx": position["segmentCenterMaxAbsPx"],
+        "segmentCenterMaxAbsEm": (
+            None
+            if position["segmentCenterMaxAbsPx"] is None
+            else position["segmentCenterMaxAbsPx"] / (point_size * dpi / 72)
+        ),
+        "segments": position["segments"],
+    }
+
+def column_ink_counts(img):
+    counts = []
+    for x in range(img.width):
+        ink = 0
+        for y in range(img.height):
+            if dark(img.getpixel((x, y))):
+                ink += 1
+        counts.append(ink)
+    return counts
+
+def ink_segments(profile):
+    segments = []
+    start = None
+    ink_sum = 0
+    weighted_sum = 0.0
+    for x, ink in enumerate(profile):
+        if ink > 0 and start is None:
+            start = x
+            ink_sum = 0
+            weighted_sum = 0.0
+        if start is not None and ink > 0:
+            ink_sum += ink
+            weighted_sum += x * ink
+        if start is not None and (ink == 0 or x == len(profile) - 1):
+            end = x - 1 if ink == 0 else x
+            if ink_sum > 0:
+                segments.append({
+                    "x0": start,
+                    "x1": end,
+                    "widthPx": end - start + 1,
+                    "inkPx": ink_sum,
+                    "centerPx": weighted_sum / ink_sum,
+                })
+            start = None
+    return segments
+
+def comparable_segment_errors(ref_segments, cand_segments):
+    if not ref_segments or len(ref_segments) != len(cand_segments):
+        return None, None
+    errors = [
+        cand["centerPx"] - ref["centerPx"]
+        for ref, cand in zip(ref_segments, cand_segments)
+    ]
+    mean_abs = sum(abs(error) for error in errors) / len(errors)
+    max_abs = max(abs(error) for error in errors)
+    return mean_abs, max_abs
+
+def ink_position_metrics(ref, cand):
+    width = max(ref.width, cand.width)
+    ref_profile = column_ink_counts(ref) + [0] * (width - ref.width)
+    cand_profile = column_ink_counts(cand) + [0] * (width - cand.width)
+    ref_total = sum(ref_profile)
+    cand_total = sum(cand_profile)
+    if ref_total == 0 or cand_total == 0:
+        return {
+            "inkPositionMeanAbsPx": 0.0,
+            "inkPositionMaxCdfDelta": 0.0,
+            "segmentCountReference": 0,
+            "segmentCountCandidate": 0,
+            "segmentCenterMeanAbsPx": None,
+            "segmentCenterMaxAbsPx": None,
+            "segments": {"reference": [], "candidate": []},
+        }
+
+    ref_cdf = 0.0
+    cand_cdf = 0.0
+    transport = 0.0
+    max_cdf = 0.0
+    for ref_ink, cand_ink in zip(ref_profile, cand_profile):
+        ref_cdf += ref_ink / ref_total
+        cand_cdf += cand_ink / cand_total
+        diff = abs(ref_cdf - cand_cdf)
+        transport += diff
+        max_cdf = max(max_cdf, diff)
+
+    ref_segments = ink_segments(ref_profile)
+    cand_segments = ink_segments(cand_profile)
+    segment_mean, segment_max = comparable_segment_errors(ref_segments, cand_segments)
+    return {
+        "inkPositionMeanAbsPx": transport,
+        "inkPositionMaxCdfDelta": max_cdf,
+        "segmentCountReference": len(ref_segments),
+        "segmentCountCandidate": len(cand_segments),
+        "segmentCenterMeanAbsPx": segment_mean,
+        "segmentCenterMaxAbsPx": segment_max,
+        "segments": {"reference": ref_segments, "candidate": cand_segments},
     }
 
 metric = overlay("indesign_metric", "typst_metric", root / "overlays/metric-parity.png")

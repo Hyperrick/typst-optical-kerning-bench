@@ -2,12 +2,12 @@ use anyhow::{Result, anyhow};
 use serde::{Deserialize, Serialize};
 use ttf_parser::GlyphId;
 
+use crate::calibration::{ClassGapCalibration, GapDistribution, calibrated_gap_distribution};
+use crate::class::PairClass;
 use crate::font::FontKit;
 use crate::outline::{FlattenOptions, GlyphOutline, LineSegment};
 use crate::profile::{GapStats, ProfileConfig, gap_stats};
 use crate::shape::{ShapedGlyphPair, ShapingOptions, metric_shaped_pair_delta_em, shape_text};
-
-const CALIBRATION_ALPHABET: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -88,19 +88,46 @@ pub struct EvaluationConfig {
     pub target_gap_em: f32,
     pub gap_mad_em: f32,
     pub preserve_monospace: bool,
+    class_gap_calibration: ClassGapCalibration,
 }
 
 impl EvaluationConfig {
     pub fn for_font(font: &FontKit) -> Self {
         let profile = ProfileConfig::for_latin(font.x_height_em(), font.cap_height_em());
-        let (target_gap_em, gap_mad_em) = calibrated_gap_distribution(font, profile);
+        let (global, class_gap_calibration) = calibrated_gap_distribution(font, profile);
         Self {
             profile,
-            target_gap_em,
-            gap_mad_em,
+            target_gap_em: global.target_gap_em,
+            gap_mad_em: global.gap_mad_em,
             preserve_monospace: font.is_monospaced(),
+            class_gap_calibration,
         }
     }
+
+    fn for_pair_class(self, pair_class: PairClass) -> Self {
+        if !pair_class.uses_class_gap_calibration() {
+            return self;
+        }
+
+        let fallback = GapDistribution {
+            target_gap_em: self.target_gap_em,
+            gap_mad_em: self.gap_mad_em,
+            sample_count: 0,
+        };
+        let distribution = self
+            .class_gap_calibration
+            .distribution(pair_class, fallback);
+        let weight = pair_class.class_gap_calibration_weight();
+        Self {
+            target_gap_em: blend(self.target_gap_em, distribution.target_gap_em, weight),
+            gap_mad_em: blend(self.gap_mad_em, distribution.gap_mad_em, weight),
+            ..self
+        }
+    }
+}
+
+fn blend(base: f32, target: f32, weight: f32) -> f32 {
+    base + (target - base) * weight.clamp(0.0, 1.0)
 }
 
 pub fn evaluate_pair(font: &FontKit, pair: &str) -> Result<AlgorithmSet> {
@@ -139,12 +166,14 @@ pub fn evaluate_shaped_pair_with_config(
         config.profile,
     )
     .ok_or_else(|| anyhow!("not enough outline overlap for pair {:?}", pair.display))?;
-    let metric_delta = metric_shaped_pair_delta_em(font, pair, ligatures).unwrap_or(0.0);
-    let optical_profile_delta = distribution_delta(stats.weighted_mean_gap, config);
-    let optical_robust_delta = distribution_delta(stats.robust_mean_gap, config);
-    let nearest_delta = nearest_distance_delta(stats, config.target_gap_em);
     let pair_class = PairClass::from_pair(pair);
-    let pair_geometry = PairGeometry::from_outlines(&left_outline, &right_outline, config.profile);
+    let pair_config = config.for_pair_class(pair_class);
+    let metric_delta = metric_shaped_pair_delta_em(font, pair, ligatures).unwrap_or(0.0);
+    let optical_profile_delta = distribution_delta(stats.weighted_mean_gap, pair_config);
+    let optical_robust_delta = distribution_delta(stats.robust_mean_gap, pair_config);
+    let nearest_delta = nearest_distance_delta(stats, pair_config.target_gap_em);
+    let pair_geometry =
+        PairGeometry::from_outlines(&left_outline, &right_outline, pair_config.profile);
 
     let outputs = Algorithm::all()
         .iter()
@@ -155,7 +184,7 @@ pub fn evaluate_shaped_pair_with_config(
                 Algorithm::ProfileWhitespace => optical_profile_delta,
                 Algorithm::AreaBalance => optical_robust_delta,
                 Algorithm::MetricPriorHybrid => {
-                    if config.preserve_monospace {
+                    if pair_config.preserve_monospace {
                         metric_delta
                     } else {
                         metric_prior_hybrid_for_class(
@@ -170,12 +199,12 @@ pub fn evaluate_shaped_pair_with_config(
                     optical_robust_delta,
                     nearest_delta,
                     stats,
-                    config,
+                    pair_config,
                     pair_class,
                     pair_geometry,
                 ),
                 Algorithm::SafeFallbackOnly => {
-                    if config.preserve_monospace || metric_delta.abs() >= dead_zone() {
+                    if pair_config.preserve_monospace || metric_delta.abs() >= dead_zone() {
                         metric_delta
                     } else {
                         optical_robust_delta
@@ -187,8 +216,8 @@ pub fn evaluate_shaped_pair_with_config(
                 delta_em: delta,
                 metric_delta_em: metric_delta,
                 optical_delta_em: optical_profile_delta,
-                target_gap_em: config.target_gap_em,
-                gap_distribution_mad_em: config.gap_mad_em,
+                target_gap_em: pair_config.target_gap_em,
+                gap_distribution_mad_em: pair_config.gap_mad_em,
                 gap_min_em: stats.min_gap,
                 gap_weighted_mean_em: stats.weighted_mean_gap,
                 gap_robust_mean_em: stats.robust_mean_gap,
@@ -213,47 +242,6 @@ pub fn evaluate_shaped_pair_with_config(
     })
 }
 
-fn calibrated_gap_distribution(font: &FontKit, profile: ProfileConfig) -> (f32, f32) {
-    let flatten = FlattenOptions::default();
-    let mut gaps = Vec::new();
-    let chars = CALIBRATION_ALPHABET.chars().collect::<Vec<_>>();
-    for left in &chars {
-        for right in &chars {
-            let Ok((left_metrics, left_outline)) = font.outline(*left, flatten) else {
-                continue;
-            };
-            let Ok((_right_metrics, right_outline)) = font.outline(*right, flatten) else {
-                continue;
-            };
-            if let Some(stats) = gap_stats(
-                &left_outline,
-                left_metrics.advance_em,
-                &right_outline,
-                profile,
-            ) {
-                gaps.push(stats.robust_mean_gap);
-            }
-        }
-    }
-
-    if gaps.is_empty() {
-        return (default_target_gap(profile), 0.055);
-    }
-    gaps.sort_by(|a, b| a.total_cmp(b));
-    let median = percentile(&gaps, 0.5).clamp(0.045, 0.42);
-    let mut deviations = gaps
-        .iter()
-        .map(|gap| (gap - median).abs())
-        .collect::<Vec<_>>();
-    deviations.sort_by(|a, b| a.total_cmp(b));
-    let mad = percentile(&deviations, 0.5).clamp(0.025, 0.16);
-    (median, mad)
-}
-
-fn default_target_gap(profile: ProfileConfig) -> f32 {
-    (profile.x_height * 0.13).clamp(0.055, 0.10)
-}
-
 fn nearest_distance_delta(stats: GapStats, target_gap: f32) -> f32 {
     let desired_min = (target_gap * 0.38).clamp(0.018, 0.040);
     if stats.min_gap < desired_min {
@@ -264,6 +252,7 @@ fn nearest_distance_delta(stats: GapStats, target_gap: f32) -> f32 {
             target_gap_em: target_gap,
             gap_mad_em: (target_gap * 0.32).clamp(0.025, 0.08),
             preserve_monospace: false,
+            class_gap_calibration: ClassGapCalibration::empty(),
         };
         distribution_delta(stats.min_gap, config) * 0.5
     }
@@ -647,115 +636,6 @@ fn spacing_compaction_delta(
     -amount
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct PairClass {
-    left: ClusterClass,
-    right: ClusterClass,
-}
-
-impl Default for PairClass {
-    fn default() -> Self {
-        Self {
-            left: ClusterClass::Other,
-            right: ClusterClass::Other,
-        }
-    }
-}
-
-impl PairClass {
-    fn from_pair(pair: &ShapedGlyphPair) -> Self {
-        Self {
-            left: ClusterClass::from_cluster(&pair.left_cluster),
-            right: ClusterClass::from_cluster(&pair.right_cluster),
-        }
-    }
-
-    fn is_upper_upper(self) -> bool {
-        self.left == ClusterClass::Upper && self.right == ClusterClass::Upper
-    }
-
-    fn is_upper_lower(self) -> bool {
-        self.left == ClusterClass::Upper && self.right == ClusterClass::Lower
-    }
-
-    fn is_lower_upper(self) -> bool {
-        self.left == ClusterClass::Lower && self.right == ClusterClass::Upper
-    }
-
-    fn is_upper_digit(self) -> bool {
-        self.left == ClusterClass::Upper && self.right == ClusterClass::Digit
-    }
-
-    fn is_digit_digit(self) -> bool {
-        self.left == ClusterClass::Digit && self.right == ClusterClass::Digit
-    }
-
-    fn is_upper_punctuation(self) -> bool {
-        self.left == ClusterClass::Upper && self.right == ClusterClass::Punctuation
-    }
-
-    fn is_digit_punctuation(self) -> bool {
-        self.left == ClusterClass::Digit && self.right == ClusterClass::Punctuation
-    }
-
-    fn is_punctuation_digit(self) -> bool {
-        self.left == ClusterClass::Punctuation && self.right == ClusterClass::Digit
-    }
-
-    fn has_digit(self) -> bool {
-        self.left == ClusterClass::Digit || self.right == ClusterClass::Digit
-    }
-
-    fn has_punctuation(self) -> bool {
-        self.left == ClusterClass::Punctuation || self.right == ClusterClass::Punctuation
-    }
-
-    fn allows_safe_compaction(self) -> bool {
-        !self.has_punctuation() && !self.has_digit()
-    }
-
-    fn allows_tight_nearest_override(self) -> bool {
-        self.is_digit_digit()
-            || self.is_upper_digit()
-            || self.is_upper_lower()
-            || self.is_upper_punctuation()
-    }
-
-    fn allows_collision_opening(self) -> bool {
-        !self.has_punctuation() && !self.has_digit()
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ClusterClass {
-    Upper,
-    Lower,
-    Digit,
-    Punctuation,
-    Other,
-}
-
-impl ClusterClass {
-    fn from_cluster(cluster: &str) -> Self {
-        let chars = cluster.chars().collect::<Vec<_>>();
-        if chars.is_empty() {
-            return Self::Other;
-        }
-
-        if chars.iter().all(|ch| ch.is_ascii_uppercase()) {
-            Self::Upper
-        } else if chars.iter().all(|ch| ch.is_ascii_lowercase()) {
-            Self::Lower
-        } else if chars.iter().all(|ch| ch.is_ascii_digit()) {
-            Self::Digit
-        } else if chars.iter().all(|ch| ch.is_ascii_punctuation()) {
-            Self::Punctuation
-        } else {
-            Self::Other
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, Default)]
 struct PairGeometry {
     right_top_left_overhang: f32,
@@ -987,9 +867,20 @@ fn percentile(values: &[f32], p: f32) -> f32 {
 
 #[cfg(test)]
 mod tests {
+    use crate::class::ClusterClass;
     use crate::outline::{Bounds, Point};
 
     use super::*;
+
+    fn test_config(target_gap_em: f32, gap_mad_em: f32) -> EvaluationConfig {
+        EvaluationConfig {
+            profile: ProfileConfig::default(),
+            target_gap_em,
+            gap_mad_em,
+            preserve_monospace: false,
+            class_gap_calibration: ClassGapCalibration::empty(),
+        }
+    }
 
     #[test]
     fn algorithm_names_are_stable() {
@@ -1034,12 +925,7 @@ mod tests {
             mad: 0.05,
             samples: 80,
         };
-        let config = EvaluationConfig {
-            profile: ProfileConfig::default(),
-            target_gap_em: 0.2846,
-            gap_mad_em: 0.0567,
-            preserve_monospace: false,
-        };
+        let config = test_config(0.2846, 0.0567);
         let delta = guarded_profile_hybrid(
             0.0,
             -0.079,
@@ -1061,12 +947,7 @@ mod tests {
             mad: 0.03,
             samples: 80,
         };
-        let config = EvaluationConfig {
-            profile: ProfileConfig::default(),
-            target_gap_em: 0.2846,
-            gap_mad_em: 0.0567,
-            preserve_monospace: false,
-        };
+        let config = test_config(0.2846, 0.0567);
         let delta = guarded_profile_hybrid(
             0.0,
             -0.053,
@@ -1132,12 +1013,7 @@ mod tests {
             mad: 0.04,
             samples: 80,
         };
-        let config = EvaluationConfig {
-            profile: ProfileConfig::default(),
-            target_gap_em: 0.231,
-            gap_mad_em: 0.056,
-            preserve_monospace: false,
-        };
+        let config = test_config(0.231, 0.056);
         let class = PairClass {
             left: ClusterClass::Lower,
             right: ClusterClass::Upper,
@@ -1194,12 +1070,7 @@ mod tests {
             mad: 0.02,
             samples: 80,
         };
-        let config = EvaluationConfig {
-            profile: ProfileConfig::default(),
-            target_gap_em: 0.231,
-            gap_mad_em: 0.056,
-            preserve_monospace: false,
-        };
+        let config = test_config(0.231, 0.056);
         let class = PairClass {
             left: ClusterClass::Digit,
             right: ClusterClass::Digit,
@@ -1229,12 +1100,7 @@ mod tests {
             mad: 0.03,
             samples: 80,
         };
-        let config = EvaluationConfig {
-            profile: ProfileConfig::default(),
-            target_gap_em: 0.231,
-            gap_mad_em: 0.056,
-            preserve_monospace: false,
-        };
+        let config = test_config(0.231, 0.056);
         let class = PairClass {
             left: ClusterClass::Upper,
             right: ClusterClass::Lower,
@@ -1261,12 +1127,7 @@ mod tests {
             mad: 0.043,
             samples: 80,
         };
-        let config = EvaluationConfig {
-            profile: ProfileConfig::default(),
-            target_gap_em: 0.231,
-            gap_mad_em: 0.056,
-            preserve_monospace: false,
-        };
+        let config = test_config(0.231, 0.056);
         let class = PairClass {
             left: ClusterClass::Upper,
             right: ClusterClass::Upper,
@@ -1285,12 +1146,7 @@ mod tests {
             mad: 0.043,
             samples: 80,
         };
-        let config = EvaluationConfig {
-            profile: ProfileConfig::default(),
-            target_gap_em: 0.231,
-            gap_mad_em: 0.056,
-            preserve_monospace: false,
-        };
+        let config = test_config(0.231, 0.056);
         let class = PairClass {
             left: ClusterClass::Upper,
             right: ClusterClass::Punctuation,
@@ -1309,12 +1165,7 @@ mod tests {
             mad: 0.019,
             samples: 80,
         };
-        let config = EvaluationConfig {
-            profile: ProfileConfig::default(),
-            target_gap_em: 0.231,
-            gap_mad_em: 0.056,
-            preserve_monospace: false,
-        };
+        let config = test_config(0.231, 0.056);
         let class = PairClass {
             left: ClusterClass::Lower,
             right: ClusterClass::Upper,

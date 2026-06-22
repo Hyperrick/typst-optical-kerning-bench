@@ -1,4 +1,6 @@
 mod algorithms;
+mod calibration;
+mod class;
 mod font;
 mod outline;
 mod profile;
