@@ -106,3 +106,7 @@ EB Garamond:        +0.0000em
 Libre Baskerville:  +0.0120em
 Inter:              -0.0024em
 ```
+
+After this single-word gate passes, use the broader metric-only suite described
+in [`metric-parity-suite.md`](metric-parity-suite.md) before treating a sample
+set as optical tuning evidence.

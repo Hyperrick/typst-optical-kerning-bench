@@ -18,6 +18,7 @@ Options:
   --ligatures BOOL      true or false. Default: false.
   --dpi DPI             Raster DPI. Default: 300.
   --output DIR          Output directory. Default derived from text/settings.
+  --metric-only         Render only None and Metrics parity outputs.
   -h, --help            Show this help.
 USAGE
 }
@@ -30,6 +31,7 @@ point_size="100"
 ligatures="false"
 dpi="300"
 output_dir=""
+metric_only="false"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -41,6 +43,7 @@ while [[ $# -gt 0 ]]; do
     --ligatures) ligatures="$2"; shift 2 ;;
     --dpi) dpi="$2"; shift 2 ;;
     --output) output_dir="$2"; shift 2 ;;
+    --metric-only) metric_only="true"; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
   esac
@@ -83,12 +86,14 @@ font_filename="$(basename "$font_path")"
 cp "$font_path" "$output_dir/indesign/Document fonts/$font_filename"
 cp "$font_path" "$output_dir/typst/fonts/$font_filename"
 
-echo "== Deltas =="
-cargo run -q -p optikern-cli -- sample-deltas \
-  --font-id "$font_id" \
-  --text "$text" \
-  --ligatures="$ligatures" \
-  > "$output_dir/metrics/guarded-deltas.json"
+if [[ "$metric_only" == "false" ]]; then
+  echo "== Deltas =="
+  cargo run -q -p optikern-cli -- sample-deltas \
+    --font-id "$font_id" \
+    --text "$text" \
+    --ligatures="$ligatures" \
+    > "$output_dir/metrics/guarded-deltas.json"
+fi
 
 echo "== InDesign =="
 scripts/render-indesign-outlined-text.sh \
@@ -111,24 +116,28 @@ scripts/render-indesign-outlined-text.sh \
   --output-indd "$repo_root/$output_dir/indesign/metric.indd" \
   --output-json "$repo_root/$output_dir/metrics/indesign-metric.json"
 
-scripts/render-indesign-outlined-text.sh \
-  --font-family "$font_family" \
-  --text "$text" \
-  --kerning optical \
-  --ligatures "$ligatures" \
-  --point-size "$point_size" \
-  --output-pdf "$repo_root/$output_dir/indesign/optical.tmp.pdf" \
-  --output-indd "$repo_root/$output_dir/indesign/optical.indd" \
-  --output-json "$repo_root/$output_dir/metrics/indesign-optical.json"
+if [[ "$metric_only" == "false" ]]; then
+  scripts/render-indesign-outlined-text.sh \
+    --font-family "$font_family" \
+    --text "$text" \
+    --kerning optical \
+    --ligatures "$ligatures" \
+    --point-size "$point_size" \
+    --output-pdf "$repo_root/$output_dir/indesign/optical.tmp.pdf" \
+    --output-indd "$repo_root/$output_dir/indesign/optical.indd" \
+    --output-json "$repo_root/$output_dir/metrics/indesign-optical.json"
+fi
 
 pdftoppm -png -r "$dpi" "$output_dir/indesign/none.tmp.pdf" "$output_dir/indesign/none"
 pdftoppm -png -r "$dpi" "$output_dir/indesign/metric.tmp.pdf" "$output_dir/indesign/metric"
-pdftoppm -png -r "$dpi" "$output_dir/indesign/optical.tmp.pdf" "$output_dir/indesign/optical"
+if [[ "$metric_only" == "false" ]]; then
+  pdftoppm -png -r "$dpi" "$output_dir/indesign/optical.tmp.pdf" "$output_dir/indesign/optical"
+fi
 rm -f "$output_dir/indesign/"*.tmp.pdf
 rm -f "$output_dir/indesign/"*.idlk
 
 echo "== Typst =="
-python3 - "$output_dir" "$font_family" "$text" "$point_size" "$ligatures" <<'PY'
+python3 - "$output_dir" "$font_family" "$text" "$point_size" "$ligatures" "$metric_only" <<'PY'
 from pathlib import Path
 import json
 import sys
@@ -138,7 +147,10 @@ font_family = sys.argv[2]
 text = sys.argv[3]
 point_size = float(sys.argv[4])
 ligatures = sys.argv[5] == "true"
-deltas = json.loads((out / "metrics/guarded-deltas.json").read_text(encoding="utf-8"))
+metric_only = sys.argv[6] == "true"
+deltas = None
+if not metric_only:
+    deltas = json.loads((out / "metrics/guarded-deltas.json").read_text(encoding="utf-8"))
 margin = point_size * 0.8
 
 def typ_content(value: str) -> str:
@@ -178,17 +190,18 @@ none = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
 """
 (out / "typst/none.typ").write_text(none, encoding="utf-8")
 
-pairs = deltas["pairs"]
-if not pairs:
-    guarded_body = typ_content(text)
-else:
-    parts = [typ_content(pairs[0]["leftCluster"])]
-    for pair in pairs:
-        parts.append(f'#h({pair["deltaEm"]:.5f}em)')
-        parts.append(typ_content(pair["rightCluster"]))
-    guarded_body = "".join(parts)
+if not metric_only:
+    pairs = deltas["pairs"]
+    if not pairs:
+        guarded_body = typ_content(text)
+    else:
+        parts = [typ_content(pairs[0]["leftCluster"])]
+        for pair in pairs:
+            parts.append(f'#h({pair["deltaEm"]:.5f}em)')
+            parts.append(typ_content(pair["rightCluster"]))
+        guarded_body = "".join(parts)
 
-guarded = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
+    guarded = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
 #set text(
   font: "{typ_string(font_family)}",
   size: {point_size:.4f}pt,
@@ -198,18 +211,20 @@ guarded = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
 )
 {guarded_body}
 """
-(out / "typst/guarded.typ").write_text(guarded, encoding="utf-8")
+    (out / "typst/guarded.typ").write_text(guarded, encoding="utf-8")
 PY
 
 typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
   "$output_dir/typst/none.typ" "$output_dir/typst/none.png"
 typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
   "$output_dir/typst/metric.typ" "$output_dir/typst/metric.png"
-typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
-  "$output_dir/typst/guarded.typ" "$output_dir/typst/guarded.png"
+if [[ "$metric_only" == "false" ]]; then
+  typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
+    "$output_dir/typst/guarded.typ" "$output_dir/typst/guarded.png"
+fi
 
 echo "== Crops and overlays =="
-python3 - "$output_dir" "$dpi" "$font_family" "$text" "$point_size" "$ligatures" <<'PY'
+python3 - "$output_dir" "$dpi" "$font_family" "$text" "$point_size" "$ligatures" "$metric_only" <<'PY'
 from pathlib import Path
 from PIL import Image
 import json
@@ -221,23 +236,25 @@ font = sys.argv[3]
 text = sys.argv[4]
 point_size = float(sys.argv[5])
 ligatures = sys.argv[6] == "true"
+metric_only = sys.argv[7] == "true"
 
 sources = {
     "indesign_none": root / "indesign/none-1.png",
     "indesign_metric": root / "indesign/metric-1.png",
-    "indesign_optical": root / "indesign/optical-1.png",
     "typst_none": root / "typst/none.png",
     "typst_metric": root / "typst/metric.png",
-    "typst_guarded": root / "typst/guarded.png",
 }
 crop_paths = {
     "indesign_none": root / "crops/indesign-none-ink.png",
     "indesign_metric": root / "crops/indesign-metric-ink.png",
-    "indesign_optical": root / "crops/indesign-optical-ink.png",
     "typst_none": root / "crops/typst-none-ink.png",
     "typst_metric": root / "crops/typst-metric-ink.png",
-    "typst_guarded": root / "crops/typst-guarded-ink.png",
 }
+if not metric_only:
+    sources["indesign_optical"] = root / "indesign/optical-1.png"
+    sources["typst_guarded"] = root / "typst/guarded.png"
+    crop_paths["indesign_optical"] = root / "crops/indesign-optical-ink.png"
+    crop_paths["typst_guarded"] = root / "crops/typst-guarded-ink.png"
 
 def dark(pixel):
     r, g, b, a = pixel
@@ -411,7 +428,16 @@ def ink_position_metrics(ref, cand):
 
 none = overlay("indesign_none", "typst_none", root / "overlays/none-parity.png")
 metric = overlay("indesign_metric", "typst_metric", root / "overlays/metric-parity.png")
-optical = overlay("indesign_optical", "typst_guarded", root / "overlays/optical-vs-guarded.png")
+comparisons = {
+    "noneParity": none,
+    "metricParity": metric,
+}
+if not metric_only:
+    comparisons["opticalVsGuarded"] = overlay(
+        "indesign_optical",
+        "typst_guarded",
+        root / "overlays/optical-vs-guarded.png",
+    )
 report = {
     "schemaVersion": 1,
     "text": text,
@@ -420,11 +446,7 @@ report = {
     "ligatures": ligatures,
     "dpi": dpi,
     "crops": boxes,
-    "comparisons": {
-        "noneParity": none,
-        "metricParity": metric,
-        "opticalVsGuarded": optical,
-    },
+    "comparisons": comparisons,
 }
 (root / "metrics/comparison.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 print(json.dumps(report["comparisons"], indent=2))

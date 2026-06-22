@@ -36,6 +36,7 @@ scripts/run-goldfish-pipeline.sh --text Goldfish --point-size 100 --ligatures fa
 scripts/run-goldfish-parity.py --baseline-output baselines/goldfish-parity-v1.json
 .venv-fonttools/bin/python scripts/build-parity-fonts.py
 scripts/run-goldfish-parity.py --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json
+scripts/run-metric-parity-suite.py
 ```
 
 ## InDesign Baselines
@@ -148,6 +149,20 @@ legacy glyph names, and remove Unicode presentation-form ligature cmap entries
 so both engines shape the same no-ligature text.
 See [`docs/glyph-shape-parity.md`](docs/glyph-shape-parity.md) and
 [`docs/goldfish-parity-gate.md`](docs/goldfish-parity-gate.md).
+
+After `Goldfish` passes, run the broader metric-only suite:
+
+```sh
+scripts/run-metric-parity-suite.py \
+  --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json \
+  --point-size 100 \
+  --ligatures false \
+  --metric-threshold-em 0.02 \
+  --output renders/metric-parity-suite/no-ligatures-100pt \
+  --baseline-output baselines/metric-parity-suite-v1.json
+```
+
+See [`docs/metric-parity-suite.md`](docs/metric-parity-suite.md).
 
 ## Design Constraints
 

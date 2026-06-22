@@ -18,6 +18,9 @@ scripts/run-goldfish-parity.py --baseline-output baselines/goldfish-parity-v1.js
 scripts/run-goldfish-parity.py \
   --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json \
   --baseline-output baselines/goldfish-parity-sandbox-v1.json
+scripts/run-metric-parity-suite.py \
+  --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json \
+  --baseline-output baselines/metric-parity-suite-v1.json
 cargo test
 ```
 
@@ -37,6 +40,8 @@ cargo test
   focused single-word metric parity gate before optical tuning.
 - `renders/goldfish-parity/goldfish-100pt-no-ligatures-sandbox/summary.json`:
   strict no-ligature metric parity gate using isolated static benchmark fonts.
+- `renders/metric-parity-suite/no-ligatures-100pt/summary.json`:
+  strict multi-sample metric-only parity gate using the same sandbox fonts.
 - `renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures/summary.json`:
   individual glyph shape parity before word or kerning comparison.
 
@@ -108,11 +113,14 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
 - This confirmed two different failure causes: Inter needed a fixed static
   instance (`wght=400`, `opsz=14`), while Libre Baskerville needed the legacy
   `fi` ligature path removed before a no-ligature comparison was meaningful.
+- The broader metric-only suite passes all 30 current samples across EB
+  Garamond, Libre Baskerville, and Inter. The largest remaining metric deltas
+  are Inter `WAYFINDER` and `LANDMARK` at `+0.0192em`, still inside the
+  `0.02em` gate.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 
 ## Next Question
 
-The next benchmark layer should extend the strict sandbox beyond `Goldfish`.
-Only words that pass Metric-vs-Metric parity should be used as evidence for
-InDesign Optical vs Typst Guarded Optical tuning.
+The next benchmark layer can return to InDesign Optical vs Typst Guarded
+Optical tuning, but only for samples that pass the metric parity suite.
