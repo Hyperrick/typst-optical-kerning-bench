@@ -13,6 +13,7 @@ use super::script_context::{
     connected_script_delta, script_ligature_run_delta, script_lower_run_delta,
     script_mixed_case_delta, script_spacing_profile, script_upper_run_delta,
 };
+use super::serif_context::{serif_ligature_lower_run_delta, wide_serif_spacing_profile};
 use super::types::{Algorithm, AlgorithmSet, EvaluationConfig};
 
 pub(super) fn apply_run_context_adjustments(
@@ -95,6 +96,18 @@ pub(super) fn apply_run_context_adjustments(
         );
         delta = normalized_delta(
             delta
+                + serif_ligature_lower_run_delta(
+                    delta,
+                    output.metric_delta_em,
+                    output.gap_min_em,
+                    pair_class,
+                    result.right_cluster.chars().count(),
+                    context,
+                    config,
+                ),
+        );
+        delta = normalized_delta(
+            delta
                 + script_ligature_run_delta(
                     delta,
                     output.metric_delta_em,
@@ -133,6 +146,8 @@ pub(super) struct RunContext {
     pub(super) script_lower_run_like: bool,
     pub(super) script_upper_run_like: bool,
     pub(super) sans_lower_run_like: bool,
+    pub(super) wide_serif_lower_run_like: bool,
+    pub(super) serif_ligature_lower_run_like: bool,
     pub(super) mixed_case_pairs: usize,
     pub(super) upper_pairs: usize,
     pub(super) metricless_upper_pairs: usize,
@@ -278,6 +293,16 @@ impl RunContext {
             && context.lower_pairs >= 5
             && context.lower_pairs == context.letter_pairs
             && context.metricless_lower_pairs >= context.lower_pairs.saturating_sub(2);
+        context.wide_serif_lower_run_like = !context.sans_like
+            && wide_serif_spacing_profile(config)
+            && context.lower_pairs >= 4
+            && context.connected_lower_pairs == 0;
+        context.serif_ligature_lower_run_like = !context.sans_like
+            && wide_serif_spacing_profile(config)
+            && context.lower_pairs >= 6
+            && context.multi_char_letter_pairs > 0
+            && context.metricless_lower_pairs >= context.lower_pairs.saturating_sub(1)
+            && context.connected_lower_pairs == 0;
 
         context
     }
@@ -289,6 +314,8 @@ impl RunContext {
             || self.script_lower_run_like
             || self.script_upper_run_like
             || self.sans_lower_run_like
+            || self.wide_serif_lower_run_like
+            || self.serif_ligature_lower_run_like
             || self.digit_run.has_adjustments(self.sans_like, config)
             || self.capital_run.has_adjustments(self.sans_like, config)
             || (compact_sans_spacing_profile(config)

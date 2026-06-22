@@ -11,7 +11,7 @@ pub(super) const SCRIPT_MIXED_MIN_PAIRS: usize = 2;
 pub(super) const SCRIPT_LIGATURE_RUN_MIN_PAIRS: usize = 3;
 pub(super) const SCRIPT_RESIDUAL_MIN_LOWER_PAIRS: usize = 2;
 pub(super) const SCRIPT_RESIDUAL_SEVERE_DELTA_EM: f32 = -0.080;
-pub(super) const SCRIPT_LOWER_RUN_MIN_PAIRS: usize = 5;
+pub(super) const SCRIPT_LOWER_RUN_MIN_PAIRS: usize = 4;
 pub(super) const SCRIPT_UPPER_RUN_MIN_PAIRS: usize = 5;
 pub(super) const SCRIPT_UPPER_RUN_MIN_OPENINGS: usize = 2;
 

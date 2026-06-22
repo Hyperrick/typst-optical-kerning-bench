@@ -132,6 +132,30 @@ pair-normalization step happen once at the end. The no-ligature five-font suite
 remained unchanged from V15, so this pass improves the ligature path without
 moving the established no-ligature behavior.
 
+## V22 Serif And Script Run Notes
+
+V22 adds two dynamic corrections for the remaining ligature-suite outliers.
+
+The first correction handles wide-serif lowercase runs with ligature clusters.
+When a shaped word has a wide serif spacing profile, at least six lowercase
+pairs, at least one multi-character cluster, mostly metricless lowercase pairs,
+and no connected lowercase collisions, safe lowercase bridges can be tightened
+slightly more. Entries into a right-side ligature cluster are excluded, and
+pairs with a small local minimum gap are left alone. This fixes the Libre
+Baskerville `efficient` case without naming the font or word.
+
+The second correction handles short connected-script lowercase runs. The script
+lowercase run threshold is four adjacent pairs instead of five, so short words
+such as `fjord` can receive the same conservative compaction already used for
+longer connected script runs. The trigger still requires a connected script-like
+profile, metricless lowercase pairs, near-continuous connected gaps, and no
+profile request to open the pair.
+
+V22 also neutralizes small positive metric openings in wide serif lowercase
+runs when the unkerned local contour gap is already near-touching. This lets the
+guard override a font metric opening only in a narrow situation where InDesign
+Optical also behaves more tightly.
+
 ## Guarded Constraint Model
 
 The guarded candidate is intentionally not a single lightweight heuristic. It is

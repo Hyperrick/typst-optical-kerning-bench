@@ -5,8 +5,9 @@ Rustybuzz glyph-run shaping, the guarded V5 contact-zone pass, V6 measurement
 upgrades, the V8 sans run-context pass, script-run V13 tuning, the first
 ligature-parity preparation pass, the V14 digit-run context pass, and the V15
 compact-sans / long-caps pass. The current V21 pass adds shaped sans-lowercase
-run correction for ligature-capable words and an InDesign startup cleanup for
-crash-recovery modals.
+run correction for ligature-capable words. V22 adds wide-serif ligature-run
+tuning, short connected-script lowercase tuning, and an InDesign startup cleanup
+for crash-recovery modals.
 
 ## Commands
 
@@ -80,6 +81,22 @@ scripts/run-optical-comparison-suite.py \
   --baseline-output baselines/optical-comparison-suite-five-font-v21.json \
   --retries 1 \
   --preflight-timeout 45
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-ligature-valid-suite.json \
+  --metric-baseline baselines/metric-ligature-suite-v1.json \
+  --reuse-indesign-from renders/optical-comparison-suite/ligatures-100pt-v20-valid-complete \
+  --output renders/optical-comparison-suite/ligatures-100pt-v22 \
+  --baseline-output baselines/optical-ligature-suite-v22.json \
+  --retries 1 \
+  --preflight-timeout 45
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-cross-font-suite.json \
+  --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15 \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v22 \
+  --baseline-output baselines/optical-comparison-suite-five-font-v22.json \
+  --retries 1 \
+  --preflight-timeout 45
 cargo test
 ```
 
@@ -121,6 +138,11 @@ cargo test
   correction.
 - `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v21/summary.json`:
   30-case no-ligature regression check. It matches the V15 score set.
+- `renders/optical-comparison-suite/ligatures-100pt-v22/summary.json`:
+  31-case ligature-capable optical matrix after wide-serif and short
+  connected-script run tuning.
+- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v22/summary.json`:
+  30-case no-ligature regression check after V22. It is unchanged from V21.
 - `renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures/summary.json`:
   individual glyph shape parity before word or kerning comparison.
 
@@ -260,6 +282,14 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   `0.0177em`, worst case `0.0384em`, and no changed cases. This is important
   because the ligature-path correction did not destabilize the established
   no-ligature behavior.
+- V22 adds wide-serif ligature-run tuning and short connected-script lowercase
+  tuning. The ligature suite mean score drops from V21 `0.0168em` to
+  `0.0134em`; worst case drops from `0.0648em` to `0.0360em`. The targeted
+  fixes are Libre Baskerville `efficient` (`0.0648em` to `0.0120em`), Libre
+  Baskerville `fjord` (`0.0360em` to `0.0131em`), and Lobster `fjord`
+  (`0.0360em` to `0.0074em`).
+- The V22 no-ligature regression suite is unchanged from V21: mean score
+  `0.0177em`, worst case `0.0384em`, and zero changed cases.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 - Ligature-sensitive benchmarking now has its own sandbox font variant. Unlike
@@ -274,6 +304,7 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
 
 ## Next Question
 
-The next benchmark layer can focus on the remaining ligature outliers, especially
-Libre Baskerville `efficient` and the Lobster/Libre `fjord` and `efficient`
-cases, while keeping the no-ligature regression suite fixed as a guardrail.
+The next benchmark layer can either focus on the remaining ligature outliers
+(`Lobster efficient`, `Libre Baskerville final`) or start turning the current
+evidence into the Typst-facing article/paper while keeping both V22 suites as
+the current reproducible baseline.
