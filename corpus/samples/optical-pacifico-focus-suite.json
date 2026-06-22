@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "name": "pacifico-focus",
+  "description": "Focused optical comparison suite for Pacifico script-join behavior.",
+  "cases": [
+    {
+      "fontId": "pacifico",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "WAVY"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "10.000"
+    }
+  ]
+}

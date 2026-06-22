@@ -11,8 +11,10 @@ use super::guarded::{
     sans_lowercase_compaction_delta, side_shape_delta, suppress_false_diagonal_opening,
     wide_serif_display_delta,
 };
-use super::run_context::{RunContext, sans_run_context_delta};
-use super::{Algorithm, EvaluationConfig};
+use super::run_context::{
+    RunContext, apply_run_context_adjustments, connected_script_delta, sans_run_context_delta,
+};
+use super::{Algorithm, AlgorithmOutput, AlgorithmSet, EvaluationConfig};
 
 mod basic;
 mod constraints;
