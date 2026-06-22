@@ -7,7 +7,7 @@ use super::geometry::PairGeometry;
 use super::math::dead_zone;
 #[cfg(test)]
 use super::math::normalized_delta;
-use super::run_context::sans_like_spacing_profile;
+use super::sans_context::{compact_sans_spacing_profile, sans_like_spacing_profile};
 use super::types::EvaluationConfig;
 
 pub(super) fn guarded_profile_hybrid(
@@ -297,7 +297,12 @@ fn sans_lowercase_compaction_target(facts: KerningFacts, desired_delta: f32) -> 
         return None;
     }
 
-    let amount = if facts.pair_class.is_upper_lower() && facts.metric_delta < -dead_zone() {
+    let compact_sans = compact_sans_spacing_profile(facts.config);
+    let amount = if compact_sans && facts.pair_class.is_upper_lower() {
+        0.010
+    } else if compact_sans {
+        0.008
+    } else if facts.pair_class.is_upper_lower() && facts.metric_delta < -dead_zone() {
         0.030
     } else if facts.pair_class.is_upper_lower() {
         0.020

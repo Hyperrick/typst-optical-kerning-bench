@@ -1,7 +1,11 @@
 use crate::class::PairClass;
 
+use super::capital_context::{CapitalRunContext, serif_cap_run_delta};
 use super::digit_context::{DigitRunContext, digit_run_context_delta};
 use super::math::{dead_zone, normalized_delta};
+use super::sans_context::{
+    compact_sans_spacing_profile, sans_like_spacing_profile, sans_run_context_delta,
+};
 use super::types::{Algorithm, AlgorithmSet, EvaluationConfig};
 
 const CONNECTED_JOIN_GAP_EM: f32 = -0.020;
@@ -49,7 +53,14 @@ pub(super) fn apply_run_context_adjustments(
                 ),
         );
         delta = normalized_delta(
-            delta + sans_run_context_delta(delta, output.metric_delta_em, pair_class, context),
+            delta
+                + sans_run_context_delta(
+                    delta,
+                    output.metric_delta_em,
+                    pair_class,
+                    context,
+                    config,
+                ),
         );
         delta = normalized_delta(
             delta
@@ -58,6 +69,17 @@ pub(super) fn apply_run_context_adjustments(
                     output.metric_delta_em,
                     pair_class,
                     context.digit_run,
+                    context.sans_like,
+                    config,
+                ),
+        );
+        delta = normalized_delta(
+            delta
+                + serif_cap_run_delta(
+                    delta,
+                    output.metric_delta_em,
+                    pair_class,
+                    context.capital_run,
                     context.sans_like,
                     config,
                 ),
@@ -113,6 +135,7 @@ pub(super) struct RunContext {
     pub(super) connected_lower_pairs: usize,
     pub(super) opening_lower_pairs: usize,
     pub(super) digit_run: DigitRunContext,
+    pub(super) capital_run: CapitalRunContext,
 }
 
 impl RunContext {
@@ -185,6 +208,7 @@ impl RunContext {
             context
                 .digit_run
                 .record(class, output.metric_delta_em, output.gap_min_em, config);
+            context.capital_run.record(class, output.metric_delta_em);
         }
 
         context.connected_script_like = context.letter_pairs >= 3
@@ -216,6 +240,10 @@ impl RunContext {
             || self.script_lower_run_like
             || self.script_upper_run_like
             || self.digit_run.has_adjustments(self.sans_like, config)
+            || self.capital_run.has_adjustments(self.sans_like, config)
+            || (compact_sans_spacing_profile(config)
+                && self.mixed_case_pairs >= 2
+                && self.lower_pairs >= 3)
             || (self.sans_like
                 && (self.strong_upper_metric_pairs >= 2 || self.strong_mixed_metric_pairs >= 2))
     }
@@ -404,50 +432,6 @@ pub(super) fn script_mixed_case_delta(
     }
 }
 
-pub(super) fn sans_run_context_delta(
-    adjusted_delta: f32,
-    metric_delta: f32,
-    pair_class: PairClass,
-    context: RunContext,
-) -> f32 {
-    if !context.sans_like {
-        return 0.0;
-    }
-
-    if pair_class.is_upper_upper()
-        && metric_delta < -0.050
-        && context.strong_upper_metric_pairs >= 2
-    {
-        let amount = if context.strong_upper_metric_pairs >= 4 {
-            0.026
-        } else {
-            0.012
-        };
-        return clamp_tightening(adjusted_delta, amount, -0.125);
-    }
-
-    if (pair_class.is_upper_lower() || pair_class.is_lower_upper())
-        && metric_delta < -0.050
-        && context.strong_mixed_metric_pairs >= 2
-    {
-        return clamp_tightening(adjusted_delta, 0.024, -0.130);
-    }
-
-    if context.strong_mixed_metric_pairs >= 2 {
-        if pair_class.is_lower_lower() && adjusted_delta > -0.040 {
-            return clamp_tightening(adjusted_delta, 0.012, -0.040);
-        }
-        if pair_class.is_upper_lower()
-            && metric_delta.abs() < dead_zone()
-            && adjusted_delta > -0.045
-        {
-            return clamp_tightening(adjusted_delta, 0.010, -0.045);
-        }
-    }
-
-    0.0
-}
-
 pub(super) fn script_lower_run_delta(
     adjusted_delta: f32,
     metric_delta: f32,
@@ -508,15 +492,6 @@ pub(super) fn script_upper_run_delta(
     0.0
 }
 
-fn clamp_tightening(adjusted_delta: f32, amount: f32, lower_bound: f32) -> f32 {
-    let target = (adjusted_delta - amount).max(lower_bound);
-    normalized_delta(target - adjusted_delta)
-}
-
-pub(super) fn sans_like_spacing_profile(config: EvaluationConfig) -> bool {
-    config.target_gap_em <= 0.235 && config.profile.x_height / config.profile.cap_height >= 0.72
-}
-
 fn connected_script_opening_cap(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.035).clamp(0.004, 0.010)
 }
@@ -536,35 +511,27 @@ fn script_residual_min_excess(config: EvaluationConfig) -> f32 {
 fn script_residual_soft_mixed_amount(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.08).clamp(0.010, 0.016)
 }
-
 fn script_residual_soft_mixed_bound(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.38).clamp(0.052, 0.070)
 }
-
 fn script_residual_lower_compaction_amount(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.085).clamp(0.010, 0.018)
 }
-
 fn script_lower_run_compaction_amount(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.065).clamp(0.008, 0.012)
 }
-
 fn script_upper_run_opening_cap(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.12).clamp(0.018, 0.026)
 }
-
 fn script_upper_run_near_gap_limit(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.14).clamp(0.018, 0.032)
 }
-
 fn script_upper_run_near_gap_opening(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.11).clamp(0.016, 0.022)
 }
-
 fn script_spacing_profile(config: EvaluationConfig) -> bool {
     config.target_gap_em <= 0.205 && config.profile.x_height / config.profile.cap_height < 0.72
 }
-
 fn is_lower_involved_letter_pair(pair_class: PairClass) -> bool {
     pair_class.is_upper_lower() || pair_class.is_lower_upper() || pair_class.is_lower_lower()
 }

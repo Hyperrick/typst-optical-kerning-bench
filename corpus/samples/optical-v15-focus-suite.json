@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "name": "v15-focus",
+  "description": "Targeted V15 review for compact sans words and long serif caps across the current five-font spread.",
+  "cases": [
+    {
+      "fontId": "eb-garamond",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "inter",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "inter",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "inter",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "inter",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "AVATAR"
+    }
+  ]
+}

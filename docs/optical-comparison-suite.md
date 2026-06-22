@@ -47,6 +47,17 @@ scripts/run-optical-comparison-suite.py \
   --baseline-output baselines/optical-comparison-suite-number-focus-v14.json
 ```
 
+V15 focus suite:
+
+```sh
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-v15-focus-suite.json \
+  --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-cross-font \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-v15-focus \
+  --baseline-output baselines/optical-comparison-suite-v15-focus.json
+```
+
 Five-font verification suite:
 
 ```sh
@@ -54,8 +65,8 @@ scripts/run-optical-comparison-suite.py \
   --suite-file corpus/samples/optical-cross-font-suite.json \
   --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
   --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-cross-font \
-  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v14 \
-  --baseline-output baselines/optical-comparison-suite-five-font-v14.json
+  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15 \
+  --baseline-output baselines/optical-comparison-suite-five-font-v15.json
 ```
 
 Full verification suite:
@@ -91,6 +102,10 @@ The `fast`, `cross-font`, and `full` case lists are explicit JSON files under
   digit-run focus baseline.
 - `baselines/optical-comparison-suite-five-font-v14.json`: compact five-font
   optical baseline after the V14 digit-run pass.
+- `baselines/optical-comparison-suite-v15-focus.json`: compact V15 focus-suite
+  baseline.
+- `baselines/optical-comparison-suite-five-font-v15.json`: compact five-font
+  optical baseline after compact-sans and long-cap tuning.
 
 Overlay colors:
 
@@ -100,39 +115,39 @@ magenta = Typst Guarded Optical
 black   = overlap
 ```
 
-## Current Result: V14
+## Current Result: V15
 
 The current no-ligature five-font matrix compares InDesign Optical against
-Typst Guarded Optical for 30 rows. V14 adds a digit-run context pass after the
-V13 script-run work. Compared with the previous five-font current baseline, the
-mean score improved from `0.0276em` to `0.0240em`, with no measured regression
-above `0.001em`.
+Typst Guarded Optical for 30 rows. V15 builds on the V14 digit-run context with
+compact-sans and long-cap run handling. Compared with V14, the mean score
+improved from `0.0240em` to `0.0177em`; worst case improved from `0.0648em` to
+`0.0384em`, with no measured regression above `0.001em`.
 
-V14 five-font worst cases by combined optical score:
+V15 five-font worst cases by combined optical score:
 
 ```text
-Comic Neue Goldfish:  +0.0648em width, 0.0271em ink
-Libre AVATAR:         +0.0552em width, 0.0310em ink
-Comic Neue ToTaL:     +0.0504em width, 0.0332em ink
-Comic Neue AVATAR:    -0.0480em width, 0.0261em ink
-EB AVATAR:            +0.0384em width, 0.0184em ink
 EB ToTaL:             -0.0384em width, 0.0294em ink
-Inter AVATAR:         -0.0360em width, 0.0201em ink
+Libre AVATAR:         +0.0168em width, 0.0304em ink
+Pacifico AVATAR:      -0.0120em width, 0.0253em ink
+Pacifico OpenType:    -0.0168em width, 0.0242em ink
+Comic Neue Goldfish:  +0.0240em width, 0.0130em ink
+EB OpenType:          -0.0240em width, 0.0103em ink
+Pacifico ToTaL:       -0.0120em width, 0.0239em ink
 ```
 
 In the comparison metric, negative width means the Typst Guarded output is
 wider than InDesign Optical; positive width means Typst Guarded is narrower.
 
-The V14 number-focus suite measured five `10.000` rows. Comic Neue improved
-from `0.0984em` to `0.0144em`; Libre Baskerville improved from `0.0456em` to
-`0.0198em`. EB Garamond, Inter, and Pacifico stayed effectively unchanged.
+The V15 focus suite covers `Goldfish`, `ToTaL`, `OpenType`, and `AVATAR`
+across all five fonts. It catches the compact-sans `OpenType` regression that a
+smaller focus sheet missed, so it is now the preferred fast iteration suite.
 
 ## Interpretation
 
 The current guarded algorithm is much closer to InDesign Optical than V1, but
 still has targeted failures.
 
-Four patterns stand out after V14:
+Four patterns stand out after V15:
 
 - **Sans context improved**: Inter `OpenType`, `ToTaL`, and `WAVY` are now
   close to InDesign Optical. The run-level V8 pass uses computed sans-like font
@@ -148,9 +163,12 @@ Four patterns stand out after V14:
   tightens long metricless digit runs when the local gaps and font spacing show
   that ordinary pair guards are too weak. This is dynamic, not a font-name or
   sample-name exception.
-- **Comic Neue is the main remaining spread test**: after numeric tuning, its
-  `Goldfish`, `ToTaL`, and `AVATAR` rows remain the largest non-serif visual
-  deviations.
+- **Compact sans needs run context**: Comic Neue `Goldfish`, `ToTaL`, and
+  `AVATAR` improved substantially only after treating simple lowercase,
+  mixed-case, and all-caps runs differently.
+- **Focus suites must include controls**: the first V15 focus set missed
+  `OpenType`; adding it caught an over-loosening regression before the final
+  full-suite baseline.
 
 Good or near-good controls:
 
@@ -167,6 +185,6 @@ three focused changes:
    upper-lower pairs without making good `Goldfish` rows wider.
 2. Treat Libre `AVATAR`, EB `AVATAR`, and EB `ToTaL` as visual tuning targets,
    not as hard failures.
-3. Treat Comic Neue `Goldfish`, Comic Neue `ToTaL`, and Libre `AVATAR` as the
-   next visual tuning targets, while keeping the V14 digit-run improvements
-   locked by tests.
+3. Treat EB `ToTaL`, Pacifico `AVATAR`, and Pacifico `OpenType` as the next
+   visual tuning targets, while keeping V14 digit-run and V15 compact-sans
+   improvements locked by tests.

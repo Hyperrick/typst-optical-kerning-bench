@@ -3,7 +3,8 @@
 Generated on 2026-06-22 from the pinned corpus after dynamic font calibration,
 Rustybuzz glyph-run shaping, the guarded V5 contact-zone pass, V6 measurement
 upgrades, the V8 sans run-context pass, script-run V13 tuning, the first
-ligature-parity preparation pass, and the V14 digit-run context pass.
+ligature-parity preparation pass, the V14 digit-run context pass, and the V15
+compact-sans / long-caps pass.
 
 ## Commands
 
@@ -50,11 +51,17 @@ scripts/run-optical-comparison-suite.py \
   --output renders/optical-comparison-suite/no-ligatures-100pt-number-focus-v14 \
   --baseline-output baselines/optical-comparison-suite-number-focus-v14.json
 scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-v15-focus-suite.json \
+  --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-cross-font \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-v15-focus \
+  --baseline-output baselines/optical-comparison-suite-v15-focus.json
+scripts/run-optical-comparison-suite.py \
   --suite-file corpus/samples/optical-cross-font-suite.json \
   --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
   --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-cross-font \
-  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v14 \
-  --baseline-output baselines/optical-comparison-suite-five-font-v14.json
+  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15 \
+  --baseline-output baselines/optical-comparison-suite-five-font-v15.json
 cargo test
 ```
 
@@ -87,8 +94,10 @@ cargo test
   18-case optical cross-font matrix for visual review.
 - `renders/optical-comparison-suite/no-ligatures-100pt-number-focus-v14/summary.json`:
   5-case digit-run focus matrix across the current five-font spread.
-- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v14/summary.json`:
-  30-case no-ligature optical matrix after digit-run tuning.
+- `renders/optical-comparison-suite/no-ligatures-100pt-v15-focus/summary.json`:
+  20-case focus matrix for compact sans, mixed-case words, and long cap runs.
+- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15/summary.json`:
+  30-case no-ligature optical matrix after compact sans and long-cap tuning.
 - `renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures/summary.json`:
   individual glyph shape parity before word or kerning comparison.
 
@@ -211,6 +220,12 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   `0.0240em` with no measured regression above `0.001em`. The targeted numeric
   fixes are Comic Neue `10.000` (`0.0984em` to `0.0144em`) and Libre
   Baskerville `10.000` (`0.0456em` to `0.0198em`).
+- V15 adds compact-sans and long-cap run handling. Compact sans reduces
+  over-tightening in simple lowercase/mixed words, but restores lower bridges in
+  mixed-case words like `OpenType`. Long-cap handling loosens long serif cap
+  runs and tightens long sans cap runs. The five-font 30-case mean score drops
+  from `0.0240em` to `0.0177em`; worst case drops from `0.0648em` to
+  `0.0384em`, with no measured regression above `0.001em`.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 - Ligature-sensitive benchmarking now has its own sandbox font variant. Unlike
