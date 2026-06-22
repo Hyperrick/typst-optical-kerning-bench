@@ -10,6 +10,8 @@ const SCRIPT_MIXED_MIN_PAIRS: usize = 2;
 const SCRIPT_RESIDUAL_MIN_LOWER_PAIRS: usize = 2;
 const SCRIPT_RESIDUAL_SEVERE_DELTA_EM: f32 = -0.080;
 const SCRIPT_LOWER_RUN_MIN_PAIRS: usize = 5;
+const SCRIPT_UPPER_RUN_MIN_PAIRS: usize = 5;
+const SCRIPT_UPPER_RUN_MIN_OPENINGS: usize = 2;
 
 pub(super) fn apply_run_context_adjustments(
     results: &mut [AlgorithmSet],
@@ -59,6 +61,17 @@ pub(super) fn apply_run_context_adjustments(
                     config,
                 ),
         );
+        delta = normalized_delta(
+            delta
+                + script_upper_run_delta(
+                    delta,
+                    output.metric_delta_em,
+                    output.gap_min_em,
+                    pair_class,
+                    context,
+                    config,
+                ),
+        );
         output.delta_em = delta;
     }
     apply_script_residual_balancer(results, context, config);
@@ -74,7 +87,12 @@ pub(super) struct RunContext {
     pub(super) positive_connected_opening_em: f32,
     pub(super) script_mixed_case_like: bool,
     pub(super) script_lower_run_like: bool,
+    pub(super) script_upper_run_like: bool,
     pub(super) mixed_case_pairs: usize,
+    pub(super) upper_pairs: usize,
+    pub(super) metricless_upper_pairs: usize,
+    pub(super) connected_upper_pairs: usize,
+    pub(super) opened_connected_upper_pairs: usize,
     pub(super) strong_upper_metric_pairs: usize,
     pub(super) strong_mixed_metric_pairs: usize,
     pub(super) lower_pairs: usize,
@@ -126,6 +144,19 @@ impl RunContext {
                 }
             }
 
+            if class.is_upper_upper() {
+                context.upper_pairs += 1;
+                if output.metric_delta_em.abs() < dead_zone() {
+                    context.metricless_upper_pairs += 1;
+                }
+                if output.gap_min_em < CONNECTED_JOIN_GAP_EM {
+                    context.connected_upper_pairs += 1;
+                    if output.delta_em > CONNECTED_JOIN_OPENING_EM {
+                        context.opened_connected_upper_pairs += 1;
+                    }
+                }
+            }
+
             if context.sans_like {
                 if class.is_upper_upper() && output.metric_delta_em < -0.050 {
                     context.strong_upper_metric_pairs += 1;
@@ -151,6 +182,12 @@ impl RunContext {
             && context.opening_lower_pairs == 0
             && !context.sans_like
             && script_spacing_profile(config);
+        context.script_upper_run_like = context.upper_pairs >= SCRIPT_UPPER_RUN_MIN_PAIRS
+            && context.metricless_upper_pairs == context.upper_pairs
+            && context.connected_upper_pairs >= SCRIPT_UPPER_RUN_MIN_OPENINGS
+            && context.opened_connected_upper_pairs >= SCRIPT_UPPER_RUN_MIN_OPENINGS
+            && !context.sans_like
+            && script_spacing_profile(config);
 
         context
     }
@@ -159,6 +196,7 @@ impl RunContext {
         self.connected_script_like
             || self.script_mixed_case_like
             || self.script_lower_run_like
+            || self.script_upper_run_like
             || (self.sans_like
                 && (self.strong_upper_metric_pairs >= 2 || self.strong_mixed_metric_pairs >= 2))
     }
@@ -412,6 +450,31 @@ pub(super) fn script_lower_run_delta(
     }
 }
 
+pub(super) fn script_upper_run_delta(
+    adjusted_delta: f32,
+    metric_delta: f32,
+    gap_min_em: f32,
+    pair_class: PairClass,
+    context: RunContext,
+    config: EvaluationConfig,
+) -> f32 {
+    if !context.script_upper_run_like
+        || !pair_class.is_upper_upper()
+        || metric_delta.abs() >= dead_zone()
+        || gap_min_em >= CONNECTED_JOIN_GAP_EM
+        || adjusted_delta <= CONNECTED_JOIN_OPENING_EM
+    {
+        return 0.0;
+    }
+
+    let target = script_upper_run_opening_cap(config);
+    if target < adjusted_delta {
+        normalized_delta(target - adjusted_delta)
+    } else {
+        0.0
+    }
+}
+
 fn clamp_tightening(adjusted_delta: f32, amount: f32, lower_bound: f32) -> f32 {
     let target = (adjusted_delta - amount).max(lower_bound);
     normalized_delta(target - adjusted_delta)
@@ -451,6 +514,10 @@ fn script_residual_lower_compaction_amount(config: EvaluationConfig) -> f32 {
 
 fn script_lower_run_compaction_amount(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.065).clamp(0.008, 0.012)
+}
+
+fn script_upper_run_opening_cap(config: EvaluationConfig) -> f32 {
+    (config.target_gap_em * 0.12).clamp(0.018, 0.026)
 }
 
 fn script_spacing_profile(config: EvaluationConfig) -> bool {

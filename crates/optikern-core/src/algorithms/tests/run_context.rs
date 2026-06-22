@@ -381,3 +381,78 @@ fn script_lower_run_does_not_mark_pacifico_like_mixed_lower_run() {
     assert_eq!(guarded_delta(&results[3]), 0.0);
     assert_eq!(guarded_delta(&results[5]), 0.0);
 }
+
+#[test]
+fn script_upper_run_caps_long_connected_openings() {
+    let mut results = vec![
+        guarded_run_result_with_metrics('A', 'V', 0.0, 0.0, 0.0, 0.021),
+        guarded_run_result_with_metrics('V', 'A', 0.055, 0.0, 0.0, -0.080),
+        guarded_run_result_with_metrics('A', 'T', 0.0, 0.0, -0.024, 0.041),
+        guarded_run_result_with_metrics('T', 'A', 0.0, 0.0, -0.037, 0.066),
+        guarded_run_result_with_metrics('A', 'R', 0.055, 0.0, 0.0, -0.060),
+    ];
+    let mut config = test_config(0.182, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    apply_run_context_adjustments(&mut results, config);
+
+    assert!(guarded_delta(&results[1]) > 0.018);
+    assert!(guarded_delta(&results[1]) < 0.026);
+    assert!(guarded_delta(&results[4]) > 0.018);
+    assert!(guarded_delta(&results[4]) < 0.026);
+}
+
+#[test]
+fn script_upper_run_keeps_short_upper_runs() {
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Upper,
+    };
+    let context = RunContext {
+        script_upper_run_like: false,
+        upper_pairs: 3,
+        metricless_upper_pairs: 3,
+        connected_upper_pairs: 2,
+        opened_connected_upper_pairs: 2,
+        ..RunContext::default()
+    };
+
+    let delta = script_upper_run_delta(
+        0.055,
+        0.0,
+        -0.080,
+        class,
+        context,
+        test_config(0.182, 0.050),
+    );
+
+    assert_eq!(delta, 0.0);
+}
+
+#[test]
+fn script_upper_run_keeps_upper_runs_without_openings() {
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Upper,
+    };
+    let context = RunContext {
+        script_upper_run_like: true,
+        upper_pairs: 5,
+        metricless_upper_pairs: 5,
+        connected_upper_pairs: 2,
+        opened_connected_upper_pairs: 2,
+        ..RunContext::default()
+    };
+
+    let delta = script_upper_run_delta(
+        -0.048,
+        0.0,
+        0.086,
+        class,
+        context,
+        test_config(0.171, 0.050),
+    );
+
+    assert_eq!(delta, 0.0);
+}
