@@ -87,9 +87,11 @@ sources that shaped the current benchmark rules.
 
 The current leading candidate is `guarded-profile-hybrid`. It combines
 metric-prior kerning, contact-zone awareness, shaped ligature handling, and
-V23 run-context tuning for sans-like, serif, and connected-script words. See
+V24 run-context tuning for sans-like, serif, and connected-script words. See
 [`docs/algorithms.md`](docs/algorithms.md) and
 [`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).
+For a Typst-facing narrative of the current approach, see
+[`docs/typst-optical-kerning-evaluation.md`](docs/typst-optical-kerning-evaluation.md).
 
 ## Contact Sheet
 

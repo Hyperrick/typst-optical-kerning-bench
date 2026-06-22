@@ -100,6 +100,7 @@ pub(super) fn apply_run_context_adjustments(
                     delta,
                     output.metric_delta_em,
                     output.gap_min_em,
+                    output.gap_robust_mean_em,
                     pair_class,
                     result.right_cluster.chars().count(),
                     context,
@@ -148,6 +149,7 @@ pub(super) struct RunContext {
     pub(super) sans_lower_run_like: bool,
     pub(super) wide_serif_lower_run_like: bool,
     pub(super) serif_ligature_lower_run_like: bool,
+    pub(super) short_serif_ligature_lower_run_like: bool,
     pub(super) mixed_case_pairs: usize,
     pub(super) upper_pairs: usize,
     pub(super) metricless_upper_pairs: usize,
@@ -303,6 +305,14 @@ impl RunContext {
             && context.multi_char_letter_pairs > 0
             && context.metricless_lower_pairs >= context.lower_pairs.saturating_sub(1)
             && context.connected_lower_pairs == 0;
+        context.short_serif_ligature_lower_run_like = !context.sans_like
+            && wide_serif_spacing_profile(config)
+            && (2..=3).contains(&context.lower_pairs)
+            && context.lower_pairs == context.letter_pairs
+            && context.multi_char_letter_pairs > 0
+            && context.max_cluster_chars <= 2
+            && context.metricless_lower_pairs == context.lower_pairs
+            && context.connected_lower_pairs == 0;
 
         context
     }
@@ -316,6 +326,7 @@ impl RunContext {
             || self.sans_lower_run_like
             || self.wide_serif_lower_run_like
             || self.serif_ligature_lower_run_like
+            || self.short_serif_ligature_lower_run_like
             || self.digit_run.has_adjustments(self.sans_like, config)
             || self.capital_run.has_adjustments(self.sans_like, config)
             || (compact_sans_spacing_profile(config)

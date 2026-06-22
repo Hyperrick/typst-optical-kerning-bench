@@ -171,6 +171,23 @@ ligature-run correction is capped to a smaller positive delta. This fixed the
 remaining Lobster `efficient` over-opening without changing the no-ligature
 suite or the shorter connected-script controls.
 
+## V24 Short Serif Ligature Word Notes
+
+V24 adds a defensive rule for short wide-serif lowercase words that shape into
+one small ligature cluster. In those words, a generic "safe compaction" target
+can make a compact bridge tighter even when the robust outline gap is already
+well below the font-local target. The visible failure was Libre Baskerville
+`final`, where the `n|a` bridge was tightened although InDesign Optical keeps
+the word more open.
+
+The trigger is deliberately narrow: the run must be wide-serif, consist of two
+or three lowercase pairs, contain at least one multi-character cluster, have a
+maximum cluster length of two characters, be fully metricless, and have no
+connected lowercase collisions. The pair-level correction only neutralizes a
+small negative delta when the robust gap is already compact. This improves the
+short `fi` word case without changing the no-ligature suite or longer `ffi`
+words such as `office`.
+
 ## Guarded Constraint Model
 
 The guarded candidate is intentionally not a single lightweight heuristic. It is

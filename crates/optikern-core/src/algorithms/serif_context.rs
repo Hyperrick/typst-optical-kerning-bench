@@ -8,11 +8,23 @@ pub(super) fn serif_ligature_lower_run_delta(
     adjusted_delta: f32,
     metric_delta: f32,
     gap_min_em: f32,
+    gap_robust_mean_em: f32,
     pair_class: PairClass,
     right_cluster_chars: usize,
     context: RunContext,
     config: EvaluationConfig,
 ) -> f32 {
+    if let Some(delta) = short_serif_ligature_compaction_relief(
+        adjusted_delta,
+        metric_delta,
+        gap_robust_mean_em,
+        pair_class,
+        context,
+        config,
+    ) {
+        return delta;
+    }
+
     if let Some(delta) = wide_serif_metric_opening_delta(
         adjusted_delta,
         metric_delta,
@@ -43,6 +55,26 @@ pub(super) fn serif_ligature_lower_run_delta(
     } else {
         0.0
     }
+}
+
+fn short_serif_ligature_compaction_relief(
+    adjusted_delta: f32,
+    metric_delta: f32,
+    gap_robust_mean_em: f32,
+    pair_class: PairClass,
+    context: RunContext,
+    config: EvaluationConfig,
+) -> Option<f32> {
+    if !context.short_serif_ligature_lower_run_like
+        || !pair_class.is_lower_lower()
+        || metric_delta.abs() >= dead_zone()
+        || adjusted_delta >= -dead_zone()
+    {
+        return None;
+    }
+
+    let compact_gap = config.target_gap_em * 0.74;
+    (gap_robust_mean_em <= compact_gap).then_some(normalized_delta(-adjusted_delta))
 }
 
 fn serif_ligature_lower_run_amount(config: EvaluationConfig) -> f32 {
