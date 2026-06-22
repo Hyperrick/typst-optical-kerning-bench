@@ -13,6 +13,8 @@ from urllib.parse import quote
 
 from PIL import Image, ImageDraw, ImageFont
 
+from indesign_preflight import run_indesign_preflight
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -55,6 +57,17 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=1,
         help="Retries per case for transient InDesign automation failures.",
+    )
+    parser.add_argument(
+        "--skip-indesign-preflight",
+        action="store_true",
+        help="Skip the one-shot InDesign automation health check before rendering cases.",
+    )
+    parser.add_argument(
+        "--preflight-timeout",
+        type=int,
+        default=45,
+        help="Seconds to wait for the InDesign automation preflight. Default: 45.",
     )
     args = parser.parse_args()
     name = suite_name(args)
@@ -460,6 +473,8 @@ def main() -> None:
     root = repo_root()
     out = root / args.output
     out.mkdir(parents=True, exist_ok=True)
+    if not args.skip_indesign_preflight and not args.reuse_indesign_from:
+        run_indesign_preflight(root, args.preflight_timeout, "optical")
     baseline, cases = load_cases(root, args)
     entries = []
     for case in cases:

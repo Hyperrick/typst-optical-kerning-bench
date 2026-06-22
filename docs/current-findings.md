@@ -2,7 +2,8 @@
 
 Generated on 2026-06-22 from the pinned corpus after dynamic font calibration,
 Rustybuzz glyph-run shaping, the guarded V5 contact-zone pass, V6 measurement
-upgrades, and the V8 sans run-context pass.
+upgrades, the V8 sans run-context pass, script-run V13 tuning, and the first
+ligature-parity preparation pass.
 
 ## Commands
 
@@ -15,6 +16,9 @@ scripts/run-guarded-review-batch.py --output renders/guarded-v6-review/eb-garamo
 scripts/run-glyph-shape-parity.py --baseline-output baselines/glyph-shape-parity-v1.json
 scripts/run-goldfish-parity.py --baseline-output baselines/goldfish-parity-v1.json
 .venv-fonttools/bin/python scripts/build-parity-fonts.py
+.venv-fonttools/bin/python scripts/build-parity-fonts.py \
+  --variant ligatures \
+  --spec-output renders/font-sandbox/goldfish-ligature-fonts.json
 scripts/run-goldfish-parity.py \
   --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json \
   --baseline-output baselines/goldfish-parity-sandbox-v1.json
@@ -180,8 +184,19 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   differences as careful visual tuning, not as broad failures. The main guard
   to preserve is the new local aperture/collision behavior for metricless
   upper-lower pairs.
+- The V13 script-uppercase pass opens only near-touching, metricless uppercase
+  gaps in long connected script runs. This fixed the Pacifico `AVATAR` split
+  against InDesign Optical without changing the existing script-focus controls.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
+- Ligature-sensitive benchmarking now has its own sandbox font variant. Unlike
+  the no-ligature sandbox, it retains standard ligature data, legacy glyph
+  names, and presentation-form cmap entries. Rustybuzz confirms `Goldfish` in
+  EB Garamond Liga shapes as `G|o`, `o|l`, `l|d`, `d|fi`, `fi|s`, and `s|h`.
+- InDesign is currently blocked locally by a modal/non-scriptable startup state
+  (`30486`). The suite now runs an InDesign automation preflight before writing
+  metric or optical baselines, so this failure stops early instead of producing
+  an all-`render-error` baseline.
 
 ## Next Question
 

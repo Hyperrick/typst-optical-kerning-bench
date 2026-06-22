@@ -14,6 +14,8 @@ from urllib.parse import quote
 
 from PIL import Image, ImageDraw, ImageFont
 
+from indesign_preflight import run_indesign_preflight
+
 
 DEFAULT_SAMPLE_MATRIX = {
     "eb-garamond": ["Goldfish", "AV", "VA", "WA", "To", "AVATAR", "WAVY", "ToTaL"],
@@ -80,6 +82,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--baseline-output",
         default="baselines/metric-parity-suite-v1.json",
+    )
+    parser.add_argument(
+        "--skip-indesign-preflight",
+        action="store_true",
+        help="Skip the one-shot InDesign automation health check before rendering cases.",
+    )
+    parser.add_argument(
+        "--preflight-timeout",
+        type=int,
+        default=45,
+        help="Seconds to wait for the InDesign automation preflight. Default: 45.",
     )
     return parser.parse_args()
 
@@ -365,6 +378,8 @@ def main() -> None:
     root = repo_root()
     out = root / args.output
     out.mkdir(parents=True, exist_ok=True)
+    if not args.skip_indesign_preflight:
+        run_indesign_preflight(root, args.preflight_timeout, "metric")
     specs = load_font_specs(root, args.font_specs)
     matrix = load_sample_matrix(root, args)
     entries = []

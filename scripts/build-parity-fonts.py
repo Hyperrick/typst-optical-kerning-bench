@@ -66,10 +66,13 @@ PARITY_FONTS = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=(
-            "Build isolated no-ligature parity fonts for InDesign-vs-Typst "
-            "metric baseline checks."
-        )
+        description="Build isolated parity fonts for InDesign-vs-Typst metric baseline checks."
+    )
+    parser.add_argument(
+        "--variant",
+        choices=["no-ligatures", "ligatures"],
+        default="no-ligatures",
+        help="Build fonts with ligature features removed or retained. Default: no-ligatures.",
     )
     parser.add_argument(
         "--output-dir",
@@ -78,7 +81,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--spec-output",
-        default="renders/font-sandbox/goldfish-no-ligature-fonts.json",
+        default="",
         help="JSON font spec consumed by run-goldfish-parity.py.",
     )
     parser.add_argument(
@@ -119,13 +122,48 @@ def axis_args(font: ParityFont) -> list[str]:
     return args
 
 
+def variant_family(font: ParityFont, variant: str) -> str:
+    if variant == "ligatures":
+        return font.family.removesuffix(" NoLiga") + " Liga"
+    return font.family
+
+
+def variant_output_name(font: ParityFont, variant: str) -> str:
+    if variant == "ligatures":
+        return font.output_name.replace("-noliga", "-liga")
+    return font.output_name
+
+
+def feature_args(variant: str) -> list[str]:
+    if variant == "ligatures":
+        return []
+    return [
+        "--drop-feature",
+        "liga",
+        "--drop-feature",
+        "clig",
+        "--drop-feature",
+        "dlig",
+    ]
+
+
+def isolation_args(variant: str) -> list[str]:
+    if variant == "ligatures":
+        return []
+    return [
+        "--strip-glyph-names",
+        "--drop-ligature-cmap",
+    ]
+
+
 def build_font(root: Path, args: argparse.Namespace, font: ParityFont) -> dict:
     source = root / font.source
     if not source.exists():
         raise SystemExit(f"Missing source font: {font.source}")
 
     output_dir = root / args.output_dir
-    output = output_dir / font.output_name
+    family = variant_family(font, args.variant)
+    output = output_dir / variant_output_name(font, args.variant)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     command = [
@@ -134,25 +172,30 @@ def build_font(root: Path, args: argparse.Namespace, font: ParityFont) -> dict:
         str(source),
         str(output),
         "--family",
-        font.family,
+        family,
         "--style",
         "Regular",
         *axis_args(font),
-        "--drop-feature",
-        "liga",
-        "--drop-feature",
-        "clig",
-        "--drop-feature",
-        "dlig",
-        "--strip-glyph-names",
-        "--drop-ligature-cmap",
+        *feature_args(args.variant),
+        *isolation_args(args.variant),
     ]
     subprocess.run(command, cwd=root, check=True)
     return {
         "fontId": font.font_id,
-        "family": font.family,
+        "family": family,
         "fontPath": relative_to_root(output, root),
     }
+
+
+def spec_output_path(root: Path, args: argparse.Namespace) -> Path:
+    if args.spec_output:
+        return root / args.spec_output
+    name = (
+        "goldfish-no-ligature-fonts.json"
+        if args.variant == "no-ligatures"
+        else "goldfish-ligature-fonts.json"
+    )
+    return root / args.output_dir / name
 
 
 def main() -> None:
@@ -160,7 +203,7 @@ def main() -> None:
     require_fonttools(args)
     root = repo_root()
     specs = [build_font(root, args, font) for font in PARITY_FONTS]
-    spec_output = root / args.spec_output
+    spec_output = spec_output_path(root, args)
     spec_output.parent.mkdir(parents=True, exist_ok=True)
     spec_output.write_text(json.dumps(specs, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {relative_to_root(spec_output, root)}")

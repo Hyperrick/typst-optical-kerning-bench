@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "name": "ligature-focus",
+  "description": "Focused optical comparison suite for words that may shape fi, ffi, ff, or fj as ligature glyph clusters.",
+  "cases": [
+    {
+      "fontId": "eb-garamond",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "inter",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "office"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "office"
+    },
+    {
+      "fontId": "inter",
+      "sample": "office"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "office"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "office"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "office"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "final"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "final"
+    },
+    {
+      "fontId": "inter",
+      "sample": "final"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "final"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "final"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "final"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "inter",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "fjord"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "fjord"
+    }
+  ]
+}

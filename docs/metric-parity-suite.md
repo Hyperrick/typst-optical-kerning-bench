@@ -17,6 +17,19 @@ python3 -m venv .venv-fonttools
 .venv-fonttools/bin/python scripts/build-parity-fonts.py
 ```
 
+For a ligature-sensitive suite, build the sibling sandbox separately:
+
+```sh
+.venv-fonttools/bin/python scripts/build-parity-fonts.py \
+  --variant ligatures \
+  --spec-output renders/font-sandbox/goldfish-ligature-fonts.json
+```
+
+The no-ligature variant removes standard ligature features, legacy glyph names,
+and presentation-form cmap entries. The ligature variant keeps those values so
+InDesign and Typst can both shape real ligature glyph clusters before any
+optical spacing is evaluated.
+
 Then run the metric-only suite:
 
 ```sh
@@ -40,6 +53,11 @@ only:
 
 This keeps the gate focused on baseline parity and avoids mixing optical
 algorithm differences into the evidence.
+
+Before the first case, the runner executes a one-shot InDesign automation
+preflight. If InDesign is blocked by a modal dialog, crash recovery, or another
+non-scriptable state, the suite exits before writing a baseline. This prevents
+large all-`render-error` baselines from being committed accidentally.
 
 ## Current Sample Matrix
 

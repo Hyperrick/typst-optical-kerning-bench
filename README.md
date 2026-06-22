@@ -40,6 +40,10 @@ scripts/run-metric-parity-suite.py
 scripts/run-optical-comparison-suite.py
 ```
 
+The suite performs a small InDesign automation preflight before writing metric
+or optical baselines. If InDesign is stuck behind a modal dialog or is not
+scriptable, the run stops before any render-error baseline is written.
+
 ## InDesign Baselines
 
 Generate the InDesign ExtendScript and sidecar data:
@@ -151,6 +155,19 @@ legacy glyph names, and remove Unicode presentation-form ligature cmap entries
 so both engines shape the same no-ligature text.
 See [`docs/glyph-shape-parity.md`](docs/glyph-shape-parity.md) and
 [`docs/goldfish-parity-gate.md`](docs/goldfish-parity-gate.md).
+
+For ligature-sensitive checks, build the sibling sandbox with standard ligature
+data retained:
+
+```sh
+.venv-fonttools/bin/python scripts/build-parity-fonts.py \
+  --variant ligatures \
+  --spec-output renders/font-sandbox/goldfish-ligature-fonts.json
+```
+
+The ligature variant keeps `liga`/ligature glyph metadata so words such as
+`Goldfish` can be evaluated after shaping as `d|fi` and `fi|s` instead of
+pretending `f|i` is a real pair.
 
 After `Goldfish` passes, run the broader metric-only suite:
 
