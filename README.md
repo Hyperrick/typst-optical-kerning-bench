@@ -84,8 +84,8 @@ See [`docs/research-alignment.md`](docs/research-alignment.md) for the external
 sources that shaped the current benchmark rules.
 
 The current leading candidate is `guarded-profile-hybrid`. It combines
-metric-prior kerning, contact-zone awareness, and V8 run-context tuning for
-sans-like display words. See
+metric-prior kerning, contact-zone awareness, shaped ligature handling, and
+V21 run-context tuning for sans-like display and lowercase words. See
 [`docs/algorithms.md`](docs/algorithms.md) and
 [`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).
 

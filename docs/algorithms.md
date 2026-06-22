@@ -112,6 +112,26 @@ right glyph is round-like and the nearest contour distance is already critical.
 This fixes the Libre Baskerville `G|o` collision without naming the font or
 sample.
 
+## V21 Sans Lowercase Run Notes
+
+V21 adds a narrow run-context correction for sans-like lowercase words after
+shaping. The trigger is dynamic: the run must look sans-like, consist only of
+letter pairs, contain at least five lowercase pairs, and have mostly metricless
+lowercase spacing. It does not check font names or sample strings.
+
+This specifically fixes the ligature-suite failures where Comic Neue and Inter
+lowercase words accumulated small pair errors across the whole word. Compact
+sans runs can be opened when no pair was optically tightened, while severe local
+tightening in compact runs can be relaxed back toward a safer target. Noncompact
+sans runs keep strong metric kerning intact and only adjust metricless bridges
+by a small amount.
+
+These corrections are deliberately small per pair, but they matter over a full
+word. For that reason the rule returns the raw run correction and lets the final
+pair-normalization step happen once at the end. The no-ligature five-font suite
+remained unchanged from V15, so this pass improves the ligature path without
+moving the established no-ligature behavior.
+
 ## Guarded Constraint Model
 
 The guarded candidate is intentionally not a single lightweight heuristic. It is

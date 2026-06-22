@@ -147,6 +147,131 @@ fn sans_run_context_limits_lowercase_accumulation_to_mixed_runs() {
 }
 
 #[test]
+fn sans_run_context_relaxes_pure_compact_lowercase_runs_without_optical_tightening() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        sans_like: true,
+        sans_lower_run_like: true,
+        lower_pairs: 7,
+        metricless_lower_pairs: 7,
+        ..RunContext::default()
+    };
+    let mut config = test_config(0.203, 0.046);
+    config.profile.x_height = 0.52;
+    config.profile.cap_height = 0.70;
+
+    let delta = sans_run_context_delta(-0.008, 0.0, class, context, config);
+
+    assert!((delta - 0.019).abs() < 0.001);
+}
+
+#[test]
+fn sans_run_context_relaxes_severe_compact_lowercase_tightening_only() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        sans_like: true,
+        sans_lower_run_like: true,
+        lower_pairs: 5,
+        metricless_lower_pairs: 5,
+        optical_tightening_lower_pairs: 1,
+        ..RunContext::default()
+    };
+    let mut config = test_config(0.203, 0.046);
+    config.profile.x_height = 0.52;
+    config.profile.cap_height = 0.70;
+
+    let severe_delta = sans_run_context_delta(-0.123, 0.0, class, context, config);
+    let mild_delta = sans_run_context_delta(-0.008, 0.0, class, context, config);
+
+    assert!((severe_delta - 0.088).abs() < 0.001);
+    assert_eq!(mild_delta, 0.0);
+}
+
+#[test]
+fn sans_run_context_relaxes_long_noncompact_lowercase_runs_moderately() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        sans_like: true,
+        sans_lower_run_like: true,
+        lower_pairs: 8,
+        metricless_lower_pairs: 7,
+        optical_tightening_lower_pairs: 1,
+        ..RunContext::default()
+    };
+
+    let delta = sans_run_context_delta(-0.018, 0.0, class, context, test_config(0.218, 0.050));
+
+    assert!((delta - 0.004).abs() < 0.001);
+}
+
+#[test]
+fn sans_run_context_relaxes_medium_noncompact_lowercase_runs_moderately() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        sans_like: true,
+        sans_lower_run_like: true,
+        lower_pairs: 5,
+        metricless_lower_pairs: 4,
+        optical_tightening_lower_pairs: 1,
+        ..RunContext::default()
+    };
+
+    let delta = sans_run_context_delta(-0.018, 0.0, class, context, test_config(0.218, 0.050));
+
+    assert!((delta - 0.008).abs() < 0.001);
+}
+
+#[test]
+fn sans_run_context_preserves_strong_lowercase_metric_pairs() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        sans_like: true,
+        sans_lower_run_like: true,
+        lower_pairs: 7,
+        metricless_lower_pairs: 6,
+        ..RunContext::default()
+    };
+
+    let delta = sans_run_context_delta(-0.060, -0.060, class, context, test_config(0.218, 0.050));
+
+    assert_eq!(delta, 0.0);
+}
+
+#[test]
+fn sans_run_context_preserves_moderate_lowercase_metric_pairs() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        sans_like: true,
+        sans_lower_run_like: true,
+        lower_pairs: 7,
+        metricless_lower_pairs: 5,
+        ..RunContext::default()
+    };
+
+    let delta = sans_run_context_delta(-0.039, -0.039, class, context, test_config(0.218, 0.050));
+
+    assert_eq!(delta, 0.0);
+}
+
+#[test]
 fn sans_run_context_keeps_compact_sans_mixed_metrics() {
     let class = PairClass {
         left: ClusterClass::Upper,

@@ -4,7 +4,9 @@ Generated on 2026-06-22 from the pinned corpus after dynamic font calibration,
 Rustybuzz glyph-run shaping, the guarded V5 contact-zone pass, V6 measurement
 upgrades, the V8 sans run-context pass, script-run V13 tuning, the first
 ligature-parity preparation pass, the V14 digit-run context pass, and the V15
-compact-sans / long-caps pass.
+compact-sans / long-caps pass. The current V21 pass adds shaped sans-lowercase
+run correction for ligature-capable words and an InDesign startup cleanup for
+crash-recovery modals.
 
 ## Commands
 
@@ -62,6 +64,22 @@ scripts/run-optical-comparison-suite.py \
   --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-cross-font \
   --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15 \
   --baseline-output baselines/optical-comparison-suite-five-font-v15.json
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-ligature-valid-suite.json \
+  --metric-baseline baselines/metric-ligature-suite-v1.json \
+  --reuse-indesign-from renders/optical-comparison-suite/ligatures-100pt-v20-valid-complete \
+  --output renders/optical-comparison-suite/ligatures-100pt-v21-valid \
+  --baseline-output baselines/optical-ligature-suite-v21-valid.json \
+  --retries 1 \
+  --preflight-timeout 45
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-cross-font-suite.json \
+  --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15 \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v21 \
+  --baseline-output baselines/optical-comparison-suite-five-font-v21.json \
+  --retries 1 \
+  --preflight-timeout 45
 cargo test
 ```
 
@@ -98,6 +116,11 @@ cargo test
   20-case focus matrix for compact sans, mixed-case words, and long cap runs.
 - `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15/summary.json`:
   30-case no-ligature optical matrix after compact sans and long-cap tuning.
+- `renders/optical-comparison-suite/ligatures-100pt-v21-valid/summary.json`:
+  31-case ligature-capable optical matrix after shaped sans-lowercase run
+  correction.
+- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v21/summary.json`:
+  30-case no-ligature regression check. It matches the V15 score set.
 - `renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures/summary.json`:
   individual glyph shape parity before word or kerning comparison.
 
@@ -226,18 +249,31 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   runs and tightens long sans cap runs. The five-font 30-case mean score drops
   from `0.0240em` to `0.0177em`; worst case drops from `0.0648em` to
   `0.0384em`, with no measured regression above `0.001em`.
+- V21 adds shaped sans-lowercase run correction for ligature-capable words. The
+  ligature suite mean score drops from V20 `0.0249em` to `0.0168em`; worst case
+  drops from `0.0888em` to `0.0648em`. The biggest fixes are Comic Neue
+  `office` (`0.0864em` to `0.0081em`), Comic Neue `affinity` (`0.0888em` to
+  `0.0152em`), Inter `office` (`0.0648em` to `0.0142em`), Inter `affinity`
+  (`0.0504em` to `0.0171em`), and Inter `efficient` (`0.0296em` to
+  `0.0147em`).
+- The V21 no-ligature regression suite is unchanged from V15: mean score
+  `0.0177em`, worst case `0.0384em`, and no changed cases. This is important
+  because the ligature-path correction did not destabilize the established
+  no-ligature behavior.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 - Ligature-sensitive benchmarking now has its own sandbox font variant. Unlike
   the no-ligature sandbox, it retains standard ligature data, legacy glyph
   names, and presentation-form cmap entries. Rustybuzz confirms `Goldfish` in
   EB Garamond Liga shapes as `G|o`, `o|l`, `l|d`, `d|fi`, `fi|s`, and `s|h`.
-- InDesign is currently blocked locally by a modal/non-scriptable startup state
-  (`30486`). The suite now runs an InDesign automation preflight before writing
-  metric or optical baselines, so this failure stops early instead of producing
-  an all-`render-error` baseline.
+- InDesign crash recovery can leave a blocking "restore documents" startup
+  modal. The suite now starts automation by killing InDesign, clearing recovery
+  and scripting state, and then running the preflight. Individual case renders
+  also have a timeout, so a modal or non-scriptable state logs as a failed
+  attempt, resets InDesign, and retries instead of hanging indefinitely.
 
 ## Next Question
 
-The next benchmark layer can return to InDesign Optical vs Typst Guarded
-Optical tuning, but only for samples that pass the metric parity suite.
+The next benchmark layer can focus on the remaining ligature outliers, especially
+Libre Baskerville `efficient` and the Lobster/Libre `fjord` and `efficient`
+cases, while keeping the no-ligature regression suite fixed as a guardrail.

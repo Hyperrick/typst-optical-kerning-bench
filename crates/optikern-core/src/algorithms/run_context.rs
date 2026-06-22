@@ -132,6 +132,7 @@ pub(super) struct RunContext {
     pub(super) script_ligature_run_like: bool,
     pub(super) script_lower_run_like: bool,
     pub(super) script_upper_run_like: bool,
+    pub(super) sans_lower_run_like: bool,
     pub(super) mixed_case_pairs: usize,
     pub(super) upper_pairs: usize,
     pub(super) metricless_upper_pairs: usize,
@@ -143,6 +144,7 @@ pub(super) struct RunContext {
     pub(super) multi_char_letter_pairs: usize,
     pub(super) connected_multi_char_letter_pairs: usize,
     pub(super) optical_opening_letter_pairs: usize,
+    pub(super) optical_tightening_lower_pairs: usize,
     pub(super) metric_tightened_letter_pairs: usize,
     pub(super) max_cluster_chars: usize,
     pub(super) metricless_lower_pairs: usize,
@@ -197,6 +199,9 @@ impl RunContext {
                     context.lower_pairs += 1;
                     if output.metric_delta_em.abs() < dead_zone() {
                         context.metricless_lower_pairs += 1;
+                    }
+                    if output.optical_delta_em < -dead_zone() {
+                        context.optical_tightening_lower_pairs += 1;
                     }
                     if output.gap_min_em < CONNECTED_JOIN_GAP_EM {
                         context.connected_lower_pairs += 1;
@@ -269,6 +274,10 @@ impl RunContext {
             && context.opened_connected_upper_pairs >= SCRIPT_UPPER_RUN_MIN_OPENINGS
             && !context.sans_like
             && script_spacing_profile(config);
+        context.sans_lower_run_like = context.sans_like
+            && context.lower_pairs >= 5
+            && context.lower_pairs == context.letter_pairs
+            && context.metricless_lower_pairs >= context.lower_pairs.saturating_sub(2);
 
         context
     }
@@ -279,6 +288,7 @@ impl RunContext {
             || self.script_ligature_run_like
             || self.script_lower_run_like
             || self.script_upper_run_like
+            || self.sans_lower_run_like
             || self.digit_run.has_adjustments(self.sans_like, config)
             || self.capital_run.has_adjustments(self.sans_like, config)
             || (compact_sans_spacing_profile(config)

@@ -6,7 +6,6 @@ import html
 import json
 import re
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import quote
@@ -15,7 +14,9 @@ from PIL import Image, ImageDraw, ImageFont
 
 from indesign_preflight import (
     clear_indesign_recovery_state,
+    prepare_indesign_for_automation,
     reset_indesign_after_failure,
+    run_indesign_case_command,
     run_indesign_preflight,
 )
 
@@ -72,6 +73,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=45,
         help="Seconds to wait for the InDesign automation preflight. Default: 45.",
+    )
+    parser.add_argument(
+        "--case-timeout",
+        type=int,
+        default=180,
+        help="Seconds to wait for one InDesign/Typst case render. Default: 180.",
     )
     args = parser.parse_args()
     name = suite_name(args)
@@ -194,7 +201,7 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
     for attempt in range(1, attempts + 1):
         if case_dir.exists():
             shutil.rmtree(case_dir)
-        result = subprocess.run(command, cwd=root, text=True, capture_output=True)
+        result, _timed_out = run_indesign_case_command(command, root, args.case_timeout)
         logs.append(
             f"== attempt {attempt}/{attempts} ==\n{result.stdout}{result.stderr}"
         )
@@ -518,8 +525,11 @@ def main() -> None:
     root = repo_root()
     out = root / args.output
     out.mkdir(parents=True, exist_ok=True)
-    if not args.skip_indesign_preflight and not args.reuse_indesign_from:
-        run_indesign_preflight(root, args.preflight_timeout, "optical")
+    if not args.reuse_indesign_from:
+        if args.skip_indesign_preflight:
+            prepare_indesign_for_automation()
+        else:
+            run_indesign_preflight(root, args.preflight_timeout, "optical")
     baseline, cases = load_cases(root, args)
     entries = []
     for case in cases:

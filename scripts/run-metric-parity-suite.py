@@ -6,7 +6,6 @@ import html
 import json
 import re
 import shutil
-import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -16,7 +15,9 @@ from PIL import Image, ImageDraw, ImageFont
 
 from indesign_preflight import (
     clear_indesign_recovery_state,
+    prepare_indesign_for_automation,
     reset_indesign_after_failure,
+    run_indesign_case_command,
     run_indesign_preflight,
 )
 
@@ -104,6 +105,12 @@ def parse_args() -> argparse.Namespace:
         default=45,
         help="Seconds to wait for the InDesign automation preflight. Default: 45.",
     )
+    parser.add_argument(
+        "--case-timeout",
+        type=int,
+        default=180,
+        help="Seconds to wait for one InDesign/Typst case render. Default: 180.",
+    )
     return parser.parse_args()
 
 
@@ -187,7 +194,7 @@ def run_case(
     for attempt in range(1, attempts + 1):
         if case_dir.exists():
             shutil.rmtree(case_dir)
-        result = subprocess.run(command, cwd=root, text=True, capture_output=True)
+        result, _timed_out = run_indesign_case_command(command, root, args.case_timeout)
         logs.append(
             f"== attempt {attempt}/{attempts} ==\n{result.stdout}{result.stderr}"
         )
@@ -410,7 +417,9 @@ def main() -> None:
     root = repo_root()
     out = root / args.output
     out.mkdir(parents=True, exist_ok=True)
-    if not args.skip_indesign_preflight:
+    if args.skip_indesign_preflight:
+        prepare_indesign_for_automation()
+    else:
         run_indesign_preflight(root, args.preflight_timeout, "metric")
     specs = load_font_specs(root, args.font_specs)
     matrix = load_sample_matrix(root, args)

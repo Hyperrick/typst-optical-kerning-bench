@@ -15,6 +15,12 @@ pub(super) fn sans_run_context_delta(
         return 0.0;
     }
 
+    if let Some(delta) =
+        sans_lower_run_relaxation_delta(adjusted_delta, metric_delta, pair_class, context, config)
+    {
+        return delta;
+    }
+
     if pair_class.is_upper_upper()
         && metric_delta < -0.050
         && context.strong_upper_metric_pairs >= 2
@@ -69,6 +75,42 @@ pub(super) fn sans_run_context_delta(
     }
 
     0.0
+}
+
+fn sans_lower_run_relaxation_delta(
+    adjusted_delta: f32,
+    metric_delta: f32,
+    pair_class: PairClass,
+    context: RunContext,
+    config: EvaluationConfig,
+) -> Option<f32> {
+    if !context.sans_lower_run_like
+        || !pair_class.is_lower_lower()
+        || adjusted_delta >= 0.020
+        || metric_delta.abs() >= 0.025
+    {
+        return None;
+    }
+
+    let target = if compact_sans_spacing_profile(config) {
+        if context.optical_tightening_lower_pairs == 0 && context.lower_pairs >= 7 {
+            0.011
+        } else if context.optical_tightening_lower_pairs > 0 && context.lower_pairs < 8 {
+            -0.035
+        } else {
+            return None;
+        }
+    } else if context.lower_pairs >= 8 {
+        -0.014
+    } else {
+        -0.010
+    };
+
+    if target > adjusted_delta {
+        Some(target - adjusted_delta)
+    } else {
+        None
+    }
 }
 
 pub(super) fn sans_like_spacing_profile(config: EvaluationConfig) -> bool {
