@@ -1,0 +1,1041 @@
+{
+  "schemaVersion": 1,
+  "pointSize": 100.0,
+  "dpi": 300,
+  "kerning": "none",
+  "ligatures": false,
+  "samples": [
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "glyph": "G",
+      "status": "ok",
+      "appliedFont": {
+        "name": "EB Garamond\tRegular",
+        "fullName": "",
+        "fontFamily": "EB Garamond",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          270,
+          282
+        ],
+        "candidatePx": [
+          270,
+          282
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9904612056249386
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          270,
+          282
+        ],
+        "candidatePx": [
+          270,
+          282
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9904612056249386
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "glyph": "o",
+      "status": "ok",
+      "appliedFont": {
+        "name": "EB Garamond\tRegular",
+        "fullName": "",
+        "fontFamily": "EB Garamond",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          177,
+          179
+        ],
+        "candidatePx": [
+          177,
+          179
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9664603546336568
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          177,
+          179
+        ],
+        "candidatePx": [
+          177,
+          179
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9664603546336568
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "glyph": "l",
+      "status": "ok",
+      "appliedFont": {
+        "name": "EB Garamond\tRegular",
+        "fullName": "",
+        "fontFamily": "EB Garamond",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          84,
+          295
+        ],
+        "candidatePx": [
+          85,
+          296
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9860323886639676
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          84,
+          295
+        ],
+        "candidatePx": [
+          85,
+          295
+        ],
+        "heightScale": 0.9966216216216216,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9888358875469401
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "glyph": "d",
+      "status": "ok",
+      "appliedFont": {
+        "name": "EB Garamond\tRegular",
+        "fullName": "",
+        "fontFamily": "EB Garamond",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          196,
+          302
+        ],
+        "candidatePx": [
+          196,
+          302
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9674928663346948
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          196,
+          302
+        ],
+        "candidatePx": [
+          196,
+          302
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9674928663346948
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "glyph": "f",
+      "status": "ok",
+      "appliedFont": {
+        "name": "EB Garamond\tRegular",
+        "fullName": "",
+        "fontFamily": "EB Garamond",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          165,
+          296
+        ],
+        "candidatePx": [
+          166,
+          296
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9881613324624429
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          165,
+          296
+        ],
+        "candidatePx": [
+          166,
+          296
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9881613324624429
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "glyph": "i",
+      "status": "ok",
+      "appliedFont": {
+        "name": "EB Garamond\tRegular",
+        "fullName": "",
+        "fontFamily": "EB Garamond",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          84,
+          259
+        ],
+        "candidatePx": [
+          85,
+          259
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9866259075277035
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          84,
+          259
+        ],
+        "candidatePx": [
+          85,
+          259
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9866259075277035
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "glyph": "s",
+      "status": "ok",
+      "appliedFont": {
+        "name": "EB Garamond\tRegular",
+        "fullName": "",
+        "fontFamily": "EB Garamond",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          109,
+          179
+        ],
+        "candidatePx": [
+          110,
+          179
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9590471720253462
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          109,
+          179
+        ],
+        "candidatePx": [
+          110,
+          179
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9590471720253462
+      }
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "glyph": "h",
+      "status": "ok",
+      "appliedFont": {
+        "name": "EB Garamond\tRegular",
+        "fullName": "",
+        "fontFamily": "EB Garamond",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          197,
+          295
+        ],
+        "candidatePx": [
+          198,
+          296
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9817332944266122
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          197,
+          295
+        ],
+        "candidatePx": [
+          197,
+          295
+        ],
+        "heightScale": 0.9966216216216216,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9759808779805282
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "glyph": "G",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Libre Baskerville\tRegular",
+        "fullName": "",
+        "fontFamily": "Libre Baskerville",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          327,
+          329
+        ],
+        "candidatePx": [
+          327,
+          330
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9839749608763694
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          327,
+          329
+        ],
+        "candidatePx": [
+          326,
+          329
+        ],
+        "heightScale": 0.996969696969697,
+        "widthDeltaPx": 1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9701515764574061
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "glyph": "o",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Libre Baskerville\tRegular",
+        "fullName": "",
+        "fontFamily": "Libre Baskerville",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          233,
+          229
+        ],
+        "candidatePx": [
+          233,
+          230
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9853572913298536
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          233,
+          229
+        ],
+        "candidatePx": [
+          232,
+          229
+        ],
+        "heightScale": 0.9956521739130435,
+        "widthDeltaPx": 1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9690428072753996
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "glyph": "l",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Libre Baskerville\tRegular",
+        "fullName": "",
+        "fontFamily": "Libre Baskerville",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          116,
+          346
+        ],
+        "candidatePx": [
+          117,
+          347
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9656481538178924
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          116,
+          346
+        ],
+        "candidatePx": [
+          117,
+          346
+        ],
+        "heightScale": 0.9971181556195965,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9712880418075622
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "glyph": "d",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Libre Baskerville\tRegular",
+        "fullName": "",
+        "fontFamily": "Libre Baskerville",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          251,
+          350
+        ],
+        "candidatePx": [
+          252,
+          351
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9756383620400777
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          251,
+          350
+        ],
+        "candidatePx": [
+          251,
+          350
+        ],
+        "heightScale": 0.9971509971509972,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9783434778222416
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "glyph": "f",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Libre Baskerville\tRegular",
+        "fullName": "",
+        "fontFamily": "Libre Baskerville",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          203,
+          346
+        ],
+        "candidatePx": [
+          203,
+          347
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9773419174527125
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          203,
+          346
+        ],
+        "candidatePx": [
+          202,
+          346
+        ],
+        "heightScale": 0.9971181556195965,
+        "widthDeltaPx": 1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9901675529246513
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "glyph": "i",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Libre Baskerville\tRegular",
+        "fullName": "",
+        "fontFamily": "Libre Baskerville",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          121,
+          336
+        ],
+        "candidatePx": [
+          121,
+          337
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9578653644925009
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          121,
+          336
+        ],
+        "candidatePx": [
+          121,
+          336
+        ],
+        "heightScale": 0.9970326409495549,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9712680014049877
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "glyph": "s",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Libre Baskerville\tRegular",
+        "fullName": "",
+        "fontFamily": "Libre Baskerville",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          143,
+          229
+        ],
+        "candidatePx": [
+          143,
+          230
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9875537306729967
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          143,
+          229
+        ],
+        "candidatePx": [
+          142,
+          229
+        ],
+        "heightScale": 0.9956521739130435,
+        "widthDeltaPx": 1,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.973727946816671
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "glyph": "h",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Libre Baskerville\tRegular",
+        "fullName": "",
+        "fontFamily": "Libre Baskerville",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          268,
+          346
+        ],
+        "candidatePx": [
+          269,
+          347
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -1,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9622666534036275
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          268,
+          346
+        ],
+        "candidatePx": [
+          268,
+          346
+        ],
+        "heightScale": 0.9971181556195965,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.983508901827483
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "glyph": "G",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Inter\tRegular",
+        "fullName": "",
+        "fontFamily": "Inter",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          260,
+          312
+        ],
+        "candidatePx": [
+          268,
+          314
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -8,
+        "heightDeltaPx": -2,
+        "overlapRatio": 0.8510465046142711
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          260,
+          312
+        ],
+        "candidatePx": [
+          266,
+          312
+        ],
+        "heightScale": 0.9936305732484076,
+        "widthDeltaPx": -6,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.8917663093984264
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "glyph": "o",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Inter\tRegular",
+        "fullName": "",
+        "fontFamily": "Inter",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          208,
+          235
+        ],
+        "candidatePx": [
+          200,
+          226
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 8,
+        "heightDeltaPx": 9,
+        "overlapRatio": 0.7572844827586207
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          208,
+          235
+        ],
+        "candidatePx": [
+          208,
+          235
+        ],
+        "heightScale": 1.0398230088495575,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9683576557794765
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "glyph": "l",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Inter\tRegular",
+        "fullName": "",
+        "fontFamily": "Inter",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          37,
+          303
+        ],
+        "candidatePx": [
+          35,
+          304
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 2,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.9430019562511115
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          37,
+          303
+        ],
+        "candidatePx": [
+          35,
+          303
+        ],
+        "heightScale": 0.9967105263157895,
+        "widthDeltaPx": 2,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9459459459459459
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "glyph": "d",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Inter\tRegular",
+        "fullName": "",
+        "fontFamily": "Inter",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          202,
+          308
+        ],
+        "candidatePx": [
+          196,
+          308
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 6,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.7820259054762649
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          202,
+          308
+        ],
+        "candidatePx": [
+          196,
+          308
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 6,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.7820259054762649
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "glyph": "f",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Inter\tRegular",
+        "fullName": "",
+        "fontFamily": "Inter",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          144,
+          318
+        ],
+        "candidatePx": [
+          117,
+          304
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 27,
+        "heightDeltaPx": 14,
+        "overlapRatio": 0.652590029198659
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          144,
+          318
+        ],
+        "candidatePx": [
+          122,
+          318
+        ],
+        "heightScale": 1.0460526315789473,
+        "widthDeltaPx": 22,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.7612570096052412
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "glyph": "i",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Inter\tRegular",
+        "fullName": "",
+        "fontFamily": "Inter",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          51,
+          313
+        ],
+        "candidatePx": [
+          48,
+          305
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 3,
+        "heightDeltaPx": 8,
+        "overlapRatio": 0.8979552654315062
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          51,
+          313
+        ],
+        "candidatePx": [
+          49,
+          313
+        ],
+        "heightScale": 1.0262295081967212,
+        "widthDeltaPx": 2,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.941909509202454
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "glyph": "s",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Inter\tRegular",
+        "fullName": "",
+        "fontFamily": "Inter",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          177,
+          235
+        ],
+        "candidatePx": [
+          168,
+          226
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 9,
+        "heightDeltaPx": 9,
+        "overlapRatio": 0.7245030050855293
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          177,
+          235
+        ],
+        "candidatePx": [
+          175,
+          235
+        ],
+        "heightScale": 1.0398230088495575,
+        "widthDeltaPx": 2,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.8841000338605911
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "glyph": "h",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Inter\tRegular",
+        "fullName": "",
+        "fontFamily": "Inter",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          182,
+          303
+        ],
+        "candidatePx": [
+          177,
+          304
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 5,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.8002967725979968
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          182,
+          303
+        ],
+        "candidatePx": [
+          176,
+          303
+        ],
+        "heightScale": 0.9967105263157895,
+        "widthDeltaPx": 6,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.7921015862579107
+      }
+    }
+  ]
+}

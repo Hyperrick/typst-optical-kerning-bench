@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "pointSize": 100.0,
+  "dpi": 300,
+  "kerning": "none",
+  "ligatures": false,
+  "samples": [
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "glyph": "fi",
+      "status": "ok",
+      "appliedFont": {
+        "name": "EB Garamond\tRegular",
+        "fullName": "",
+        "fontFamily": "EB Garamond",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          217,
+          296
+        ],
+        "candidatePx": [
+          217,
+          296
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9832263202428948
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          217,
+          296
+        ],
+        "candidatePx": [
+          217,
+          296
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": 0,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.9832263202428948
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "glyph": "fi",
+      "status": "ok",
+      "appliedFont": {
+        "name": "Libre Baskerville\tRegular",
+        "fullName": "",
+        "fontFamily": "Libre Baskerville",
+        "fontStyleName": "",
+        "postscriptName": "",
+        "fontType": "",
+        "location": ""
+      },
+      "rawShapeParity": {
+        "referencePx": [
+          251,
+          346
+        ],
+        "candidatePx": [
+          297,
+          347
+        ],
+        "heightScale": 1.0,
+        "widthDeltaPx": -46,
+        "heightDeltaPx": -1,
+        "overlapRatio": 0.5190075279660421
+      },
+      "heightNormalizedShapeParity": {
+        "referencePx": [
+          251,
+          346
+        ],
+        "candidatePx": [
+          296,
+          346
+        ],
+        "heightScale": 0.9971181556195965,
+        "widthDeltaPx": -45,
+        "heightDeltaPx": 0,
+        "overlapRatio": 0.5316015883520847
+      }
+    }
+  ]
+}

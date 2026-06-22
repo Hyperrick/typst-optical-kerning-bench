@@ -11,6 +11,7 @@ Defaults reproduce the current Goldfish benchmark:
 
 Options:
   --font-id ID          Font file id in corpus/fonts. Default: eb-garamond.
+  --font-path PATH      Font file to render. Default: corpus/fonts/<font-id>.ttf.
   --font-family NAME    InDesign/Typst font family. Default: EB Garamond.
   --text TEXT           Text to render. Default: Goldfish.
   --point-size PT       Text size. Default: 100.
@@ -22,6 +23,7 @@ USAGE
 }
 
 font_id="eb-garamond"
+font_path=""
 font_family="EB Garamond"
 text="Goldfish"
 point_size="100"
@@ -32,6 +34,7 @@ output_dir=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --font-id) font_id="$2"; shift 2 ;;
+    --font-path) font_path="$2"; shift 2 ;;
     --font-family) font_family="$2"; shift 2 ;;
     --text) text="$2"; shift 2 ;;
     --point-size) point_size="$2"; shift 2 ;;
@@ -61,7 +64,9 @@ PY
   output_dir="renders/${text_slug}/${lig_slug}-${point_size}pt"
 fi
 
-font_path="corpus/fonts/${font_id}.ttf"
+if [[ -z "$font_path" ]]; then
+  font_path="corpus/fonts/${font_id}.ttf"
+fi
 if [[ ! -f "$font_path" ]]; then
   echo "Missing font file: $font_path" >&2
   exit 1
@@ -69,11 +74,14 @@ fi
 
 mkdir -p \
   "$output_dir/indesign/Document fonts" \
+  "$output_dir/typst/fonts" \
   "$output_dir/typst" \
   "$output_dir/crops" \
   "$output_dir/overlays" \
   "$output_dir/metrics"
-cp "$font_path" "$output_dir/indesign/Document fonts/${font_id}.ttf"
+font_filename="$(basename "$font_path")"
+cp "$font_path" "$output_dir/indesign/Document fonts/$font_filename"
+cp "$font_path" "$output_dir/typst/fonts/$font_filename"
 
 echo "== Deltas =="
 cargo run -q -p optikern-cli -- sample-deltas \
@@ -83,6 +91,16 @@ cargo run -q -p optikern-cli -- sample-deltas \
   > "$output_dir/metrics/guarded-deltas.json"
 
 echo "== InDesign =="
+scripts/render-indesign-outlined-text.sh \
+  --font-family "$font_family" \
+  --text "$text" \
+  --kerning none \
+  --ligatures "$ligatures" \
+  --point-size "$point_size" \
+  --output-pdf "$repo_root/$output_dir/indesign/none.tmp.pdf" \
+  --output-indd "$repo_root/$output_dir/indesign/none.indd" \
+  --output-json "$repo_root/$output_dir/metrics/indesign-none.json"
+
 scripts/render-indesign-outlined-text.sh \
   --font-family "$font_family" \
   --text "$text" \
@@ -103,6 +121,7 @@ scripts/render-indesign-outlined-text.sh \
   --output-indd "$repo_root/$output_dir/indesign/optical.indd" \
   --output-json "$repo_root/$output_dir/metrics/indesign-optical.json"
 
+pdftoppm -png -r "$dpi" "$output_dir/indesign/none.tmp.pdf" "$output_dir/indesign/none"
 pdftoppm -png -r "$dpi" "$output_dir/indesign/metric.tmp.pdf" "$output_dir/indesign/metric"
 pdftoppm -png -r "$dpi" "$output_dir/indesign/optical.tmp.pdf" "$output_dir/indesign/optical"
 rm -f "$output_dir/indesign/"*.tmp.pdf
@@ -147,6 +166,18 @@ metric = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
 """
 (out / "typst/metric.typ").write_text(metric, encoding="utf-8")
 
+none = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
+#set text(
+  font: "{typ_string(font_family)}",
+  size: {point_size:.4f}pt,
+  kerning: false,
+  ligatures: {"true" if ligatures else "false"},
+  features: {features},
+)
+{typ_content(text)}
+"""
+(out / "typst/none.typ").write_text(none, encoding="utf-8")
+
 pairs = deltas["pairs"]
 if not pairs:
     guarded_body = typ_content(text)
@@ -170,9 +201,11 @@ guarded = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
 (out / "typst/guarded.typ").write_text(guarded, encoding="utf-8")
 PY
 
-typst compile --font-path corpus/fonts --ignore-system-fonts --format png --ppi "$dpi" \
+typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
+  "$output_dir/typst/none.typ" "$output_dir/typst/none.png"
+typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
   "$output_dir/typst/metric.typ" "$output_dir/typst/metric.png"
-typst compile --font-path corpus/fonts --ignore-system-fonts --format png --ppi "$dpi" \
+typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
   "$output_dir/typst/guarded.typ" "$output_dir/typst/guarded.png"
 
 echo "== Crops and overlays =="
@@ -190,14 +223,18 @@ point_size = float(sys.argv[5])
 ligatures = sys.argv[6] == "true"
 
 sources = {
+    "indesign_none": root / "indesign/none-1.png",
     "indesign_metric": root / "indesign/metric-1.png",
     "indesign_optical": root / "indesign/optical-1.png",
+    "typst_none": root / "typst/none.png",
     "typst_metric": root / "typst/metric.png",
     "typst_guarded": root / "typst/guarded.png",
 }
 crop_paths = {
+    "indesign_none": root / "crops/indesign-none-ink.png",
     "indesign_metric": root / "crops/indesign-metric-ink.png",
     "indesign_optical": root / "crops/indesign-optical-ink.png",
+    "typst_none": root / "crops/typst-none-ink.png",
     "typst_metric": root / "crops/typst-metric-ink.png",
     "typst_guarded": root / "crops/typst-guarded-ink.png",
 }
@@ -372,6 +409,7 @@ def ink_position_metrics(ref, cand):
         "segments": {"reference": ref_segments, "candidate": cand_segments},
     }
 
+none = overlay("indesign_none", "typst_none", root / "overlays/none-parity.png")
 metric = overlay("indesign_metric", "typst_metric", root / "overlays/metric-parity.png")
 optical = overlay("indesign_optical", "typst_guarded", root / "overlays/optical-vs-guarded.png")
 report = {
@@ -383,6 +421,7 @@ report = {
     "dpi": dpi,
     "crops": boxes,
     "comparisons": {
+        "noneParity": none,
         "metricParity": metric,
         "opticalVsGuarded": optical,
     },

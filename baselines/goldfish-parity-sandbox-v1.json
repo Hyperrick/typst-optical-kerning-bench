@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "text": "Goldfish",
+  "pointSize": 100.0,
+  "ligatures": false,
+  "dpi": 300,
+  "metricThresholdEm": 0.02,
+  "fonts": [
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "Optikern EB Garamond NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-eb-garamond-regular-static-noliga.ttf",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0020719474641205105,
+        "segmentCenterMeanAbsEm": 0.0006258920771303728
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0014113290323792575,
+        "segmentCenterMeanAbsEm": 0.00044248927791384175
+      },
+      "opticalVsGuarded": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.009679461259123558,
+        "segmentCenterMeanAbsEm": 0.007686024554808997
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Optikern Libre Baskerville NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-noliga.ttf",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "widthDeltaEm": 0.012,
+        "absoluteWidthDeltaEm": 0.012,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.00590701921761936,
+        "segmentCenterMeanAbsEm": 0.0051237610452596425
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.0058875045665695395,
+        "segmentCenterMeanAbsEm": 0.0051208606584240085
+      },
+      "opticalVsGuarded": {
+        "widthDeltaEm": 0.036,
+        "inkPositionMeanAbsEm": 0.04126315484313418,
+        "segmentCenterMeanAbsEm": null
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Optikern Inter NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-noliga.ttf",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0017632600606631032,
+        "segmentCenterMeanAbsEm": 0.00039387058228108174
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0017632600606631032,
+        "segmentCenterMeanAbsEm": 0.00039387058228108174
+      },
+      "opticalVsGuarded": {
+        "widthDeltaEm": -0.0384,
+        "inkPositionMeanAbsEm": 0.018179595344007874,
+        "segmentCenterMeanAbsEm": 0.017972812573487554
+      }
+    }
+  ]
+}

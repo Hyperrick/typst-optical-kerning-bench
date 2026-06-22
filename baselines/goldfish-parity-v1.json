@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "text": "Goldfish",
+  "pointSize": 100.0,
+  "ligatures": false,
+  "dpi": 300,
+  "metricThresholdEm": 0.02,
+  "fonts": [
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "EB Garamond",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0020719474641205105,
+        "segmentCenterMeanAbsEm": 0.0006258920771303728
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0014113290323792575,
+        "segmentCenterMeanAbsEm": 0.00044248927791384175
+      },
+      "opticalVsGuarded": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.009679461259123558,
+        "segmentCenterMeanAbsEm": 0.007686024554808997
+      }
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Libre Baskerville",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "widthDeltaEm": -0.1032,
+        "absoluteWidthDeltaEm": 0.1032,
+        "status": "baseline-mismatch",
+        "validForOpticalTuning": false
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.09119999999999999,
+        "inkPositionMeanAbsEm": 0.04400344116746332,
+        "segmentCenterMeanAbsEm": 0.03378493309058527
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.1032,
+        "inkPositionMeanAbsEm": 0.047917138761699986,
+        "segmentCenterMeanAbsEm": 0.03792445397661681
+      },
+      "opticalVsGuarded": {
+        "widthDeltaEm": -0.08879999999999999,
+        "inkPositionMeanAbsEm": 0.05000738230691058,
+        "segmentCenterMeanAbsEm": null
+      }
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Inter",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "widthDeltaEm": 0.2112,
+        "absoluteWidthDeltaEm": 0.2112,
+        "status": "baseline-mismatch",
+        "validForOpticalTuning": false
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.2112,
+        "inkPositionMeanAbsEm": 0.095718175385041,
+        "segmentCenterMeanAbsEm": 0.0936358921473027
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.2112,
+        "inkPositionMeanAbsEm": 0.095718175385041,
+        "segmentCenterMeanAbsEm": 0.0936358921473027
+      },
+      "opticalVsGuarded": {
+        "widthDeltaEm": 0.17759999999999998,
+        "inkPositionMeanAbsEm": 0.08540249394525044,
+        "segmentCenterMeanAbsEm": 0.07848073575863265
+      }
+    }
+  ]
+}

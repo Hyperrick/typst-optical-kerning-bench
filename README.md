@@ -31,7 +31,11 @@ Useful focused commands:
 ```sh
 cargo run -p optikern-cli -- contact-sheet
 cargo run -p optikern-cli -- triad-compare --run-indesign
+scripts/run-glyph-shape-parity.py --baseline-output baselines/glyph-shape-parity-v1.json
 scripts/run-goldfish-pipeline.sh --text Goldfish --point-size 100 --ligatures false
+scripts/run-goldfish-parity.py --baseline-output baselines/goldfish-parity-v1.json
+.venv-fonttools/bin/python scripts/build-parity-fonts.py
+scripts/run-goldfish-parity.py --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json
 ```
 
 ## InDesign Baselines
@@ -91,6 +95,59 @@ This writes `reports/contact-sheet.typ` and, when Typst is installed,
 for simple pair and word spacing. Ligature-capable words must be evaluated after
 shaping: a substituted ligature glyph is spaced against its neighbors while its
 internal letters are not kerned separately.
+
+## Goldfish Parity Gate
+
+Before the word-level gate, check individual glyph shapes:
+
+```sh
+scripts/run-glyph-shape-parity.py \
+  --fonts eb-garamond,libre-baskerville,inter \
+  --glyphs G,o,l,d,f,i,s,h \
+  --point-size 100 \
+  --output renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures \
+  --baseline-output baselines/glyph-shape-parity-v1.json
+```
+
+Before tuning against a new font, run the single-word `Goldfish` gate:
+
+```sh
+scripts/run-goldfish-parity.py \
+  --fonts eb-garamond,libre-baskerville,inter \
+  --text Goldfish \
+  --point-size 100 \
+  --ligatures false \
+  --metric-threshold-em 0.02 \
+  --output renders/goldfish-parity/goldfish-100pt-no-ligatures \
+  --baseline-output baselines/goldfish-parity-v1.json
+```
+
+The gate compares InDesign Metrics against Typst Metrics first. A font only
+counts as valid optical tuning evidence when metric width parity is within
+`0.02em`; otherwise the result is treated as a font/rendering baseline mismatch.
+For the strict no-ligature benchmark, first generate isolated static fonts with
+unique family names:
+
+```sh
+python3 -m venv .venv-fonttools
+.venv-fonttools/bin/pip install -r requirements-fonttools.txt
+.venv-fonttools/bin/python scripts/build-parity-fonts.py
+scripts/run-goldfish-parity.py \
+  --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json \
+  --text Goldfish \
+  --point-size 100 \
+  --ligatures false \
+  --metric-threshold-em 0.02 \
+  --output renders/goldfish-parity/goldfish-100pt-no-ligatures-sandbox \
+  --baseline-output baselines/goldfish-parity-sandbox-v1.json
+```
+
+The generated parity fonts are local render artifacts. They freeze variable
+axes, use unique family names, remove standard ligature GSUB features, strip
+legacy glyph names, and remove Unicode presentation-form ligature cmap entries
+so both engines shape the same no-ligature text.
+See [`docs/glyph-shape-parity.md`](docs/glyph-shape-parity.md) and
+[`docs/goldfish-parity-gate.md`](docs/goldfish-parity-gate.md).
 
 ## Design Constraints
 

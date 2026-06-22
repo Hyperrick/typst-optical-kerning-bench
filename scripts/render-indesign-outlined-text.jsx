@@ -34,6 +34,7 @@ function jsonQuote(value) {
   return "\"" + String(value)
     .replace(/\\/g, "\\\\")
     .replace(/"/g, "\\\"")
+    .replace(/\t/g, "\\t")
     .replace(/\r/g, "\\r")
     .replace(/\n/g, "\\n") + "\"";
 }
@@ -124,21 +125,96 @@ function fontFor(config) {
   fail("Font is not available in InDesign: " + config.fontFamily);
 }
 
-function configureText(story, config) {
-  story.appliedFont = fontFor(config);
+function configureText(doc, story, config) {
+  var font = fontFor(config);
+  var ligatures = Boolean(config.ligatures);
+  story.appliedFont = font;
   story.pointSize = Number(config.pointSize || 12);
   story.kerningMethod = kerningMethod(config.kerning || "optical");
-  story.ligatures = Boolean(config.ligatures);
+  story.ligatures = ligatures;
   try {
-    story.texts[0].opentypeFeatures = Boolean(config.ligatures)
+    story.texts[0].ligatures = ligatures;
+  } catch (error) {}
+  try {
+    story.characters.everyItem().ligatures = ligatures;
+  } catch (error2) {}
+  try {
+    story.texts[0].opentypeFeatures = ligatures
       ? [["liga", 1], ["clig", 1]]
       : [["liga", 0], ["clig", 0]];
-  } catch (error) {}
+  } catch (error3) {}
+  applyOpenTypeFlags(story, ligatures);
+  try {
+    applyOpenTypeFlags(story.texts[0], ligatures);
+  } catch (error4) {}
+  try {
+    applyOpenTypeFlags(story.characters.everyItem(), ligatures);
+  } catch (error5) {}
+  if (!ligatures) {
+    disableLigaturesViaMenu(story);
+  }
   story.tracking = Number(config.tracking || 0);
   story.horizontalScale = 100;
   story.verticalScale = 100;
   story.hyphenation = false;
   story.justification = Justification.LEFT_ALIGN;
+  applyBenchmarkCharacterStyle(doc, story, ligatures);
+  return font;
+}
+
+function applyBenchmarkCharacterStyle(doc, story, ligatures) {
+  try {
+    var style = doc.characterStyles.add({name: "Optikern Character Settings"});
+    style.ligatures = true;
+    style.ligatures = ligatures;
+    style.otfDiscretionaryLigature = false;
+    style.otfContextualAlternate = ligatures;
+    story.texts[0].appliedCharacterStyle = style;
+    applyOpenTypeFlags(story.texts[0], ligatures);
+    applyOpenTypeFlags(story.characters.everyItem(), ligatures);
+  } catch (error) {}
+}
+
+function disableLigaturesViaMenu(story) {
+  try {
+    app.select(story.texts[0]);
+    var action = app.menuActions.item("$ID/Ligatures");
+    if (action.isValid && action.checked) action.invoke();
+    app.select(null);
+  } catch (error) {
+    try {
+      app.select(null);
+    } catch (error2) {}
+  }
+}
+
+function applyOpenTypeFlags(target, ligatures) {
+  try {
+    target.properties = {
+      ligatures: ligatures,
+      otfDiscretionaryLigature: false,
+      otfContextualAlternate: ligatures
+    };
+  } catch (error) {}
+}
+
+function readFontProperty(font, name) {
+  try {
+    if (font && font[name] !== undefined) return String(font[name]);
+  } catch (error) {}
+  return "";
+}
+
+function fontInfo(font) {
+  return {
+    name: readFontProperty(font, "name"),
+    fullName: readFontProperty(font, "fullName"),
+    fontFamily: readFontProperty(font, "fontFamily"),
+    fontStyleName: readFontProperty(font, "fontStyleName"),
+    postscriptName: readFontProperty(font, "postscriptName"),
+    fontType: readFontProperty(font, "fontType"),
+    location: readFontProperty(font, "location")
+  };
 }
 
 function unionBounds(a, b) {
@@ -212,7 +288,13 @@ function build(config) {
   var frame = page.textFrames.add();
   frame.geometricBounds = ["0pt", "0pt", "120pt", "720pt"];
   frame.contents = String(config.text);
-  configureText(frame.parentStory, config);
+  var appliedFont = configureText(doc, frame.parentStory, config);
+  try {
+    frame.parentStory.recompose();
+  } catch (error) {}
+  try {
+    doc.recompose();
+  } catch (error2) {}
 
   var outlined = frame.createOutlines(true);
   var items = outlined instanceof Array ? outlined : [outlined];
@@ -237,6 +319,7 @@ function build(config) {
     text: String(config.text),
     fontFamily: String(config.fontFamily),
     fontStyle: String(config.fontStyle || ""),
+    appliedFont: fontInfo(appliedFont),
     pointSize: Number(config.pointSize || 12),
     kerning: String(config.kerning || "optical"),
     ligatures: Boolean(config.ligatures),
