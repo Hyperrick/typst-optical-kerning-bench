@@ -45,6 +45,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dpi", default="")
     parser.add_argument("--point-size", default="")
     parser.add_argument("--ligatures", choices=["true", "false", ""], default="")
+    parser.add_argument(
+        "--retries",
+        type=int,
+        default=1,
+        help="Retries per case for transient InDesign automation failures.",
+    )
     args = parser.parse_args()
     name = suite_name(args)
     if not args.output:
@@ -147,11 +153,23 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
     if case.get("fontPath"):
         command[3:3] = ["--font-path", case["fontPath"]]
 
-    result = subprocess.run(command, cwd=root, text=True, capture_output=True)
     log_dir = out / "logs" / font_id
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"{slug(sample)}.log"
-    log_path.write_text(result.stdout + result.stderr, encoding="utf-8")
+    attempts = max(1, args.retries + 1)
+    logs = []
+    result = None
+    for attempt in range(1, attempts + 1):
+        if case_dir.exists():
+            shutil.rmtree(case_dir)
+        result = subprocess.run(command, cwd=root, text=True, capture_output=True)
+        logs.append(
+            f"== attempt {attempt}/{attempts} ==\n{result.stdout}{result.stderr}"
+        )
+        if result.returncode == 0:
+            break
+    assert result is not None
+    log_path.write_text("\n".join(logs), encoding="utf-8")
 
     entry = {
         "fontId": font_id,

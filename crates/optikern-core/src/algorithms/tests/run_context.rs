@@ -174,3 +174,68 @@ fn connected_script_delta_is_zero_without_script_run_context() {
 
     assert_eq!(delta, 0.0);
 }
+
+#[test]
+fn script_mixed_case_caps_connected_openings() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Upper,
+    };
+    let context = RunContext {
+        script_mixed_case_like: true,
+        mixed_case_pairs: 2,
+        ..RunContext::default()
+    };
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    let delta = script_mixed_case_delta(0.055, -0.063, 0.0, class, context, config);
+
+    assert!(delta < -0.045);
+}
+
+#[test]
+fn script_mixed_case_tightens_metricless_mixed_pairs() {
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        script_mixed_case_like: true,
+        mixed_case_pairs: 2,
+        ..RunContext::default()
+    };
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    let delta = script_mixed_case_delta(-0.013, 0.124, 0.0, class, context, config);
+
+    assert!(delta < -0.025);
+}
+
+#[test]
+fn script_mixed_case_ignores_sans_contexts() {
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        sans_like: true,
+        script_mixed_case_like: false,
+        mixed_case_pairs: 2,
+        ..RunContext::default()
+    };
+
+    let delta = script_mixed_case_delta(
+        -0.013,
+        0.124,
+        0.0,
+        class,
+        context,
+        test_config(0.170, 0.050),
+    );
+
+    assert_eq!(delta, 0.0);
+}

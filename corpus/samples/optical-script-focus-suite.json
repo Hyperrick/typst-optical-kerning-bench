@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "name": "script-focus",
+  "description": "Focused optical comparison suite for connected script fonts.",
+  "cases": [
+    {
+      "fontId": "pacifico",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "WAVY"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "WAVY"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "10.000"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "10.000"
+    }
+  ]
+}

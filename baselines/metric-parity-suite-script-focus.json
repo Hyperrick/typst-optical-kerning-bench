@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Multi-sample metric parity gate before optical tuning.",
+  "pointSize": 100.0,
+  "ligatures": false,
+  "dpi": 300,
+  "metricThresholdEm": 0.02,
+  "inkThresholdEm": 0.02,
+  "caseCount": 12,
+  "validCaseCount": 12,
+  "cases": [
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-noliga.ttf",
+      "sample": "Goldfish",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00017257963396451678,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00022436328754215268,
+        "segmentCenterMeanAbsEm": 0.00013556879282368753
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00017257963396451678,
+        "segmentCenterMeanAbsEm": 2.8443260480617028e-05
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-noliga.ttf",
+      "sample": "AVATAR",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0096,
+        "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004659545506708785,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004659545506708785,
+        "segmentCenterMeanAbsEm": 0.004310343771175667
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004659545506708785,
+        "segmentCenterMeanAbsEm": 0.004310343771175667
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-noliga.ttf",
+      "sample": "WAVY",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0015405971639554576,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0015405971639554576,
+        "segmentCenterMeanAbsEm": 0.0015351710638509756
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0015405971639554576,
+        "segmentCenterMeanAbsEm": 0.0015351710638509756
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-noliga.ttf",
+      "sample": "ToTaL",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0005630545633316354,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0005238187190993341,
+        "segmentCenterMeanAbsEm": 0.0005075914375407592
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0005630545633316354,
+        "segmentCenterMeanAbsEm": 0.0005465087621714702
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-noliga.ttf",
+      "sample": "OpenType",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0002779820539136105,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00022245701837995217,
+        "segmentCenterMeanAbsEm": 0.00011175716842744805
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0002779820539136105,
+        "segmentCenterMeanAbsEm": 0.00017211468423556652
+      }
+    },
+    {
+      "fontId": "pacifico",
+      "fontFamily": "Optikern Pacifico NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-pacifico-regular-noliga.ttf",
+      "sample": "10.000",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.001777914505016253,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.001593472620807066,
+        "segmentCenterMeanAbsEm": 0.0016284779779889048
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.001777914505016253,
+        "segmentCenterMeanAbsEm": 0.0015640257611928292
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-noliga.ttf",
+      "sample": "Goldfish",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0072,
+        "absoluteWidthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0026554955855437666,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0026554955855437666,
+        "segmentCenterMeanAbsEm": 0.0024125767651699786
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0026554955855437666,
+        "segmentCenterMeanAbsEm": 0.0024125767651699786
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-noliga.ttf",
+      "sample": "AVATAR",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0072,
+        "absoluteWidthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.005625353913556286,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.005625353913556286,
+        "segmentCenterMeanAbsEm": 0.005621856037148063
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.005625353913556286,
+        "segmentCenterMeanAbsEm": 0.005621856037148063
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-noliga.ttf",
+      "sample": "WAVY",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0048,
+        "absoluteWidthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.002774190133535191,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.002774190133535191,
+        "segmentCenterMeanAbsEm": 0.00240729611173183
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.002774190133535191,
+        "segmentCenterMeanAbsEm": 0.00240729611173183
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-noliga.ttf",
+      "sample": "ToTaL",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.002240055566466084,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.002240055566466084,
+        "segmentCenterMeanAbsEm": 0.002240053368906683
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.002240055566466084,
+        "segmentCenterMeanAbsEm": 0.002240053368906683
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-noliga.ttf",
+      "sample": "OpenType",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0096,
+        "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004562745100057772,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004562745100057772,
+        "segmentCenterMeanAbsEm": 0.005495517276460464
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004562745100057772,
+        "segmentCenterMeanAbsEm": 0.005495517276460464
+      }
+    },
+    {
+      "fontId": "lobster",
+      "fontFamily": "Optikern Lobster NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-lobster-regular-noliga.ttf",
+      "sample": "10.000",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0096,
+        "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004655281936080014,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.004629228281747646,
+        "segmentCenterMeanAbsEm": 0.00418746544312379
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004655281936080014,
+        "segmentCenterMeanAbsEm": 0.004438974562966009
+      }
+    }
+  ]
+}

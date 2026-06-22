@@ -69,6 +69,12 @@ category = "script"
 path = "ofl/pacifico/Pacifico-Regular.ttf"
 
 [[fonts]]
+id = "lobster"
+family = "Lobster"
+category = "script"
+path = "ofl/lobster/Lobster-Regular.ttf"
+
+[[fonts]]
 id = "comic-neue"
 family = "Comic Neue"
 category = "comic"

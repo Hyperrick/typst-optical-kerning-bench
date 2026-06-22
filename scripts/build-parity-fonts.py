@@ -48,6 +48,13 @@ PARITY_FONTS = (
         axes=(),
     ),
     ParityFont(
+        font_id="lobster",
+        source="corpus/fonts/lobster.ttf",
+        family="Optikern Lobster NoLiga",
+        output_name="optikern-lobster-regular-noliga.ttf",
+        axes=(),
+    ),
+    ParityFont(
         font_id="comic-neue",
         source="corpus/fonts/comic-neue.ttf",
         family="Optikern Comic Neue NoLiga",
