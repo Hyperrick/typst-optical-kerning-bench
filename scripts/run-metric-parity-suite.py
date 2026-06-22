@@ -343,6 +343,9 @@ def write_contact_sheet(out: Path, report: dict) -> None:
         draw.text((16, y + 38), entry["sample"], fill=(0, 0, 0), font=font)
         draw.text((16, y + 58), width_delta(entry, "metricParity"), fill=(50, 50, 50), font=font)
         paste_center(canvas, out / entry["images"]["metricOverlay"], (label_w + 12, y + 12, width - 12, y + row_h - 12))
+    for x in [label_w, width - 1]:
+        draw.line((x, 0, x, height), fill=(185, 185, 185), width=2)
+    draw.line((0, header_h, width, header_h), fill=(185, 185, 185), width=2)
     canvas.save(out / "contact-sheet.png")
 
 

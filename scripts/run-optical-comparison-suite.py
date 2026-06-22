@@ -346,6 +346,7 @@ def write_contact_sheet(out: Path, report: dict) -> None:
     draw.text((16, 38), report_order_label(report), fill=(60, 60, 60), font=small)
     for i, col in enumerate(cols):
         draw.text((label_w + i * col_w + 12, 18), col, fill=(0, 0, 0), font=font)
+    column_lines = [label_w + i * col_w for i in range(len(cols) + 1)]
     for index, entry in enumerate(rows):
         y = header_h + index * row_h
         score = entry["opticalScore"]
@@ -379,6 +380,9 @@ def write_contact_sheet(out: Path, report: dict) -> None:
                     y + row_h - 14,
                 ),
             )
+    for x in column_lines:
+        draw.line((x, 0, x, height), fill=(185, 185, 185), width=2)
+    draw.line((0, header_h, width, header_h), fill=(185, 185, 185), width=2)
     canvas.save(out / "contact-sheet.png")
 
 
