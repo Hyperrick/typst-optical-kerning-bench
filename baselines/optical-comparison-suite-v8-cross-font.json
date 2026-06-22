@@ -106,18 +106,18 @@
       },
       "opticalScore": {
         "status": "measured",
-        "scoreEm": 0.04126315484313418,
-        "absoluteWidthDeltaEm": 0.036,
-        "widthDeltaEm": 0.036,
-        "inkPositionMeanAbsEm": 0.04126315484313418,
-        "segmentCenterMeanAbsEm": null
+        "scoreEm": 0.014885764622267886,
+        "absoluteWidthDeltaEm": 0.0048,
+        "widthDeltaEm": -0.0048,
+        "inkPositionMeanAbsEm": 0.011978794611128975,
+        "segmentCenterMeanAbsEm": 0.014885764622267886
       },
       "deltas": [
         {
           "display": "G|o",
           "leftGlyphId": 87,
           "rightGlyphId": 481,
-          "deltaEm": -0.095832,
+          "deltaEm": -0.054970987,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": -0.09269066
         },
@@ -398,18 +398,18 @@
       },
       "opticalScore": {
         "status": "measured",
-        "scoreEm": 0.1392,
-        "absoluteWidthDeltaEm": 0.1392,
-        "widthDeltaEm": -0.1392,
-        "inkPositionMeanAbsEm": 0.08322245285858157,
-        "segmentCenterMeanAbsEm": 0.10165263155776369
+        "scoreEm": 0.036,
+        "absoluteWidthDeltaEm": 0.036,
+        "widthDeltaEm": -0.036,
+        "inkPositionMeanAbsEm": 0.02007027864896427,
+        "segmentCenterMeanAbsEm": 0.025726718946178423
       },
       "deltas": [
         {
           "display": "A|V",
           "leftGlyphId": 2,
           "rightGlyphId": 456,
-          "deltaEm": -0.056094587,
+          "deltaEm": -0.08209459,
           "metricDeltaEm": -0.068359375,
           "opticalDeltaEm": -0.019300228
         },
@@ -417,7 +417,7 @@
           "display": "V|A",
           "leftGlyphId": 456,
           "rightGlyphId": 2,
-          "deltaEm": -0.0554201,
+          "deltaEm": -0.0814201,
           "metricDeltaEm": -0.068359375,
           "opticalDeltaEm": -0.016614785
         },
@@ -425,7 +425,7 @@
           "display": "A|T",
           "leftGlyphId": 2,
           "rightGlyphId": 411,
-          "deltaEm": -0.08496094,
+          "deltaEm": -0.11096094,
           "metricDeltaEm": -0.08496094,
           "opticalDeltaEm": -0.09647946
         },
@@ -433,7 +433,7 @@
           "display": "T|A",
           "leftGlyphId": 411,
           "rightGlyphId": 2,
-          "deltaEm": -0.08496094,
+          "deltaEm": -0.11096094,
           "metricDeltaEm": -0.08496094,
           "opticalDeltaEm": -0.09435152
         },
@@ -561,18 +561,18 @@
       },
       "opticalScore": {
         "status": "measured",
-        "scoreEm": 0.024,
-        "absoluteWidthDeltaEm": 0.024,
-        "widthDeltaEm": -0.024,
-        "inkPositionMeanAbsEm": 0.016362745972418033,
-        "segmentCenterMeanAbsEm": 0.017705928139956268
+        "scoreEm": 0.005460527667846642,
+        "absoluteWidthDeltaEm": 0.0,
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.005460527667846642,
+        "segmentCenterMeanAbsEm": 0.0014800184279523364
       },
       "deltas": [
         {
           "display": "W|A",
           "leftGlyphId": 459,
           "rightGlyphId": 2,
-          "deltaEm": -0.055748,
+          "deltaEm": -0.067748,
           "metricDeltaEm": -0.056640625,
           "opticalDeltaEm": 0.0
         },
@@ -580,7 +580,7 @@
           "display": "A|V",
           "leftGlyphId": 2,
           "rightGlyphId": 456,
-          "deltaEm": -0.056094587,
+          "deltaEm": -0.06809459,
           "metricDeltaEm": -0.068359375,
           "opticalDeltaEm": -0.019300228
         },
@@ -724,18 +724,18 @@
       },
       "opticalScore": {
         "status": "measured",
-        "scoreEm": 0.09119999999999999,
-        "absoluteWidthDeltaEm": 0.09119999999999999,
-        "widthDeltaEm": -0.09119999999999999,
-        "inkPositionMeanAbsEm": 0.05054561402272924,
-        "segmentCenterMeanAbsEm": null
+        "scoreEm": 0.0192,
+        "absoluteWidthDeltaEm": 0.0192,
+        "widthDeltaEm": -0.0192,
+        "inkPositionMeanAbsEm": 0.01108123657717022,
+        "segmentCenterMeanAbsEm": 0.011475929846238159
       },
       "deltas": [
         {
           "display": "T|o",
           "leftGlyphId": 411,
           "rightGlyphId": 790,
-          "deltaEm": -0.105,
+          "deltaEm": -0.129,
           "metricDeltaEm": -0.078125,
           "opticalDeltaEm": -0.072303765
         },
@@ -743,7 +743,7 @@
           "display": "o|T",
           "leftGlyphId": 790,
           "rightGlyphId": 411,
-          "deltaEm": -0.078125,
+          "deltaEm": -0.102125004,
           "metricDeltaEm": -0.078125,
           "opticalDeltaEm": -0.07318154
         },
@@ -751,7 +751,7 @@
           "display": "T|a",
           "leftGlyphId": 411,
           "rightGlyphId": 507,
-          "deltaEm": -0.10324219,
+          "deltaEm": -0.1272422,
           "metricDeltaEm": -0.07324219,
           "opticalDeltaEm": -0.105992
         },
@@ -943,18 +943,18 @@
       },
       "opticalScore": {
         "status": "measured",
-        "scoreEm": 0.0936,
-        "absoluteWidthDeltaEm": 0.0936,
-        "widthDeltaEm": -0.0936,
-        "inkPositionMeanAbsEm": 0.040062191681821006,
-        "segmentCenterMeanAbsEm": 0.037423701047380034
+        "scoreEm": 0.01281966792689072,
+        "absoluteWidthDeltaEm": 0.012,
+        "widthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.011059057516682319,
+        "segmentCenterMeanAbsEm": 0.01281966792689072
       },
       "deltas": [
         {
           "display": "O|p",
           "leftGlyphId": 321,
           "rightGlyphId": 843,
-          "deltaEm": -0.02,
+          "deltaEm": -0.03,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": 0.0
         },
@@ -962,7 +962,7 @@
           "display": "p|e",
           "leftGlyphId": 843,
           "rightGlyphId": 614,
-          "deltaEm": -0.018,
+          "deltaEm": -0.03,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": 0.0
         },
@@ -970,7 +970,7 @@
           "display": "e|n",
           "leftGlyphId": 614,
           "rightGlyphId": 773,
-          "deltaEm": -0.018,
+          "deltaEm": -0.03,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": 0.0
         },
@@ -978,7 +978,7 @@
           "display": "n|T",
           "leftGlyphId": 773,
           "rightGlyphId": 411,
-          "deltaEm": -0.068359375,
+          "deltaEm": -0.09235938,
           "metricDeltaEm": -0.068359375,
           "opticalDeltaEm": -0.06956983
         },
@@ -986,7 +986,7 @@
           "display": "T|y",
           "leftGlyphId": 411,
           "rightGlyphId": 998,
-          "deltaEm": -0.0925,
+          "deltaEm": -0.116500005,
           "metricDeltaEm": -0.0625,
           "opticalDeltaEm": -0.10258183
         },
@@ -994,7 +994,7 @@
           "display": "y|p",
           "leftGlyphId": 998,
           "rightGlyphId": 843,
-          "deltaEm": -0.018,
+          "deltaEm": -0.03,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": 0.0
         },
@@ -1002,7 +1002,7 @@
           "display": "p|e",
           "leftGlyphId": 843,
           "rightGlyphId": 614,
-          "deltaEm": -0.018,
+          "deltaEm": -0.03,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": 0.0
         }
@@ -1206,209 +1206,6 @@
   ],
   "worstCases": [
     {
-      "fontId": "inter",
-      "fontFamily": "Optikern Inter NoLiga",
-      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-noliga.ttf",
-      "sample": "AVATAR",
-      "metricGate": {
-        "thresholdEm": 0.02,
-        "inkThresholdEm": 0.02,
-        "widthDeltaEm": 0.012,
-        "absoluteWidthDeltaEm": 0.012,
-        "inkPositionMeanAbsEm": 0.0056644069657961265,
-        "status": "valid-for-optical-tuning",
-        "validForOpticalTuning": true
-      },
-      "opticalScore": {
-        "status": "measured",
-        "scoreEm": 0.1392,
-        "absoluteWidthDeltaEm": 0.1392,
-        "widthDeltaEm": -0.1392,
-        "inkPositionMeanAbsEm": 0.08322245285858157,
-        "segmentCenterMeanAbsEm": 0.10165263155776369
-      },
-      "deltas": [
-        {
-          "display": "A|V",
-          "leftGlyphId": 2,
-          "rightGlyphId": 456,
-          "deltaEm": -0.056094587,
-          "metricDeltaEm": -0.068359375,
-          "opticalDeltaEm": -0.019300228
-        },
-        {
-          "display": "V|A",
-          "leftGlyphId": 456,
-          "rightGlyphId": 2,
-          "deltaEm": -0.0554201,
-          "metricDeltaEm": -0.068359375,
-          "opticalDeltaEm": -0.016614785
-        },
-        {
-          "display": "A|T",
-          "leftGlyphId": 2,
-          "rightGlyphId": 411,
-          "deltaEm": -0.08496094,
-          "metricDeltaEm": -0.08496094,
-          "opticalDeltaEm": -0.09647946
-        },
-        {
-          "display": "T|A",
-          "leftGlyphId": 411,
-          "rightGlyphId": 2,
-          "deltaEm": -0.08496094,
-          "metricDeltaEm": -0.08496094,
-          "opticalDeltaEm": -0.09435152
-        },
-        {
-          "display": "A|R",
-          "leftGlyphId": 2,
-          "rightGlyphId": 384,
-          "deltaEm": -0.013267531,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        }
-      ]
-    },
-    {
-      "fontId": "inter",
-      "fontFamily": "Optikern Inter NoLiga",
-      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-noliga.ttf",
-      "sample": "OpenType",
-      "metricGate": {
-        "thresholdEm": 0.02,
-        "inkThresholdEm": 0.02,
-        "widthDeltaEm": 0.0,
-        "absoluteWidthDeltaEm": 0.0,
-        "inkPositionMeanAbsEm": 0.00197345638906928,
-        "status": "valid-for-optical-tuning",
-        "validForOpticalTuning": true
-      },
-      "opticalScore": {
-        "status": "measured",
-        "scoreEm": 0.0936,
-        "absoluteWidthDeltaEm": 0.0936,
-        "widthDeltaEm": -0.0936,
-        "inkPositionMeanAbsEm": 0.040062191681821006,
-        "segmentCenterMeanAbsEm": 0.037423701047380034
-      },
-      "deltas": [
-        {
-          "display": "O|p",
-          "leftGlyphId": 321,
-          "rightGlyphId": 843,
-          "deltaEm": -0.02,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        },
-        {
-          "display": "p|e",
-          "leftGlyphId": 843,
-          "rightGlyphId": 614,
-          "deltaEm": -0.018,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        },
-        {
-          "display": "e|n",
-          "leftGlyphId": 614,
-          "rightGlyphId": 773,
-          "deltaEm": -0.018,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        },
-        {
-          "display": "n|T",
-          "leftGlyphId": 773,
-          "rightGlyphId": 411,
-          "deltaEm": -0.068359375,
-          "metricDeltaEm": -0.068359375,
-          "opticalDeltaEm": -0.06956983
-        },
-        {
-          "display": "T|y",
-          "leftGlyphId": 411,
-          "rightGlyphId": 998,
-          "deltaEm": -0.0925,
-          "metricDeltaEm": -0.0625,
-          "opticalDeltaEm": -0.10258183
-        },
-        {
-          "display": "y|p",
-          "leftGlyphId": 998,
-          "rightGlyphId": 843,
-          "deltaEm": -0.018,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        },
-        {
-          "display": "p|e",
-          "leftGlyphId": 843,
-          "rightGlyphId": 614,
-          "deltaEm": -0.018,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        }
-      ]
-    },
-    {
-      "fontId": "inter",
-      "fontFamily": "Optikern Inter NoLiga",
-      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-noliga.ttf",
-      "sample": "ToTaL",
-      "metricGate": {
-        "thresholdEm": 0.02,
-        "inkThresholdEm": 0.02,
-        "widthDeltaEm": 0.0,
-        "absoluteWidthDeltaEm": 0.0,
-        "inkPositionMeanAbsEm": 0.002920171769926743,
-        "status": "valid-for-optical-tuning",
-        "validForOpticalTuning": true
-      },
-      "opticalScore": {
-        "status": "measured",
-        "scoreEm": 0.09119999999999999,
-        "absoluteWidthDeltaEm": 0.09119999999999999,
-        "widthDeltaEm": -0.09119999999999999,
-        "inkPositionMeanAbsEm": 0.05054561402272924,
-        "segmentCenterMeanAbsEm": null
-      },
-      "deltas": [
-        {
-          "display": "T|o",
-          "leftGlyphId": 411,
-          "rightGlyphId": 790,
-          "deltaEm": -0.105,
-          "metricDeltaEm": -0.078125,
-          "opticalDeltaEm": -0.072303765
-        },
-        {
-          "display": "o|T",
-          "leftGlyphId": 790,
-          "rightGlyphId": 411,
-          "deltaEm": -0.078125,
-          "metricDeltaEm": -0.078125,
-          "opticalDeltaEm": -0.07318154
-        },
-        {
-          "display": "T|a",
-          "leftGlyphId": 411,
-          "rightGlyphId": 507,
-          "deltaEm": -0.10324219,
-          "metricDeltaEm": -0.07324219,
-          "opticalDeltaEm": -0.105992
-        },
-        {
-          "display": "a|L",
-          "leftGlyphId": 507,
-          "rightGlyphId": 281,
-          "deltaEm": -0.012196511,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        }
-      ]
-    },
-    {
       "fontId": "libre-baskerville",
       "fontFamily": "Optikern Libre Baskerville NoLiga",
       "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-noliga.ttf",
@@ -1533,87 +1330,6 @@
           "leftGlyphId": 639,
           "rightGlyphId": 639,
           "deltaEm": -0.024,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        }
-      ]
-    },
-    {
-      "fontId": "libre-baskerville",
-      "fontFamily": "Optikern Libre Baskerville NoLiga",
-      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-noliga.ttf",
-      "sample": "Goldfish",
-      "metricGate": {
-        "thresholdEm": 0.02,
-        "inkThresholdEm": 0.02,
-        "widthDeltaEm": 0.012,
-        "absoluteWidthDeltaEm": 0.012,
-        "inkPositionMeanAbsEm": 0.0058875045665695395,
-        "status": "valid-for-optical-tuning",
-        "validForOpticalTuning": true
-      },
-      "opticalScore": {
-        "status": "measured",
-        "scoreEm": 0.04126315484313418,
-        "absoluteWidthDeltaEm": 0.036,
-        "widthDeltaEm": 0.036,
-        "inkPositionMeanAbsEm": 0.04126315484313418,
-        "segmentCenterMeanAbsEm": null
-      },
-      "deltas": [
-        {
-          "display": "G|o",
-          "leftGlyphId": 87,
-          "rightGlyphId": 481,
-          "deltaEm": -0.095832,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": -0.09269066
-        },
-        {
-          "display": "o|l",
-          "leftGlyphId": 481,
-          "rightGlyphId": 450,
-          "deltaEm": -0.013088331,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        },
-        {
-          "display": "l|d",
-          "leftGlyphId": 450,
-          "rightGlyphId": 349,
-          "deltaEm": -0.013088331,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        },
-        {
-          "display": "d|f",
-          "leftGlyphId": 349,
-          "rightGlyphId": 388,
-          "deltaEm": 0.0,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        },
-        {
-          "display": "f|i",
-          "leftGlyphId": 388,
-          "rightGlyphId": 415,
-          "deltaEm": 0.011999965,
-          "metricDeltaEm": 0.011999965,
-          "opticalDeltaEm": 0.0
-        },
-        {
-          "display": "i|s",
-          "leftGlyphId": 415,
-          "rightGlyphId": 530,
-          "deltaEm": 0.0,
-          "metricDeltaEm": 0.0,
-          "opticalDeltaEm": 0.0
-        },
-        {
-          "display": "s|h",
-          "leftGlyphId": 530,
-          "rightGlyphId": 403,
-          "deltaEm": -0.013088331,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": 0.0
         }
@@ -1745,48 +1461,64 @@
       "fontId": "inter",
       "fontFamily": "Optikern Inter NoLiga",
       "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-noliga.ttf",
-      "sample": "WAVY",
+      "sample": "AVATAR",
       "metricGate": {
         "thresholdEm": 0.02,
         "inkThresholdEm": 0.02,
-        "widthDeltaEm": 0.0096,
-        "absoluteWidthDeltaEm": 0.0096,
-        "inkPositionMeanAbsEm": 0.004952306050802832,
+        "widthDeltaEm": 0.012,
+        "absoluteWidthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.0056644069657961265,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
       "opticalScore": {
         "status": "measured",
-        "scoreEm": 0.024,
-        "absoluteWidthDeltaEm": 0.024,
-        "widthDeltaEm": -0.024,
-        "inkPositionMeanAbsEm": 0.016362745972418033,
-        "segmentCenterMeanAbsEm": 0.017705928139956268
+        "scoreEm": 0.036,
+        "absoluteWidthDeltaEm": 0.036,
+        "widthDeltaEm": -0.036,
+        "inkPositionMeanAbsEm": 0.02007027864896427,
+        "segmentCenterMeanAbsEm": 0.025726718946178423
       },
       "deltas": [
-        {
-          "display": "W|A",
-          "leftGlyphId": 459,
-          "rightGlyphId": 2,
-          "deltaEm": -0.055748,
-          "metricDeltaEm": -0.056640625,
-          "opticalDeltaEm": 0.0
-        },
         {
           "display": "A|V",
           "leftGlyphId": 2,
           "rightGlyphId": 456,
-          "deltaEm": -0.056094587,
+          "deltaEm": -0.08209459,
           "metricDeltaEm": -0.068359375,
           "opticalDeltaEm": -0.019300228
         },
         {
-          "display": "V|Y",
+          "display": "V|A",
           "leftGlyphId": 456,
-          "rightGlyphId": 472,
-          "deltaEm": 0.0,
+          "rightGlyphId": 2,
+          "deltaEm": -0.0814201,
+          "metricDeltaEm": -0.068359375,
+          "opticalDeltaEm": -0.016614785
+        },
+        {
+          "display": "A|T",
+          "leftGlyphId": 2,
+          "rightGlyphId": 411,
+          "deltaEm": -0.11096094,
+          "metricDeltaEm": -0.08496094,
+          "opticalDeltaEm": -0.09647946
+        },
+        {
+          "display": "T|A",
+          "leftGlyphId": 411,
+          "rightGlyphId": 2,
+          "deltaEm": -0.11096094,
+          "metricDeltaEm": -0.08496094,
+          "opticalDeltaEm": -0.09435152
+        },
+        {
+          "display": "A|R",
+          "leftGlyphId": 2,
+          "rightGlyphId": 384,
+          "deltaEm": -0.013267531,
           "metricDeltaEm": 0.0,
-          "opticalDeltaEm": -0.08120909
+          "opticalDeltaEm": 0.0
         }
       ]
     },
@@ -1868,6 +1600,234 @@
           "deltaEm": -0.014681552,
           "metricDeltaEm": 0.0,
           "opticalDeltaEm": 0.0
+        }
+      ]
+    },
+    {
+      "fontId": "eb-garamond",
+      "fontFamily": "Optikern EB Garamond NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-eb-garamond-regular-static-noliga.ttf",
+      "sample": "10.000",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0021825462217588774,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "opticalScore": {
+        "status": "measured",
+        "scoreEm": 0.022980902968094703,
+        "absoluteWidthDeltaEm": 0.0192,
+        "widthDeltaEm": 0.0192,
+        "inkPositionMeanAbsEm": 0.021558929776075746,
+        "segmentCenterMeanAbsEm": 0.022980902968094703
+      },
+      "deltas": [
+        {
+          "display": "1|0",
+          "leftGlyphId": 2254,
+          "rightGlyphId": 2253,
+          "deltaEm": -0.04,
+          "metricDeltaEm": 0.0,
+          "opticalDeltaEm": 0.0
+        },
+        {
+          "display": "0|.",
+          "leftGlyphId": 2253,
+          "rightGlyphId": 2456,
+          "deltaEm": -0.01,
+          "metricDeltaEm": 0.0,
+          "opticalDeltaEm": 0.0
+        },
+        {
+          "display": ".|0",
+          "leftGlyphId": 2456,
+          "rightGlyphId": 2253,
+          "deltaEm": -0.01,
+          "metricDeltaEm": 0.0,
+          "opticalDeltaEm": 0.0
+        },
+        {
+          "display": "0|0",
+          "leftGlyphId": 2253,
+          "rightGlyphId": 2253,
+          "deltaEm": -0.024,
+          "metricDeltaEm": 0.0,
+          "opticalDeltaEm": 0.0
+        },
+        {
+          "display": "0|0",
+          "leftGlyphId": 2253,
+          "rightGlyphId": 2253,
+          "deltaEm": -0.024,
+          "metricDeltaEm": 0.0,
+          "opticalDeltaEm": 0.0
+        }
+      ]
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Optikern Libre Baskerville NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-noliga.ttf",
+      "sample": "ToTaL",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0096,
+        "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004134745539762076,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "opticalScore": {
+        "status": "measured",
+        "scoreEm": 0.021599999999999998,
+        "absoluteWidthDeltaEm": 0.021599999999999998,
+        "widthDeltaEm": 0.021599999999999998,
+        "inkPositionMeanAbsEm": 0.009869059307645645,
+        "segmentCenterMeanAbsEm": 0.011303116341272448
+      },
+      "deltas": [
+        {
+          "display": "T|o",
+          "leftGlyphId": 233,
+          "rightGlyphId": 481,
+          "deltaEm": -0.14,
+          "metricDeltaEm": -0.11100006,
+          "opticalDeltaEm": -0.07519954
+        },
+        {
+          "display": "o|T",
+          "leftGlyphId": 481,
+          "rightGlyphId": 233,
+          "deltaEm": -0.14,
+          "metricDeltaEm": -0.11400008,
+          "opticalDeltaEm": -0.07580031
+        },
+        {
+          "display": "T|a",
+          "leftGlyphId": 233,
+          "rightGlyphId": 306,
+          "deltaEm": -0.13342294,
+          "metricDeltaEm": -0.10399997,
+          "opticalDeltaEm": -0.10385565
+        },
+        {
+          "display": "a|L",
+          "leftGlyphId": 306,
+          "rightGlyphId": 140,
+          "deltaEm": 0.0,
+          "metricDeltaEm": 0.0,
+          "opticalDeltaEm": 0.0
+        }
+      ]
+    },
+    {
+      "fontId": "inter",
+      "fontFamily": "Optikern Inter NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-inter-regular-opsz14-static-noliga.ttf",
+      "sample": "ToTaL",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.002920171769926743,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "opticalScore": {
+        "status": "measured",
+        "scoreEm": 0.0192,
+        "absoluteWidthDeltaEm": 0.0192,
+        "widthDeltaEm": -0.0192,
+        "inkPositionMeanAbsEm": 0.01108123657717022,
+        "segmentCenterMeanAbsEm": 0.011475929846238159
+      },
+      "deltas": [
+        {
+          "display": "T|o",
+          "leftGlyphId": 411,
+          "rightGlyphId": 790,
+          "deltaEm": -0.129,
+          "metricDeltaEm": -0.078125,
+          "opticalDeltaEm": -0.072303765
+        },
+        {
+          "display": "o|T",
+          "leftGlyphId": 790,
+          "rightGlyphId": 411,
+          "deltaEm": -0.102125004,
+          "metricDeltaEm": -0.078125,
+          "opticalDeltaEm": -0.07318154
+        },
+        {
+          "display": "T|a",
+          "leftGlyphId": 411,
+          "rightGlyphId": 507,
+          "deltaEm": -0.1272422,
+          "metricDeltaEm": -0.07324219,
+          "opticalDeltaEm": -0.105992
+        },
+        {
+          "display": "a|L",
+          "leftGlyphId": 507,
+          "rightGlyphId": 281,
+          "deltaEm": -0.012196511,
+          "metricDeltaEm": 0.0,
+          "opticalDeltaEm": 0.0
+        }
+      ]
+    },
+    {
+      "fontId": "libre-baskerville",
+      "fontFamily": "Optikern Libre Baskerville NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-libre-baskerville-regular-static-noliga.ttf",
+      "sample": "WAVY",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0096,
+        "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.002574986309440147,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "opticalScore": {
+        "status": "measured",
+        "scoreEm": 0.01716235259078465,
+        "absoluteWidthDeltaEm": 0.0,
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.01716235259078465,
+        "segmentCenterMeanAbsEm": null
+      },
+      "deltas": [
+        {
+          "display": "W|A",
+          "leftGlyphId": 275,
+          "rightGlyphId": 1,
+          "deltaEm": -0.10392413,
+          "metricDeltaEm": -0.07200003,
+          "opticalDeltaEm": -0.039911564
+        },
+        {
+          "display": "A|V",
+          "leftGlyphId": 1,
+          "rightGlyphId": 270,
+          "deltaEm": -0.110205606,
+          "metricDeltaEm": -0.075999975,
+          "opticalDeltaEm": -0.050271153
+        },
+        {
+          "display": "V|Y",
+          "leftGlyphId": 270,
+          "rightGlyphId": 286,
+          "deltaEm": 0.0,
+          "metricDeltaEm": 0.0,
+          "opticalDeltaEm": -0.080387324
         }
       ]
     }

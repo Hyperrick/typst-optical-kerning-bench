@@ -242,6 +242,145 @@ pub fn evaluate_shaped_pair_with_config(
     })
 }
 
+pub fn evaluate_shaped_run_with_config(
+    font: &FontKit,
+    run: &crate::shape::ShapedRun,
+    config: EvaluationConfig,
+    ligatures: bool,
+) -> Result<Vec<AlgorithmSet>> {
+    let mut results = run
+        .adjacent_pairs()
+        .into_iter()
+        .map(|pair| evaluate_shaped_pair_with_config(font, &pair, config, ligatures))
+        .collect::<Result<Vec<_>>>()?;
+    apply_run_context_adjustments(&mut results, config);
+    Ok(results)
+}
+
+fn apply_run_context_adjustments(results: &mut [AlgorithmSet], config: EvaluationConfig) {
+    let context = RunContext::from_results(results, config);
+    if !context.has_adjustments() {
+        return;
+    }
+
+    for result in results {
+        let pair_class = PairClass::from_chars(result.left, result.right);
+        let Some(output) = result
+            .outputs
+            .iter_mut()
+            .find(|output| output.algorithm == Algorithm::GuardedProfileHybrid)
+        else {
+            continue;
+        };
+        output.delta_em = normalized_delta(
+            output.delta_em
+                + sans_run_context_delta(
+                    output.delta_em,
+                    output.metric_delta_em,
+                    pair_class,
+                    context,
+                ),
+        );
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+struct RunContext {
+    sans_like: bool,
+    strong_upper_metric_pairs: usize,
+    strong_mixed_metric_pairs: usize,
+    lower_pairs: usize,
+}
+
+impl RunContext {
+    fn from_results(results: &[AlgorithmSet], config: EvaluationConfig) -> Self {
+        let mut context = Self {
+            sans_like: sans_like_spacing_profile(config),
+            ..Self::default()
+        };
+        if !context.sans_like {
+            return context;
+        }
+
+        for result in results {
+            let class = PairClass::from_chars(result.left, result.right);
+            let Some(output) = result
+                .outputs
+                .iter()
+                .find(|output| output.algorithm == Algorithm::GuardedProfileHybrid)
+            else {
+                continue;
+            };
+            if class.is_upper_upper() && output.metric_delta_em < -0.050 {
+                context.strong_upper_metric_pairs += 1;
+            }
+            if (class.is_upper_lower() || class.is_lower_upper()) && output.metric_delta_em < -0.050
+            {
+                context.strong_mixed_metric_pairs += 1;
+            }
+            if class.is_lower_lower() {
+                context.lower_pairs += 1;
+            }
+        }
+
+        context
+    }
+
+    fn has_adjustments(self) -> bool {
+        self.sans_like
+            && (self.strong_upper_metric_pairs >= 2 || self.strong_mixed_metric_pairs >= 2)
+    }
+}
+
+fn sans_run_context_delta(
+    adjusted_delta: f32,
+    metric_delta: f32,
+    pair_class: PairClass,
+    context: RunContext,
+) -> f32 {
+    if !context.sans_like {
+        return 0.0;
+    }
+
+    if pair_class.is_upper_upper()
+        && metric_delta < -0.050
+        && context.strong_upper_metric_pairs >= 2
+    {
+        let amount = if context.strong_upper_metric_pairs >= 4 {
+            0.026
+        } else {
+            0.012
+        };
+        return clamp_tightening(adjusted_delta, amount, -0.125);
+    }
+
+    if (pair_class.is_upper_lower() || pair_class.is_lower_upper())
+        && metric_delta < -0.050
+        && context.strong_mixed_metric_pairs >= 2
+    {
+        return clamp_tightening(adjusted_delta, 0.024, -0.130);
+    }
+
+    if context.strong_mixed_metric_pairs >= 2 {
+        if pair_class.is_lower_lower() && adjusted_delta > -0.040 {
+            return clamp_tightening(adjusted_delta, 0.012, -0.040);
+        }
+        if pair_class.is_upper_lower()
+            && metric_delta.abs() < dead_zone()
+            && adjusted_delta > -0.045
+        {
+            return clamp_tightening(adjusted_delta, 0.010, -0.045);
+        }
+    }
+
+    0.0
+}
+
+fn clamp_tightening(adjusted_delta: f32, amount: f32, lower_bound: f32) -> f32 {
+    let target = (adjusted_delta - amount).max(lower_bound);
+    normalized_delta(target - adjusted_delta)
+}
+
 fn nearest_distance_delta(stats: GapStats, target_gap: f32) -> f32 {
     let desired_min = (target_gap * 0.38).clamp(0.018, 0.040);
     if stats.min_gap < desired_min {
@@ -325,6 +464,15 @@ fn guarded_profile_hybrid(
         };
     }
 
+    adjusted += metricless_upper_lower_aperture_guard_delta(
+        metric_delta,
+        adjusted,
+        nearest_delta,
+        stats,
+        config,
+        pair_class,
+        pair_geometry,
+    );
     adjusted += lower_upper_overhang_delta(
         metric_delta,
         optical_delta,
@@ -390,6 +538,37 @@ fn guarded_profile_hybrid(
                 pair_class,
             ),
     )
+}
+
+fn metricless_upper_lower_aperture_guard_delta(
+    metric_delta: f32,
+    adjusted_delta: f32,
+    nearest_delta: f32,
+    stats: GapStats,
+    config: EvaluationConfig,
+    pair_class: PairClass,
+    pair_geometry: PairGeometry,
+) -> f32 {
+    if !pair_class.is_upper_lower()
+        || metric_delta.abs() >= dead_zone()
+        || adjusted_delta >= -dead_zone()
+        || !pair_geometry.right_left_side.is_round_like()
+    {
+        return 0.0;
+    }
+
+    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
+    let safe_min = (config.target_gap_em * 0.42).clamp(0.070, 0.120);
+    if nearest_delta <= nearest_guard && !aperture_risk(stats, config) {
+        return 0.0;
+    }
+    if stats.min_gap > safe_min {
+        return 0.0;
+    }
+
+    let lower_bound = -(config.gap_mad_em * 1.05).clamp(0.045, 0.065);
+    let target = adjusted_delta.max(lower_bound);
+    normalized_delta(target - adjusted_delta)
 }
 
 fn suppress_false_diagonal_opening(
@@ -1150,6 +1329,33 @@ mod tests {
     }
 
     #[test]
+    fn guarded_hybrid_clamps_metricless_upper_lower_aperture_bias() {
+        let stats = GapStats {
+            min_gap: 0.0755,
+            weighted_mean_gap: 0.4507,
+            robust_mean_gap: 0.4544,
+            mad: 0.263,
+            samples: 39,
+        };
+        let config = test_config(0.271, 0.052);
+        let class = PairClass {
+            left: ClusterClass::Upper,
+            right: ClusterClass::Lower,
+        };
+        let geometry = PairGeometry {
+            right_left_side: SideFeatures {
+                roundness: 0.08,
+                stemness: 0.10,
+            },
+            ..PairGeometry::default()
+        };
+
+        let delta = guarded_profile_hybrid(0.0, -0.093, 0.023, stats, config, class, geometry);
+        assert!(delta > -0.060);
+        assert!(delta < -0.045);
+    }
+
+    #[test]
     fn class_aware_hybrid_trusts_upper_lower_metric_pairs() {
         let class = PairClass {
             left: ClusterClass::Upper,
@@ -1506,6 +1712,80 @@ mod tests {
 
         let delta = sans_lowercase_compaction_delta(0.0, -0.012, 0.0, stats, config, class);
         assert_eq!(delta, 0.0);
+    }
+
+    #[test]
+    fn sans_run_context_tightens_kerned_uppercase_runs() {
+        let class = PairClass {
+            left: ClusterClass::Upper,
+            right: ClusterClass::Upper,
+        };
+        let context = RunContext {
+            sans_like: true,
+            strong_upper_metric_pairs: 4,
+            ..RunContext::default()
+        };
+
+        let delta = sans_run_context_delta(-0.085, -0.085, class, context);
+        assert!((delta + 0.026).abs() < 0.001);
+    }
+
+    #[test]
+    fn sans_run_context_leaves_metricless_uppercase_controls_alone() {
+        let class = PairClass {
+            left: ClusterClass::Upper,
+            right: ClusterClass::Upper,
+        };
+        let context = RunContext {
+            sans_like: true,
+            strong_upper_metric_pairs: 4,
+            ..RunContext::default()
+        };
+
+        let delta = sans_run_context_delta(-0.013, 0.0, class, context);
+        assert_eq!(delta, 0.0);
+    }
+
+    #[test]
+    fn sans_run_context_tightens_mixed_case_runs() {
+        let class = PairClass {
+            left: ClusterClass::Upper,
+            right: ClusterClass::Lower,
+        };
+        let context = RunContext {
+            sans_like: true,
+            strong_mixed_metric_pairs: 2,
+            ..RunContext::default()
+        };
+
+        let delta = sans_run_context_delta(-0.092, -0.063, class, context);
+        assert!((delta + 0.024).abs() < 0.001);
+    }
+
+    #[test]
+    fn sans_run_context_limits_lowercase_accumulation_to_mixed_runs() {
+        let class = PairClass {
+            left: ClusterClass::Lower,
+            right: ClusterClass::Lower,
+        };
+        let pure_lower_context = RunContext {
+            sans_like: true,
+            lower_pairs: 5,
+            ..RunContext::default()
+        };
+        let mixed_context = RunContext {
+            sans_like: true,
+            strong_mixed_metric_pairs: 2,
+            lower_pairs: 5,
+            ..RunContext::default()
+        };
+
+        assert_eq!(
+            sans_run_context_delta(-0.018, 0.0, class, pure_lower_context),
+            0.0
+        );
+        let delta = sans_run_context_delta(-0.018, 0.0, class, mixed_context);
+        assert!((delta + 0.012).abs() < 0.001);
     }
 
     fn glyph_from_rects(rects: &[(f32, f32, f32, f32)]) -> GlyphOutline {

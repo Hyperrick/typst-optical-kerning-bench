@@ -74,10 +74,11 @@ cacheable.
 - `guarded-profile-hybrid`: starts from the metric-prior hybrid, then blocks
   negative optical corrections when the nearest contour gap is already small
   but the profile average is inflated by an aperture or counter-like shape.
-  The current V5 pass also adds contact-zone rules for local outline collisions,
-  uppercase punctuation, and round-to-overhang pairs. This is intended to catch
-  cases such as Libre Baskerville `G|o`, EB Garamond `Y|F`, `P|.`, `T|.`, and
-  `o|T` without hard-coding a font or glyph name.
+  The current pass also adds contact-zone rules for local outline collisions,
+  uppercase punctuation, round-to-overhang pairs, and V8 run-context tuning for
+  sans-like display words. This is intended to catch cases such as Libre
+  Baskerville `G|o`, EB Garamond `Y|F`, `P|.`, `T|.`, and `o|T` without
+  hard-coding a font or glyph name.
 - `safe-fallback-only`: preserves metric kerning if it exists; otherwise uses
   the robust optical outlier correction. Monospaced fonts are preserved.
 
@@ -92,6 +93,24 @@ and uppercase pairs.
 The committed V6 behavior blends eligible class-local values into the global
 distribution at a low weight. This keeps the signal available for tuning while
 preserving the more stable V5 behavior.
+
+## V8 Run-Context Notes
+
+V8 evaluates a shaped word as a run, not only as isolated pairs. The guarded
+output is still pair-based, but a small final adjustment can be applied when the
+run looks sans-like and contains multiple strong metric-kerned uppercase or
+mixed-case pairs. The trigger is computed from the font spacing profile, pair
+classes, and existing metric deltas; it does not use font names or sample names.
+
+This keeps the implementation deterministic and cacheable while fixing the
+largest Inter failures from the cross-font matrix. The pass is intentionally
+narrow: serif fonts and metricless uppercase controls stay near their previous
+behavior.
+
+The current guard also clamps metricless upper-lower aperture cases when the
+right glyph is round-like and the nearest contour distance is already critical.
+This fixes the Libre Baskerville `G|o` collision without naming the font or
+sample.
 
 ## Typst Compatibility Constraints
 

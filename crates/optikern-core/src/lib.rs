@@ -9,7 +9,7 @@ mod svg;
 
 pub use algorithms::{
     Algorithm, AlgorithmOutput, AlgorithmSet, EvaluationConfig, evaluate_pair,
-    evaluate_pair_with_config, evaluate_shaped_pair_with_config,
+    evaluate_pair_with_config, evaluate_shaped_pair_with_config, evaluate_shaped_run_with_config,
 };
 pub use font::{FontKit, GlyphMetrics};
 pub use outline::{FlattenOptions, GlyphOutline, LineSegment, Point};

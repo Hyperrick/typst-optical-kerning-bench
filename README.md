@@ -79,10 +79,11 @@ the constraints that make them plausible for a future Typst implementation.
 See [`docs/research-alignment.md`](docs/research-alignment.md) for the external
 sources that shaped the current benchmark rules.
 
-The current leading candidate is `guarded-profile-hybrid`. The V5 pass adds
-contact-zone awareness for local outline collisions, uppercase punctuation, and
-round-to-overhang pairs. See
-[`docs/guarded-v5-review-results.md`](docs/guarded-v5-review-results.md).
+The current leading candidate is `guarded-profile-hybrid`. It combines
+metric-prior kerning, contact-zone awareness, and V8 run-context tuning for
+sans-like display words. See
+[`docs/algorithms.md`](docs/algorithms.md) and
+[`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).
 
 ## Contact Sheet
 

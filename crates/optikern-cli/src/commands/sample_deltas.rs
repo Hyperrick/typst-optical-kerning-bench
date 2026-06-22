@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use anyhow::{Context, Result, anyhow};
 use optikern_core::{
     Algorithm, AlgorithmOutput, EvaluationConfig, FontKit, ShapingOptions,
-    evaluate_shaped_pair_with_config, shape_text,
+    evaluate_shaped_run_with_config, shape_text,
 };
 use serde::Serialize;
 
@@ -39,20 +39,19 @@ pub fn run(
     )?;
 
     let mut pairs = Vec::new();
-    for pair in run.adjacent_pairs() {
-        let result = evaluate_shaped_pair_with_config(&font, &pair, config, ligatures)?;
+    for result in evaluate_shaped_run_with_config(&font, &run, config, ligatures)? {
         let guarded = result
             .outputs
             .iter()
             .find(|output| output.algorithm == Algorithm::GuardedProfileHybrid)
-            .ok_or_else(|| anyhow!("missing guarded output for {}", pair.display))?;
+            .ok_or_else(|| anyhow!("missing guarded output for {}", result.display))?;
         pairs.push(SamplePairDelta {
-            display: pair.display,
-            shaping_text: pair.shaping_text,
-            left_cluster: pair.left_cluster,
-            right_cluster: pair.right_cluster,
-            left_glyph_id: pair.left_glyph_id,
-            right_glyph_id: pair.right_glyph_id,
+            display: result.display,
+            shaping_text: result.shaping_text,
+            left_cluster: result.left_cluster,
+            right_cluster: result.right_cluster,
+            left_glyph_id: result.left_glyph_id,
+            right_glyph_id: result.right_glyph_id,
             delta_em: guarded.delta_em,
             metric_delta_em: guarded.metric_delta_em,
             optical_delta_em: guarded.optical_delta_em,

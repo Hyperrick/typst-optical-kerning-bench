@@ -18,8 +18,8 @@ Fast iteration suite:
 scripts/run-optical-comparison-suite.py \
   --suite fast \
   --metric-baseline baselines/metric-parity-suite-v1.json \
-  --output renders/optical-comparison-suite/no-ligatures-100pt-v7-fast \
-  --baseline-output baselines/optical-comparison-suite-v7-fast.json
+  --output renders/optical-comparison-suite/no-ligatures-100pt-v8-fast \
+  --baseline-output baselines/optical-comparison-suite-v8-fast.json
 ```
 
 Cross-font visual suite:
@@ -59,7 +59,7 @@ The `fast`, `cross-font`, and `full` case lists are explicit JSON files under
 - `contact-sheet.png`: compact visual sheet.
 - `baselines/optical-comparison-suite-v7.json`: compact committed baseline
   with worst cases and pair deltas.
-- `baselines/optical-comparison-suite-v7-fast.json`: compact fast-suite
+- `baselines/optical-comparison-suite-v8-fast.json`: compact fast-suite
   baseline for algorithm iteration.
 - `baselines/metric-parity-suite-v8-cross-font.json`: metric-valid cross-font
   baseline for the visual matrix.
@@ -74,14 +74,15 @@ magenta = Typst Guarded Optical
 black   = overlap
 ```
 
-## Current Result: V7
+## Current Result: V8
 
-The current full suite measured all 30 metric-valid cases. Compared with the
+The latest full 30-case suite is still the V7 reference. Compared with the
 original V1 baseline, V7 reduced mean score from `0.0428em` to `0.0249em` and
 worst-case score from `0.1416em` to `0.0936em`, with no measured score
-regressions.
+regressions. V8 has currently been verified on the 12-case fast suite and the
+18-case cross-font visual matrix.
 
-Worst cases by combined optical score:
+V7 full-suite worst cases by combined optical score:
 
 ```text
 Inter OpenType:       -0.0936em width, 0.0401em ink
@@ -99,37 +100,39 @@ EB To:                -0.0264em width, 0.0119em ink
 In the comparison metric, negative width means the Typst Guarded output is
 wider than InDesign Optical; positive width means Typst Guarded is narrower.
 
-The fast suite measured all 12 selected iteration cases. Its current worst
-cases are Inter `OpenType` (`0.0936em` score), Libre `AVATAR` (`0.0552em`),
-Libre `AV` (`0.0240em`), Libre `ToTaL` (`0.0216em`), and Inter `ipsum`
-(`0.0192em`).
+The V8 fast suite measured all 12 selected iteration cases. Libre `WAVY`
+hit one transient InDesign `-609`; rerunning only that case repaired the suite.
+Its current worst cases are Libre `AVATAR` (`0.0552em` score), Libre `ToTaL`
+(`0.0216em`), Inter `ToTaL` (`0.0192em`), Inter `ipsum` (`0.0192em`), and
+Libre `WAVY` (`0.0172em`).
 
 The V8 cross-font metric suite measured all 18 matrix cases as valid. The
-optical cross-font suite then measured the same 18 cases. Its largest failures
-are Inter `AVATAR` (`0.1392em` score), Inter `OpenType` (`0.0936em`), Inter
-`ToTaL` (`0.0912em`), Libre `AVATAR` (`0.0552em`), Libre `10.000`
-(`0.0456em`), and Libre `Goldfish` (`0.0413em`).
+optical cross-font suite then measured the same 18 cases. A focused local
+aperture guard repaired the visible Libre `Goldfish` `G|o` collision, reducing
+that row from `0.0413em` to `0.0149em`. The largest remaining numeric scores
+are Libre `AVATAR` (`0.0552em`), Libre `10.000` (`0.0456em`), EB `AVATAR`
+(`0.0384em`), EB `ToTaL` (`0.0384em`), and Inter `AVATAR` (`0.0360em`).
 
 ## Interpretation
 
 The current guarded algorithm is much closer to InDesign Optical than V1, but
 still has targeted failures.
 
-Three patterns stand out:
+Three patterns stand out after V8:
 
-- **Inter mixed/lowercase accumulation**: `OpenType` remains the strongest
-  failure. Several small lowercase corrections add up across the word, so V8
-  should guard accumulation instead of applying blanket lowercase compaction.
-- **Inter uppercase/mixed display words**: the cross-font matrix exposes
-  `AVATAR` and `ToTaL` as larger Inter failures than the original fast suite
-  showed. V8 needs to avoid applying serif-style display assumptions to sans
-  uppercase and mixed-case words.
-- **Numeric and punctuation cases**: `1001`, `0123456789`, `V2.0`, and `A10`
-  need a separate low-clamp class rather than sharing normal letter heuristics.
-  The cross-font matrix also shows Libre `10.000` as a useful serif numeric
-  target.
-- **Serif display caps**: `AVATAR` and related uppercase sequences still need
-  careful tuning, but only behind collision and aperture guards.
+- **Sans context improved**: Inter `OpenType`, `ToTaL`, and `WAVY` are now
+  close to InDesign Optical. The run-level V8 pass uses computed sans-like font
+  spacing and metric-kerning density, not font names.
+- **Libre Goldfish collision fixed**: the visible `G|o` collision came from a
+  metricless upper-lower aperture case. The guard now clamps that pair from
+  `-0.0958em` to `-0.0550em` instead of trusting the inflated profile mean.
+- **Inter AVATAR remains the sans stress case**: it is much closer than before,
+  but still the largest Inter row in the cross-font sheet.
+- **Libre/EB display caps are now the main failures**: Libre `AVATAR`, EB
+  `AVATAR`, and EB `ToTaL` need serif-specific contour safeguards.
+- **Numeric and punctuation cases need their own class**: Libre `10.000` is the
+  strongest current numeric target; it should not be tuned with ordinary letter
+  clamps.
 
 Good or near-good controls:
 
@@ -142,11 +145,9 @@ Good or near-good controls:
 The next algorithm pass should stay narrow. The current evidence points to
 three focused changes:
 
-1. Add a lowercase accumulation guard for sans words, using `OpenType`,
-   `valley`, and `ipsum`.
-2. Add a sans display-word guard using Inter `AVATAR` and `ToTaL` so uppercase
-   and mixed-case sans words do not get over-tightened.
-3. Add a numeric/punctuation class with smaller clamps, using `1001`, `V2.0`,
-   `A10`, `10.000`, and Libre `10.000`.
-4. Carefully tune serif display-cap pairs, using Libre `AVATAR` while keeping
-   EB `AV`, `WA`, and `Goldfish` neutral.
+1. Preserve and broaden the local aperture/collision guard for metricless
+   upper-lower pairs without making good `Goldfish` rows wider.
+2. Treat Libre `AVATAR`, EB `AVATAR`, and EB `ToTaL` as visual tuning targets,
+   not as hard failures.
+3. Add a numeric/punctuation class only if Libre `10.000` remains visibly wrong
+   after closer inspection.
