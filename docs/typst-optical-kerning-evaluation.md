@@ -76,6 +76,9 @@ Overlay colors:
 - magenta: Typst Guarded Optical,
 - black: overlap.
 
+Related background notes and external references are collected in
+`docs/research-alignment.md`.
+
 ## Evaluation Pipeline
 
 The suite intentionally compares rendered output, not only internal pair values.
@@ -246,6 +249,8 @@ scripts/run-optical-comparison-suite.py \
   --baseline-output baselines/optical-comparison-suite-five-font-v24.json \
   --retries 1 \
   --preflight-timeout 45
+
+scripts/build-paper-figures.py
 ```
 
 ## What This Suggests For Typst
@@ -271,6 +276,24 @@ The public Typst API could later be discussed separately, for example:
 The benchmark is deliberately not an API proposal yet. Its value is to make the
 behavioral tradeoffs visible before an implementation proposal is made.
 
+## Claims And Non-Claims
+
+This work claims that the current direction is plausible for Typst: shaped text,
+font outlines, metric priors, dynamic guards, and cached pair/run data can
+produce stable optical-kerning behavior without raster work in the layout path.
+
+It does not claim that:
+
+- InDesign Optical is ground truth,
+- the current algorithm is ready to merge into Typst,
+- the current Latin-focused corpus is enough for all scripts,
+- or a public Typst API has been settled.
+
+The useful result is the evaluation frame itself. It makes future changes
+measurable: a new rule must improve a named visual failure, preserve metric
+parity assumptions, and avoid drifting unrelated no-ligature or ligature
+controls.
+
 ## Evidence Map
 
 The following files are the best starting points for review:
@@ -289,14 +312,14 @@ The large rendered artifacts under `renders/` are intentionally generated
 outputs. They can be reproduced from the commands above; selected small figures
 are committed under `docs/figures/` for easier review.
 
-## Remaining Work
+## Limitations And Next Work
 
 - Broaden the font corpus while keeping the parity gates strict.
 - Add more display-size words and number cases that designers actually care
   about.
 - Keep optimizing only when a failure has a dynamic shape cause, not a
   font-name-specific exception.
-- Turn the current Markdown draft into a polished public article with selected
-  images from the V24 contact sheets.
+- Turn this review draft into a polished public article with a shorter story
+  arc and fewer implementation details.
 - Decide which result tables and overlays should be committed, released, or
   generated in CI.

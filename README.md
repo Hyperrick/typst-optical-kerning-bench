@@ -38,6 +38,7 @@ scripts/run-goldfish-parity.py --baseline-output baselines/goldfish-parity-v1.js
 scripts/run-goldfish-parity.py --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json
 scripts/run-metric-parity-suite.py
 scripts/run-optical-comparison-suite.py
+scripts/build-paper-figures.py
 ```
 
 The suite performs a small InDesign automation preflight before writing metric
