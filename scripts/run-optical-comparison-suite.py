@@ -276,13 +276,14 @@ def link(path: str) -> str:
 def write_html(out: Path, report: dict) -> None:
     rows_to_render = report_rows(report)
     rows = []
-    previous_font = None
+    previous_group = None
     for entry in rows_to_render:
         score = entry.get("opticalScore", {})
         images = entry.get("images", {})
         overlay = images.get("opticalOverlay")
         overlay_html = "" if not overlay else f"<img src=\"{link(overlay)}\" alt=\"Optical overlay\">"
-        group_class = "group-start" if previous_font is not None and previous_font != entry["fontId"] else ""
+        group = report_group_key(report, entry)
+        group_class = "group-start" if previous_group is not None and previous_group != group else ""
         rows.append(
             f"<tr class=\"{group_class}\">"
             f"<td>{html.escape(entry['fontFamily'])}</td>"
@@ -293,7 +294,7 @@ def write_html(out: Path, report: dict) -> None:
             f"<td>{overlay_html}</td>"
             "</tr>"
         )
-        previous_font = entry["fontId"]
+        previous_group = group
     html_text = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -348,8 +349,9 @@ def write_contact_sheet(out: Path, report: dict) -> None:
     for index, entry in enumerate(rows):
         y = header_h + index * row_h
         score = entry["opticalScore"]
-        outline = (170, 170, 170) if is_group_start(rows, index) else (220, 220, 220)
-        line_width = 3 if is_group_start(rows, index) else 1
+        group_start = is_group_start(report, rows, index)
+        outline = (170, 170, 170) if group_start else (220, 220, 220)
+        line_width = 3 if group_start else 1
         draw.rectangle((0, y, width, y + row_h), outline=outline, width=line_width)
         draw.text((16, y + 14), entry["fontFamily"], fill=(0, 0, 0), font=title_font)
         draw.text((16, y + 36), entry["sample"], fill=(0, 0, 0), font=font)
@@ -392,12 +394,18 @@ def report_rows(report: dict) -> list[dict]:
 
 def report_order_label(report: dict) -> str:
     if report.get("suite") == "cross-font":
-        return "grouped by font; samples keep suite order"
+        return "grouped by sample; fonts keep suite order"
     return "sorted by worst guarded-vs-InDesign-optical score"
 
 
-def is_group_start(rows: list[dict], index: int) -> bool:
-    return index > 0 and rows[index - 1]["fontId"] != rows[index]["fontId"]
+def is_group_start(report: dict, rows: list[dict], index: int) -> bool:
+    return index > 0 and report_group_key(report, rows[index - 1]) != report_group_key(report, rows[index])
+
+
+def report_group_key(report: dict, entry: dict) -> str:
+    if report.get("suite") == "cross-font":
+        return entry["sample"]
+    return entry["fontId"]
 
 
 def paste_center(canvas: Image.Image, image_path: Path, box: tuple[int, int, int, int]) -> None:
