@@ -37,6 +37,7 @@ scripts/run-goldfish-parity.py --baseline-output baselines/goldfish-parity-v1.js
 .venv-fonttools/bin/python scripts/build-parity-fonts.py
 scripts/run-goldfish-parity.py --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json
 scripts/run-metric-parity-suite.py
+scripts/run-optical-comparison-suite.py
 ```
 
 ## InDesign Baselines
@@ -164,6 +165,17 @@ scripts/run-metric-parity-suite.py \
 ```
 
 See [`docs/metric-parity-suite.md`](docs/metric-parity-suite.md).
+
+Once metric parity passes, run the optical comparison suite:
+
+```sh
+scripts/run-optical-comparison-suite.py \
+  --metric-baseline baselines/metric-parity-suite-v1.json \
+  --output renders/optical-comparison-suite/no-ligatures-100pt \
+  --baseline-output baselines/optical-comparison-suite-v1.json
+```
+
+See [`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).
 
 ## Design Constraints
 

@@ -90,6 +90,7 @@ if [[ "$metric_only" == "false" ]]; then
   echo "== Deltas =="
   cargo run -q -p optikern-cli -- sample-deltas \
     --font-id "$font_id" \
+    --font-path "$font_path" \
     --text "$text" \
     --ligatures="$ligatures" \
     > "$output_dir/metrics/guarded-deltas.json"

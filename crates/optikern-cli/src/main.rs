@@ -64,6 +64,8 @@ enum Command {
         #[arg(long)]
         font_id: String,
         #[arg(long)]
+        font_path: Option<PathBuf>,
+        #[arg(long)]
         text: String,
         #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
         ligatures: bool,
@@ -88,8 +90,15 @@ fn main() -> Result<()> {
         } => commands::triad_compare::run(&cli.root, run_indesign, !no_compile),
         Command::SampleDeltas {
             font_id,
+            font_path,
             text,
             ligatures,
-        } => commands::sample_deltas::run(&cli.root, &font_id, &text, ligatures),
+        } => commands::sample_deltas::run(
+            &cli.root,
+            &font_id,
+            font_path.as_deref(),
+            &text,
+            ligatures,
+        ),
     }
 }

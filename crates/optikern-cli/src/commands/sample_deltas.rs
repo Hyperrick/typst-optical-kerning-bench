@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result, anyhow};
 use optikern_core::{
@@ -9,14 +9,23 @@ use serde::Serialize;
 
 use crate::corpus;
 
-pub fn run(root: &Path, font_id: &str, text: &str, ligatures: bool) -> Result<()> {
+pub fn run(
+    root: &Path,
+    font_id: &str,
+    font_path: Option<&Path>,
+    text: &str,
+    ligatures: bool,
+) -> Result<()> {
     let manifest = corpus::load_fonts(root)?;
     let entry = manifest
         .fonts
         .iter()
         .find(|entry| entry.id == font_id)
         .ok_or_else(|| anyhow!("unknown font id {font_id:?}"))?;
-    let font_path = entry.local_path(root);
+    let font_path = match font_path {
+        Some(path) => resolved_font_path(root, path),
+        None => entry.local_path(root),
+    };
     let font = FontKit::load(&entry.id, &font_path)
         .with_context(|| format!("failed to load {}", font_path.display()))?;
     let config = EvaluationConfig::for_font(&font);
@@ -55,6 +64,7 @@ pub fn run(root: &Path, font_id: &str, text: &str, ligatures: bool) -> Result<()
         schema_version: 1,
         font_id: entry.id.clone(),
         family: entry.family.clone(),
+        font_path: font_path.display().to_string(),
         text: text.to_owned(),
         ligatures,
         pairs,
@@ -63,12 +73,21 @@ pub fn run(root: &Path, font_id: &str, text: &str, ligatures: bool) -> Result<()
     Ok(())
 }
 
+fn resolved_font_path(root: &Path, path: &Path) -> PathBuf {
+    if path.is_absolute() {
+        path.to_path_buf()
+    } else {
+        root.join(path)
+    }
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct SampleDeltaReport {
     schema_version: u32,
     font_id: String,
     family: String,
+    font_path: String,
     text: String,
     ligatures: bool,
     pairs: Vec<SamplePairDelta>,

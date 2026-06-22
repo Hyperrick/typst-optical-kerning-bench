@@ -21,6 +21,9 @@ scripts/run-goldfish-parity.py \
 scripts/run-metric-parity-suite.py \
   --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json \
   --baseline-output baselines/metric-parity-suite-v1.json
+scripts/run-optical-comparison-suite.py \
+  --metric-baseline baselines/metric-parity-suite-v1.json \
+  --baseline-output baselines/optical-comparison-suite-v1.json
 cargo test
 ```
 
@@ -42,6 +45,9 @@ cargo test
   strict no-ligature metric parity gate using isolated static benchmark fonts.
 - `renders/metric-parity-suite/no-ligatures-100pt/summary.json`:
   strict multi-sample metric-only parity gate using the same sandbox fonts.
+- `renders/optical-comparison-suite/no-ligatures-100pt/summary.json`:
+  InDesign Optical vs Typst Guarded Optical for samples that passed metric
+  parity.
 - `renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures/summary.json`:
   individual glyph shape parity before word or kerning comparison.
 
@@ -118,6 +124,15 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   are Inter `WAYFINDER` and `LANDMARK` at `+0.0192em`, still inside the
   `0.02em` width gate. The worst ink-position delta is Inter `LANDMARK` at
   `0.0143em`, inside the `0.02em` ink gate.
+- The optical comparison suite measured all 30 metric-valid cases. The largest
+  current failures are Inter `OpenType` (`-0.1416em` width), Libre
+  `ToTaL` (`-0.1152em`), Libre `WAVY` (`-0.1104em`), and Libre
+  `AVATAR` (`-0.0816em`). Negative width means Typst Guarded is wider than
+  InDesign Optical.
+- The next algorithm pass should focus on stronger uppercase diagonal
+  tightening for Libre Baskerville, avoiding the false-positive `V|Y` opening in
+  `WAVY`, and improving lowercase/mixed-case sans behavior using Inter
+  `OpenType`, `valley`, and `ipsum`.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 
