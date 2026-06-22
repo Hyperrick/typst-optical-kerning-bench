@@ -20,7 +20,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--suite",
-        choices=["fast", "full"],
+        choices=["fast", "cross-font", "full"],
         default="full",
         help="Case set to render. Defaults to full.",
     )
@@ -274,19 +274,17 @@ def link(path: str) -> str:
 
 
 def write_html(out: Path, report: dict) -> None:
-    ranked = sorted(
-        report["cases"],
-        key=lambda entry: entry.get("opticalScore", {}).get("scoreEm", -1),
-        reverse=True,
-    )
+    rows_to_render = report_rows(report)
     rows = []
-    for entry in ranked:
+    previous_font = None
+    for entry in rows_to_render:
         score = entry.get("opticalScore", {})
         images = entry.get("images", {})
         overlay = images.get("opticalOverlay")
         overlay_html = "" if not overlay else f"<img src=\"{link(overlay)}\" alt=\"Optical overlay\">"
+        group_class = "group-start" if previous_font is not None and previous_font != entry["fontId"] else ""
         rows.append(
-            "<tr>"
+            f"<tr class=\"{group_class}\">"
             f"<td>{html.escape(entry['fontFamily'])}</td>"
             f"<td><code>{html.escape(entry['sample'])}</code></td>"
             f"<td>{fmt(score.get('widthDeltaEm'))}</td>"
@@ -295,6 +293,7 @@ def write_html(out: Path, report: dict) -> None:
             f"<td>{overlay_html}</td>"
             "</tr>"
         )
+        previous_font = entry["fontId"]
     html_text = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -306,6 +305,7 @@ def write_html(out: Path, report: dict) -> None:
     table {{ border-collapse: collapse; width: 100%; }}
     th, td {{ border-bottom: 1px solid color-mix(in srgb, CanvasText 18%, transparent); padding: 8px; text-align: left; vertical-align: middle; }}
     th {{ position: sticky; top: 0; background: Canvas; }}
+    tr.group-start td {{ border-top: 3px solid color-mix(in srgb, CanvasText 35%, transparent); }}
     img {{ max-width: 420px; max-height: 96px; background: white; }}
   </style>
 </head>
@@ -323,11 +323,7 @@ def write_html(out: Path, report: dict) -> None:
 
 
 def write_contact_sheet(out: Path, report: dict) -> None:
-    rows = sorted(
-        [entry for entry in report["cases"] if entry["status"] == "ok"],
-        key=lambda entry: entry["opticalScore"]["scoreEm"],
-        reverse=True,
-    )
+    rows = [entry for entry in report_rows(report) if entry["status"] == "ok"]
     if not rows:
         return
     label_w = 430
@@ -346,13 +342,15 @@ def write_contact_sheet(out: Path, report: dict) -> None:
     except OSError:
         title_font = font = small = ImageFont.load_default()
     draw.text((16, 14), "Optical Comparison Suite", fill=(0, 0, 0), font=title_font)
-    draw.text((16, 38), "sorted by worst guarded-vs-InDesign-optical score", fill=(60, 60, 60), font=small)
+    draw.text((16, 38), report_order_label(report), fill=(60, 60, 60), font=small)
     for i, col in enumerate(cols):
         draw.text((label_w + i * col_w + 12, 18), col, fill=(0, 0, 0), font=font)
     for index, entry in enumerate(rows):
         y = header_h + index * row_h
         score = entry["opticalScore"]
-        draw.rectangle((0, y, width, y + row_h), outline=(220, 220, 220))
+        outline = (170, 170, 170) if is_group_start(rows, index) else (220, 220, 220)
+        line_width = 3 if is_group_start(rows, index) else 1
+        draw.rectangle((0, y, width, y + row_h), outline=outline, width=line_width)
         draw.text((16, y + 14), entry["fontFamily"], fill=(0, 0, 0), font=title_font)
         draw.text((16, y + 36), entry["sample"], fill=(0, 0, 0), font=font)
         draw.text(
@@ -380,6 +378,26 @@ def write_contact_sheet(out: Path, report: dict) -> None:
                 ),
             )
     canvas.save(out / "contact-sheet.png")
+
+
+def report_rows(report: dict) -> list[dict]:
+    if report.get("suite") == "cross-font":
+        return list(report["cases"])
+    return sorted(
+        report["cases"],
+        key=lambda entry: entry.get("opticalScore", {}).get("scoreEm", -1),
+        reverse=True,
+    )
+
+
+def report_order_label(report: dict) -> str:
+    if report.get("suite") == "cross-font":
+        return "grouped by font; samples keep suite order"
+    return "sorted by worst guarded-vs-InDesign-optical score"
+
+
+def is_group_start(rows: list[dict], index: int) -> bool:
+    return index > 0 and rows[index - 1]["fontId"] != rows[index]["fontId"]
 
 
 def paste_center(canvas: Image.Image, image_path: Path, box: tuple[int, int, int, int]) -> None:

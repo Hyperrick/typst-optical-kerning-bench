@@ -30,6 +30,15 @@ scripts/run-optical-comparison-suite.py \
   --metric-baseline baselines/metric-parity-suite-v1.json \
   --output renders/optical-comparison-suite/no-ligatures-100pt-v7-fast \
   --baseline-output baselines/optical-comparison-suite-v7-fast.json
+scripts/run-metric-parity-suite.py \
+  --sample-matrix corpus/samples/metric-cross-font-suite.json \
+  --output renders/metric-parity-suite/no-ligatures-100pt-v8-cross-font \
+  --baseline-output baselines/metric-parity-suite-v8-cross-font.json
+scripts/run-optical-comparison-suite.py \
+  --suite cross-font \
+  --metric-baseline baselines/metric-parity-suite-v8-cross-font.json \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-v8-cross-font \
+  --baseline-output baselines/optical-comparison-suite-v8-cross-font.json
 cargo test
 ```
 
@@ -56,6 +65,10 @@ cargo test
   parity.
 - `renders/optical-comparison-suite/no-ligatures-100pt-v7-fast/summary.json`:
   12-case fast optical suite for algorithm iteration.
+- `renders/metric-parity-suite/no-ligatures-100pt-v8-cross-font/summary.json`:
+  18-case metric-valid cross-font matrix.
+- `renders/optical-comparison-suite/no-ligatures-100pt-v8-cross-font/summary.json`:
+  18-case optical cross-font matrix for visual review.
 - `renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures/summary.json`:
   individual glyph shape parity before word or kerning comparison.
 
@@ -140,8 +153,17 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
 - The fast optical suite now selects 12 cases from JSON: seven known failure
   targets and five controls. It completed 12/12 in the background InDesign path;
   InDesign left zero documents open and did not steal focus from Chrome.
+- The V8 cross-font metric suite passes all 18 same-sample matrix cases across
+  EB Garamond, Libre Baskerville, and Inter. The only transient InDesign
+  `-609` failure was EB `ToTaL`; rerunning just that case produced a valid
+  metric gate.
+- The V8 cross-font optical suite measured all 18 matrix cases. It exposed
+  Inter `AVATAR` (`0.1392em`), Inter `OpenType` (`0.0936em`), and Inter
+  `ToTaL` (`0.0912em`) as the largest current failures, followed by Libre
+  `AVATAR`, Libre `10.000`, and Libre `Goldfish`.
 - The next algorithm pass should focus on lowercase accumulation in sans words,
-  a numeric/punctuation-specific class, and careful serif display-cap tuning.
+  a sans display-word guard, a numeric/punctuation-specific class, and careful
+  serif display-cap tuning.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 

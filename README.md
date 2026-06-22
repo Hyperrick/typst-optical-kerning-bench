@@ -170,6 +170,7 @@ Once metric parity passes, run the optical comparison suite:
 
 ```sh
 scripts/run-optical-comparison-suite.py --suite fast
+scripts/run-optical-comparison-suite.py --suite cross-font
 scripts/run-optical-comparison-suite.py --suite full
 ```
 
