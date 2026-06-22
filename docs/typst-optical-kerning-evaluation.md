@@ -2,6 +2,9 @@
 
 Status: review draft for maintainers and typography reviewers.
 
+For a shorter public narrative, see
+[`towards-optical-kerning-in-typst.md`](towards-optical-kerning-in-typst.md).
+
 ## Maintainer Summary
 
 This project is a reproducible evaluation harness for optical kerning
@@ -319,7 +322,7 @@ are committed under `docs/figures/` for easier review.
   about.
 - Keep optimizing only when a failure has a dynamic shape cause, not a
   font-name-specific exception.
-- Turn this review draft into a polished public article with a shorter story
-  arc and fewer implementation details.
+- Keep the public article and this technical review in sync as the benchmark
+  evolves.
 - Decide which result tables and overlays should be committed, released, or
   generated in CI.

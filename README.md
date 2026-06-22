@@ -94,7 +94,9 @@ metric-prior kerning, contact-zone awareness, shaped ligature handling, and
 V24 run-context tuning for sans-like, serif, and connected-script words. See
 [`docs/algorithms.md`](docs/algorithms.md) and
 [`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).
-For a Typst-facing narrative of the current approach, see
+For a short public narrative, see
+[`docs/towards-optical-kerning-in-typst.md`](docs/towards-optical-kerning-in-typst.md).
+For the technical Typst-facing review paper, see
 [`docs/typst-optical-kerning-evaluation.md`](docs/typst-optical-kerning-evaluation.md).
 
 ## Contact Sheet
