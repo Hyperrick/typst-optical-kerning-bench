@@ -116,7 +116,8 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
 - The broader metric-only suite passes all 30 current samples across EB
   Garamond, Libre Baskerville, and Inter. The largest remaining metric deltas
   are Inter `WAYFINDER` and `LANDMARK` at `+0.0192em`, still inside the
-  `0.02em` gate.
+  `0.02em` width gate. The worst ink-position delta is Inter `LANDMARK` at
+  `0.0143em`, inside the `0.02em` ink gate.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 

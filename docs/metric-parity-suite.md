@@ -25,6 +25,7 @@ scripts/run-metric-parity-suite.py \
   --point-size 100 \
   --ligatures false \
   --metric-threshold-em 0.02 \
+  --ink-threshold-em 0.02 \
   --output renders/metric-parity-suite/no-ligatures-100pt \
   --baseline-output baselines/metric-parity-suite-v1.json
 ```
@@ -61,15 +62,16 @@ The current no-ligature sandbox suite passes all 30 cases:
 ```text
 30 / 30 valid
 threshold: 0.02em absolute metric width delta
+ink gate: 0.02em mean ink-position delta
 ```
 
 Worst cases:
 
 ```text
-Inter LANDMARK:  +0.0192em
-Inter WAYFINDER: +0.0192em
-Libre AVATAR:   +0.0120em
-Libre Goldfish: +0.0120em
+Inter LANDMARK:  +0.0192em width, 0.0143em ink
+Inter WAYFINDER: +0.0192em width, 0.0093em ink
+Libre AVATAR:   +0.0120em width, 0.0076em ink
+Libre Goldfish: +0.0120em width, 0.0059em ink
 ```
 
 The Inter long-word cases are close to the gate and should remain visible in

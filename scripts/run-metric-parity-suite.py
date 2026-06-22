@@ -68,6 +68,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dpi", default="300")
     parser.add_argument("--metric-threshold-em", type=float, default=0.02)
     parser.add_argument(
+        "--ink-threshold-em",
+        type=float,
+        default=0.02,
+        help="Maximum mean ink-position delta for Metric-vs-Metric parity.",
+    )
+    parser.add_argument(
         "--output",
         default="renders/metric-parity-suite/no-ligatures-100pt",
     )
@@ -176,7 +182,7 @@ def run_case(
             "indesignMetric": relative_to_out(case_dir / "crops/indesign-metric-ink.png", out),
             "typstMetric": relative_to_out(case_dir / "crops/typst-metric-ink.png", out),
         }
-        apply_metric_gate(entry, args.metric_threshold_em)
+        apply_metric_gate(entry, args.metric_threshold_em, args.ink_threshold_em)
     else:
         entry["metricGate"] = {
             "thresholdEm": args.metric_threshold_em,
@@ -186,14 +192,17 @@ def run_case(
     return entry
 
 
-def apply_metric_gate(entry: dict, threshold_em: float) -> None:
+def apply_metric_gate(entry: dict, width_threshold_em: float, ink_threshold_em: float) -> None:
     metric = entry["comparisons"]["metricParity"]
     width = float(metric["widthDeltaEm"])
-    valid = abs(width) <= threshold_em
+    ink = float(metric["inkPositionMeanAbsEm"])
+    valid = abs(width) <= width_threshold_em and ink <= ink_threshold_em
     entry["metricGate"] = {
-        "thresholdEm": threshold_em,
+        "thresholdEm": width_threshold_em,
+        "inkThresholdEm": ink_threshold_em,
         "widthDeltaEm": width,
         "absoluteWidthDeltaEm": abs(width),
+        "inkPositionMeanAbsEm": ink,
         "status": "valid-for-optical-tuning" if valid else "baseline-mismatch",
         "validForOpticalTuning": valid,
     }
@@ -233,6 +242,7 @@ def write_reports(root: Path, args: argparse.Namespace, entries: list[dict]) -> 
         "ligatures": args.ligatures == "true",
         "dpi": int(args.dpi),
         "metricThresholdEm": args.metric_threshold_em,
+        "inkThresholdEm": args.ink_threshold_em,
         "caseCount": len(entries),
         "validCaseCount": len(valid),
         "cases": entries,
@@ -296,7 +306,7 @@ def write_html(out: Path, report: dict) -> None:
 </head>
 <body>
   <h1>Metric Parity Suite</h1>
-  <p>{report['validCaseCount']} / {report['caseCount']} cases pass the {report['metricThresholdEm']:.4f}em width gate.</p>
+  <p>{report['validCaseCount']} / {report['caseCount']} cases pass the {report['metricThresholdEm']:.4f}em width gate and {report['inkThresholdEm']:.4f}em ink-position gate.</p>
   <table>
     <thead><tr><th>Font</th><th>Sample</th><th>Gate</th><th>None</th><th>Metric</th><th>Overlay</th></tr></thead>
     <tbody>{''.join(rows)}</tbody>

@@ -158,6 +158,7 @@ scripts/run-metric-parity-suite.py \
   --point-size 100 \
   --ligatures false \
   --metric-threshold-em 0.02 \
+  --ink-threshold-em 0.02 \
   --output renders/metric-parity-suite/no-ligatures-100pt \
   --baseline-output baselines/metric-parity-suite-v1.json
 ```

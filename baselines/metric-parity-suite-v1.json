@@ -5,6 +5,7 @@
   "ligatures": false,
   "dpi": 300,
   "metricThresholdEm": 0.02,
+  "inkThresholdEm": 0.02,
   "caseCount": 30,
   "validCaseCount": 30,
   "cases": [
@@ -15,8 +16,10 @@
       "sample": "Goldfish",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0,
         "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0014113290323792575,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -38,8 +41,10 @@
       "sample": "AV",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0,
         "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0007291384381480341,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -61,8 +66,10 @@
       "sample": "VA",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0,
         "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0012098929186081255,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -84,8 +91,10 @@
       "sample": "WA",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": -0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.001087075414531396,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -107,8 +116,10 @@
       "sample": "To",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": -0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0008435006562688796,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -130,8 +141,10 @@
       "sample": "AVATAR",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0,
         "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0021819564945640343,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -153,8 +166,10 @@
       "sample": "WAVY",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": -0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0023135736427070653,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -176,8 +191,10 @@
       "sample": "ToTaL",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": -0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.004284661356106339,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -199,8 +216,10 @@
       "sample": "Goldfish",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.012,
         "absoluteWidthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.0058875045665695395,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -222,8 +241,10 @@
       "sample": "AV",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0008336291492981623,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -245,8 +266,10 @@
       "sample": "VA",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0048,
         "absoluteWidthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.001849953962532259,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -268,8 +291,10 @@
       "sample": "WA",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.001346209047860042,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -291,8 +316,10 @@
       "sample": "To",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0037080378351131765,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -314,8 +341,10 @@
       "sample": "AVATAR",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.012,
         "absoluteWidthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.007580015492413754,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -337,8 +366,10 @@
       "sample": "WAVY",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0096,
         "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.002574986309440147,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -360,8 +391,10 @@
       "sample": "ToTaL",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0096,
         "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004134745539762076,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -383,8 +416,10 @@
       "sample": "Goldfish",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": -0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0017632600606631032,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -406,8 +441,10 @@
       "sample": "WAVY",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0096,
         "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.004952306050802832,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -429,8 +466,10 @@
       "sample": "WAYFINDER",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0192,
         "absoluteWidthDeltaEm": 0.0192,
+        "inkPositionMeanAbsEm": 0.009319552866956337,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -452,8 +491,10 @@
       "sample": "LANDMARK",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0192,
         "absoluteWidthDeltaEm": 0.0192,
+        "inkPositionMeanAbsEm": 0.014339795440274142,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -475,8 +516,10 @@
       "sample": "valley",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0072,
         "absoluteWidthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.004635712208461627,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -498,8 +541,10 @@
       "sample": "yellow",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0072,
         "absoluteWidthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0043639455606434676,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -521,8 +566,10 @@
       "sample": "lorem",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0072,
         "absoluteWidthDeltaEm": 0.0072,
+        "inkPositionMeanAbsEm": 0.0048799152362606546,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -544,8 +591,10 @@
       "sample": "ipsum",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0048,
         "absoluteWidthDeltaEm": 0.0048,
+        "inkPositionMeanAbsEm": 0.003460039561102681,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -567,8 +616,10 @@
       "sample": "OpenType",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0,
         "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00197345638906928,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -590,8 +641,10 @@
       "sample": "0123456789",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0,
         "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.002364328798358149,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -613,8 +666,10 @@
       "sample": "1001",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": -0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0018179115742183627,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -636,8 +691,10 @@
       "sample": "10.000",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": -0.0024,
         "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0016678158222383495,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -659,8 +716,10 @@
       "sample": "A10",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0,
         "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00036761633466996505,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
@@ -682,8 +741,10 @@
       "sample": "V2.0",
       "metricGate": {
         "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
         "widthDeltaEm": 0.0,
         "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0011635792359539618,
         "status": "valid-for-optical-tuning",
         "validForOpticalTuning": true
       },
