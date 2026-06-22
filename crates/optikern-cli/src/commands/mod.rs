@@ -3,6 +3,7 @@ pub mod contact_sheet;
 pub mod eval_pdf;
 pub mod fetch_fonts;
 pub mod render_indesign;
+pub mod render_shaped_svg;
 pub mod render_typst;
 pub mod report;
 pub mod sample_deltas;

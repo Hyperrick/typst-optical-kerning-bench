@@ -1,8 +1,18 @@
 from __future__ import annotations
 
 import subprocess
+import shutil
 import tempfile
 from pathlib import Path
+
+
+DOCUMENT_RECOVERY_PATTERNS = [
+    "~/Library/Caches/Adobe InDesign/Version */*/InDesign Recovery",
+    "~/Library/Caches/Adobe InDesign/Version */*/InDesign SavedData",
+]
+SCRIPTING_STATE_PATTERNS = [
+    "~/Library/Caches/Adobe InDesign/Version */*/Scripting Support/*/Scripting SavedData",
+]
 
 
 def kill_indesign() -> None:
@@ -20,7 +30,33 @@ def kill_indesign() -> None:
     )
 
 
+def clear_indesign_recovery_state(include_scripting_state: bool = False) -> list[Path]:
+    removed = []
+    patterns = list(DOCUMENT_RECOVERY_PATTERNS)
+    if include_scripting_state:
+        patterns.extend(SCRIPTING_STATE_PATTERNS)
+    for pattern in patterns:
+        for path in Path.home().glob(pattern.removeprefix("~/")):
+            if not path.exists():
+                continue
+            try:
+                if path.is_dir():
+                    shutil.rmtree(path)
+                else:
+                    path.unlink()
+                removed.append(path)
+            except OSError:
+                continue
+    return removed
+
+
+def reset_indesign_after_failure() -> list[Path]:
+    kill_indesign()
+    return clear_indesign_recovery_state(include_scripting_state=True)
+
+
 def run_indesign_preflight(root: Path, timeout: int, baseline_kind: str) -> None:
+    clear_indesign_recovery_state()
     with tempfile.NamedTemporaryFile("w", suffix=".jsx", delete=False, encoding="utf-8") as handle:
         handle.write(
             "#target indesign\n"
@@ -37,7 +73,7 @@ def run_indesign_preflight(root: Path, timeout: int, baseline_kind: str) -> None
             timeout=timeout,
         )
     except subprocess.TimeoutExpired as error:
-        kill_indesign()
+        reset_indesign_after_failure()
         raise SystemExit(
             "InDesign automation preflight timed out. "
             f"InDesign was killed so the suite does not write {baseline_kind} render-error baselines.\n"
@@ -47,7 +83,7 @@ def run_indesign_preflight(root: Path, timeout: int, baseline_kind: str) -> None
         script_path.unlink(missing_ok=True)
 
     if result.returncode != 0:
-        kill_indesign()
+        reset_indesign_after_failure()
         raise SystemExit(
             "InDesign automation preflight failed. "
             f"No {baseline_kind} baseline was written because InDesign is not scriptable right now.\n"

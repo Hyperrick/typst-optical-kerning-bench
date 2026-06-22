@@ -70,6 +70,25 @@ enum Command {
         #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
         ligatures: bool,
     },
+    /// Render a guarded optical sample from shaped glyph outlines.
+    RenderShapedSvg {
+        #[arg(long)]
+        font_id: String,
+        #[arg(long)]
+        font_path: Option<PathBuf>,
+        #[arg(long)]
+        text: String,
+        #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
+        ligatures: bool,
+        #[arg(long, default_value_t = 100.0)]
+        point_size: f32,
+        #[arg(long, default_value_t = 300.0)]
+        dpi: f32,
+        #[arg(long)]
+        output_svg: PathBuf,
+        #[arg(long)]
+        output_json: Option<PathBuf>,
+    },
 }
 
 fn main() -> Result<()> {
@@ -99,6 +118,26 @@ fn main() -> Result<()> {
             font_path.as_deref(),
             &text,
             ligatures,
+        ),
+        Command::RenderShapedSvg {
+            font_id,
+            font_path,
+            text,
+            ligatures,
+            point_size,
+            dpi,
+            output_svg,
+            output_json,
+        } => commands::render_shaped_svg::run(
+            &cli.root,
+            &font_id,
+            font_path.as_deref(),
+            &text,
+            ligatures,
+            point_size,
+            dpi,
+            &output_svg,
+            output_json.as_deref(),
         ),
     }
 }

@@ -95,12 +95,16 @@ fn fragmented_shape_matches(font: &FontKit, run: &ShapedRun) -> Result<bool> {
         return Ok(false);
     }
 
-    Ok(run.glyphs.iter().zip(fragmented.iter()).all(|(full, part)| {
-        full.glyph_id == part.glyph_id
-            && (full.x_advance_em - part.x_advance_em).abs() < 0.0005
-            && (full.x_offset_em - part.x_offset_em).abs() < 0.0005
-            && (full.y_offset_em - part.y_offset_em).abs() < 0.0005
-    }))
+    Ok(run
+        .glyphs
+        .iter()
+        .zip(fragmented.iter())
+        .all(|(full, part)| {
+            full.glyph_id == part.glyph_id
+                && (full.x_advance_em - part.x_advance_em).abs() < 0.0005
+                && (full.x_offset_em - part.x_offset_em).abs() < 0.0005
+                && (full.y_offset_em - part.y_offset_em).abs() < 0.0005
+        }))
 }
 
 #[derive(Debug, Serialize)]

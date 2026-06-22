@@ -68,6 +68,10 @@ pub struct AlgorithmSet {
     #[serde(default)]
     pub shaping_text: String,
     #[serde(default)]
+    pub left_index: usize,
+    #[serde(default)]
+    pub right_index: usize,
+    #[serde(default)]
     pub left_glyph_id: u16,
     #[serde(default)]
     pub right_glyph_id: u16,

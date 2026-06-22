@@ -236,13 +236,34 @@ typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --form
   "$output_dir/typst/none.typ" "$output_dir/typst/none.png"
 typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
   "$output_dir/typst/metric.typ" "$output_dir/typst/metric.png"
+guarded_renderer="none"
 if [[ "$metric_only" == "false" ]]; then
-  typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
-    "$output_dir/typst/guarded.typ" "$output_dir/typst/guarded.png"
+  guarded_renderer="$(python3 - "$output_dir/metrics/guarded-deltas.json" <<'PY'
+import json
+import sys
+report = json.loads(open(sys.argv[1], encoding="utf-8").read())
+print("typst-h" if report.get("fragmentedRenderSafe", True) else "shaped-svg")
+PY
+)"
+  if [[ "$guarded_renderer" == "shaped-svg" ]]; then
+    cargo run -q -p optikern-cli -- render-shaped-svg \
+      --font-id "$font_id" \
+      --font-path "$font_path" \
+      --text "$text" \
+      --ligatures="$ligatures" \
+      --point-size "$point_size" \
+      --dpi "$dpi" \
+      --output-svg "$output_dir/typst/guarded.svg" \
+      --output-json "$output_dir/metrics/shaped-svg-guarded.json"
+    magick "$output_dir/typst/guarded.svg" "$output_dir/typst/guarded.png"
+  else
+    typst compile --font-path "$output_dir/typst/fonts" --ignore-system-fonts --format png --ppi "$dpi" \
+      "$output_dir/typst/guarded.typ" "$output_dir/typst/guarded.png"
+  fi
 fi
 
 echo "== Crops and overlays =="
-python3 - "$output_dir" "$dpi" "$font_family" "$text" "$point_size" "$ligatures" "$metric_only" <<'PY'
+python3 - "$output_dir" "$dpi" "$font_family" "$text" "$point_size" "$ligatures" "$metric_only" "$guarded_renderer" <<'PY'
 from pathlib import Path
 from PIL import Image
 import json
@@ -255,6 +276,7 @@ text = sys.argv[4]
 point_size = float(sys.argv[5])
 ligatures = sys.argv[6] == "true"
 metric_only = sys.argv[7] == "true"
+guarded_renderer = sys.argv[8]
 
 sources = {
     "indesign_none": root / "indesign/none-1.png",
@@ -463,6 +485,7 @@ report = {
     "pointSize": point_size,
     "ligatures": ligatures,
     "dpi": dpi,
+    "guardedRenderer": guarded_renderer,
     "crops": boxes,
     "comparisons": comparisons,
 }

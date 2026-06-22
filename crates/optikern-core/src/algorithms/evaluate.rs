@@ -130,6 +130,8 @@ fn evaluate_shaped_pair_with_metric_delta(
         right: pair.right_cluster.chars().next().unwrap_or(' '),
         display: pair.display.clone(),
         shaping_text: pair.shaping_text.clone(),
+        left_index: pair.left_index,
+        right_index: pair.right_index,
         left_glyph_id: pair.left_glyph_id,
         right_glyph_id: pair.right_glyph_id,
         left_cluster: pair.left_cluster.clone(),

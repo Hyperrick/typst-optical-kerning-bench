@@ -12,12 +12,13 @@ use super::guarded::{
     sans_lowercase_compaction_delta, side_shape_delta, suppress_false_diagonal_opening,
     wide_serif_display_delta,
 };
-use super::run_context::{
-    RunContext, ScriptResidualBalance, apply_run_context_adjustments, connected_script_delta,
+use super::run_context::{RunContext, apply_run_context_adjustments};
+use super::sans_context::sans_run_context_delta;
+use super::script_context::{
+    ScriptResidualBalance, connected_script_delta, script_ligature_run_delta,
     script_lower_run_delta, script_mixed_case_delta, script_residual_balance_delta,
     script_upper_run_delta,
 };
-use super::sans_context::sans_run_context_delta;
 use super::{Algorithm, AlgorithmOutput, AlgorithmSet, EvaluationConfig};
 
 mod basic;
@@ -57,6 +58,8 @@ fn guarded_run_result_with_metrics(
         right,
         display: format!("{left}{right}"),
         shaping_text: format!("{left}{right}"),
+        left_index: 0,
+        right_index: 1,
         left_glyph_id: 1,
         right_glyph_id: 2,
         left_cluster: left.to_string(),

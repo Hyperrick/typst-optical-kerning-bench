@@ -13,7 +13,11 @@ from urllib.parse import quote
 
 from PIL import Image, ImageDraw, ImageFont
 
-from indesign_preflight import run_indesign_preflight
+from indesign_preflight import (
+    clear_indesign_recovery_state,
+    reset_indesign_after_failure,
+    run_indesign_preflight,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -170,9 +174,12 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
     ]
     if case.get("fontPath"):
         command[3:3] = ["--font-path", case["fontPath"]]
+    reused_indesign = False
     if args.reuse_indesign_from:
         reuse_case_dir = root / args.reuse_indesign_from / font_id / slug(sample)
-        command.extend(["--reuse-indesign-from", str(reuse_case_dir)])
+        if reusable_indesign_case(reuse_case_dir):
+            command.extend(["--reuse-indesign-from", str(reuse_case_dir)])
+            reused_indesign = True
 
     log_dir = out / "logs" / font_id
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -180,6 +187,10 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
     attempts = max(1, args.retries + 1)
     logs = []
     result = None
+    if not reused_indesign:
+        removed = clear_indesign_recovery_state()
+        if removed:
+            logs.append(reset_log("pre-attempt cleanup", removed))
     for attempt in range(1, attempts + 1):
         if case_dir.exists():
             shutil.rmtree(case_dir)
@@ -189,6 +200,9 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
         )
         if result.returncode == 0:
             break
+        if not reused_indesign:
+            removed = reset_indesign_after_failure()
+            logs.append(reset_log(f"reset after attempt {attempt}", removed))
     assert result is not None
     log_path.write_text("\n".join(logs), encoding="utf-8")
 
@@ -212,6 +226,7 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
     if result.returncode == 0 and comparison_path.exists():
         comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
         entry["comparisons"] = comparison["comparisons"]
+        entry["guardedRenderer"] = comparison.get("guardedRenderer")
         entry["guardedDeltas"] = json.loads(deltas_path.read_text(encoding="utf-8"))
         entry["fragmentedRenderSafe"] = entry["guardedDeltas"].get(
             "fragmentedRenderSafe",
@@ -227,6 +242,23 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
     else:
         entry["opticalScore"] = {"status": "render-error"}
     return entry
+
+
+def reusable_indesign_case(case_dir: Path) -> bool:
+    required = [
+        case_dir / "indesign/none-1.png",
+        case_dir / "indesign/metric-1.png",
+        case_dir / "indesign/optical-1.png",
+        case_dir / "metrics/indesign-none.json",
+        case_dir / "metrics/indesign-metric.json",
+        case_dir / "metrics/indesign-optical.json",
+    ]
+    return all(path.exists() for path in required)
+
+
+def reset_log(label: str, removed: list[Path]) -> str:
+    paths = "\n".join(f"- {path}" for path in removed) if removed else "- none"
+    return f"== InDesign {label} ==\nremoved recovery state:\n{paths}\n"
 
 
 def optical_score(entry: dict) -> dict:
@@ -254,6 +286,7 @@ def compact(entry: dict) -> dict:
         "sample": entry["sample"],
         "metricGate": entry["metricGate"],
         "fragmentedRenderSafe": entry.get("fragmentedRenderSafe"),
+        "guardedRenderer": entry.get("guardedRenderer"),
         "opticalScore": entry["opticalScore"],
         "deltas": compact_deltas(entry.get("guardedDeltas", {})),
     }
@@ -415,7 +448,7 @@ def write_contact_sheet(out: Path, report: dict) -> None:
         if entry.get("fragmentedRenderSafe") is False:
             draw.text(
                 (16, y + 98),
-                "warning: #h render changes shaped glyphs",
+                f"guarded renderer: {entry.get('guardedRenderer') or 'unknown'}",
                 fill=(140, 40, 30),
                 font=small,
             )

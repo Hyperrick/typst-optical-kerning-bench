@@ -472,6 +472,49 @@ fn script_ligature_run_opens_connected_multi_char_clusters() {
 }
 
 #[test]
+fn script_ligature_run_softens_long_metric_tightened_optical_runs() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        script_ligature_run_like: true,
+        letter_pairs: 7,
+        connected_letter_pairs: 7,
+        optical_opening_letter_pairs: 5,
+        metric_tightened_letter_pairs: 2,
+        ..RunContext::default()
+    };
+
+    let delta =
+        script_ligature_run_delta(0.0, 0.0, -0.070, class, context, test_config(0.170, 0.054));
+
+    assert!(delta > 0.013);
+    assert!(delta < 0.018);
+}
+
+#[test]
+fn script_ligature_run_opens_short_ffi_script_runs_more() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        script_ligature_run_like: true,
+        letter_pairs: 3,
+        connected_letter_pairs: 3,
+        max_cluster_chars: 3,
+        ..RunContext::default()
+    };
+
+    let delta =
+        script_ligature_run_delta(0.0, 0.0, -0.050, class, context, test_config(0.158, 0.050));
+
+    assert!(delta > 0.036);
+    assert!(delta < 0.041);
+}
+
+#[test]
 fn script_upper_run_caps_long_connected_openings() {
     let mut results = vec![
         guarded_run_result_with_metrics('A', 'V', 0.0, 0.0, 0.0, 0.021),

@@ -14,7 +14,11 @@ from urllib.parse import quote
 
 from PIL import Image, ImageDraw, ImageFont
 
-from indesign_preflight import run_indesign_preflight
+from indesign_preflight import (
+    clear_indesign_recovery_state,
+    reset_indesign_after_failure,
+    run_indesign_preflight,
+)
 
 
 DEFAULT_SAMPLE_MATRIX = {
@@ -68,6 +72,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--point-size", default="100")
     parser.add_argument("--ligatures", choices=["true", "false"], default="false")
     parser.add_argument("--dpi", default="300")
+    parser.add_argument(
+        "--retries",
+        type=int,
+        default=1,
+        help="Retries per case for transient InDesign automation failures.",
+    )
     parser.add_argument("--metric-threshold-em", type=float, default=0.02)
     parser.add_argument(
         "--ink-threshold-em",
@@ -165,11 +175,28 @@ def run_case(
     if font.font_path:
         command[3:3] = ["--font-path", font.font_path]
 
-    result = subprocess.run(command, cwd=root, text=True, capture_output=True)
     log_dir = out / "logs" / font.font_id
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"{slug(sample)}.log"
-    log_path.write_text(result.stdout + result.stderr, encoding="utf-8")
+    attempts = max(1, args.retries + 1)
+    logs = []
+    removed = clear_indesign_recovery_state()
+    if removed:
+        logs.append(reset_log("pre-attempt cleanup", removed))
+    result = None
+    for attempt in range(1, attempts + 1):
+        if case_dir.exists():
+            shutil.rmtree(case_dir)
+        result = subprocess.run(command, cwd=root, text=True, capture_output=True)
+        logs.append(
+            f"== attempt {attempt}/{attempts} ==\n{result.stdout}{result.stderr}"
+        )
+        if result.returncode == 0:
+            break
+        removed = reset_indesign_after_failure()
+        logs.append(reset_log(f"reset after attempt {attempt}", removed))
+    assert result is not None
+    log_path.write_text("\n".join(logs), encoding="utf-8")
 
     entry: dict = {
         "fontId": font.font_id,
@@ -203,6 +230,11 @@ def run_case(
             "validForOpticalTuning": False,
         }
     return entry
+
+
+def reset_log(label: str, removed: list[Path]) -> str:
+    paths = "\n".join(f"- {path}" for path in removed) if removed else "- none"
+    return f"== InDesign {label} ==\nremoved recovery state:\n{paths}\n"
 
 
 def apply_metric_gate(entry: dict, width_threshold_em: float, ink_threshold_em: float) -> None:

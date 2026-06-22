@@ -64,7 +64,7 @@ mkdir -p "$(dirname "$output_pdf")"
 if [[ -n "$output_indd" ]]; then mkdir -p "$(dirname "$output_indd")"; fi
 if [[ -n "$output_json" ]]; then mkdir -p "$(dirname "$output_json")"; fi
 
-config_path="$(mktemp "${TMPDIR:-/tmp}/optikern-indesign-outline.XXXXXX.json")"
+config_path="$(mktemp "${TMPDIR:-/tmp}/optikern-indesign-outline.XXXXXX")"
 wrapper_path=""
 trap 'rm -f "$config_path" "$wrapper_path"' EXIT
 
