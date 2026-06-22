@@ -166,7 +166,7 @@ def typ_content(value: str) -> str:
 def typ_string(value: str) -> str:
     return value.replace("\\", "\\\\").replace('"', '\\"')
 
-features = "(liga: 1, clig: 1)" if ligatures else "(liga: 0, clig: 0)"
+features = "(liga: 1, clig: 1, calt: 1)" if ligatures else "(liga: 0, clig: 0, calt: 0)"
 metric = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
 #set text(
   font: "{typ_string(font_family)}",

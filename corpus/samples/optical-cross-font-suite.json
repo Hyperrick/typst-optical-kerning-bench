@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "cross-font",
-  "description": "Visual cross-font matrix for optical kerning review: same samples across EB Garamond, Libre Baskerville, and Inter.",
+  "description": "Visual cross-font matrix for optical kerning review: same samples across serif, sans, script, and comic-style fonts.",
   "cases": [
     {
       "fontId": "eb-garamond",
@@ -16,6 +16,14 @@
       "sample": "Goldfish"
     },
     {
+      "fontId": "pacifico",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "Goldfish"
+    },
+    {
       "fontId": "eb-garamond",
       "sample": "AVATAR"
     },
@@ -28,6 +36,14 @@
       "sample": "AVATAR"
     },
     {
+      "fontId": "pacifico",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "AVATAR"
+    },
+    {
       "fontId": "eb-garamond",
       "sample": "WAVY"
     },
@@ -37,6 +53,14 @@
     },
     {
       "fontId": "inter",
+      "sample": "WAVY"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "WAVY"
+    },
+    {
+      "fontId": "comic-neue",
       "sample": "WAVY"
     },
     {
@@ -49,6 +73,14 @@
     },
     {
       "fontId": "inter",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "comic-neue",
       "sample": "ToTaL"
     },
     {
@@ -61,6 +93,14 @@
     },
     {
       "fontId": "inter",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "comic-neue",
       "sample": "OpenType"
     },
     {
@@ -73,6 +113,14 @@
     },
     {
       "fontId": "inter",
+      "sample": "10.000"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "10.000"
+    },
+    {
+      "fontId": "comic-neue",
       "sample": "10.000"
     }
   ]

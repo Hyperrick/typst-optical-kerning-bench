@@ -40,6 +40,20 @@ PARITY_FONTS = (
         output_name="optikern-inter-regular-opsz14-static-noliga.ttf",
         axes=(("wght", 400.0), ("opsz", 14.0)),
     ),
+    ParityFont(
+        font_id="pacifico",
+        source="corpus/fonts/pacifico.ttf",
+        family="Optikern Pacifico NoLiga",
+        output_name="optikern-pacifico-regular-noliga.ttf",
+        axes=(),
+    ),
+    ParityFont(
+        font_id="comic-neue",
+        source="corpus/fonts/comic-neue.ttf",
+        family="Optikern Comic Neue NoLiga",
+        output_name="optikern-comic-neue-regular-noliga.ttf",
+        axes=(),
+    ),
 )
 
 

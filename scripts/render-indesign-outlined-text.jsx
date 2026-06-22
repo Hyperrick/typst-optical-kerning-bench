@@ -286,7 +286,9 @@ function build(config) {
 
   var page = doc.pages[0];
   var frame = page.textFrames.add();
-  frame.geometricBounds = ["0pt", "0pt", "120pt", "720pt"];
+  var frameHeight = Math.max(240, Number(config.pointSize || 12) * 4);
+  var frameWidth = Math.max(1440, String(config.text).length * Number(config.pointSize || 12) * 2);
+  frame.geometricBounds = ["0pt", "0pt", frameHeight + "pt", frameWidth + "pt"];
   frame.contents = String(config.text);
   var appliedFont = configureText(doc, frame.parentStory, config);
   try {

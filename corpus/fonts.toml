@@ -62,3 +62,14 @@ family = "Source Code Pro"
 category = "mono"
 path = "ofl/sourcecodepro/SourceCodePro[wght].ttf"
 
+[[fonts]]
+id = "pacifico"
+family = "Pacifico"
+category = "script"
+path = "ofl/pacifico/Pacifico-Regular.ttf"
+
+[[fonts]]
+id = "comic-neue"
+family = "Comic Neue"
+category = "comic"
+path = "ofl/comicneue/ComicNeue-Regular.ttf"
