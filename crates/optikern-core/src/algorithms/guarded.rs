@@ -223,9 +223,11 @@ fn serif_diagonal_upper_target(facts: KerningFacts, desired_delta: f32) -> Optio
     } else {
         0.022
     };
-    let target = (desired_delta.min(facts.metric_delta.min(0.0)) - base - gap_bonus)
-        .clamp(-0.125, desired_delta);
-    (target < desired_delta).then_some(target)
+    bounded_tightening_target(
+        desired_delta.min(facts.metric_delta.min(0.0)) - base - gap_bonus,
+        -0.125,
+        desired_delta,
+    )
 }
 
 fn serif_mixed_case_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
@@ -242,9 +244,11 @@ fn serif_mixed_case_target(facts: KerningFacts, desired_delta: f32) -> Option<f3
 
     let gap_bonus =
         ((facts.stats.robust_mean_gap - facts.spread_upper()).max(0.0) * 0.16).clamp(0.0, 0.014);
-    let target =
-        (desired_delta.min(facts.metric_delta) - 0.018 - gap_bonus).clamp(-0.140, desired_delta);
-    (target < desired_delta).then_some(target)
+    bounded_tightening_target(
+        desired_delta.min(facts.metric_delta) - 0.018 - gap_bonus,
+        -0.140,
+        desired_delta,
+    )
 }
 
 #[cfg(test)]
@@ -300,8 +304,7 @@ fn sans_lowercase_compaction_target(facts: KerningFacts, desired_delta: f32) -> 
     } else {
         0.018
     };
-    let target = (desired_delta - amount).clamp(-0.105, desired_delta);
-    (target < desired_delta).then_some(target)
+    bounded_tightening_target(desired_delta - amount, -0.105, desired_delta)
 }
 
 #[cfg(test)]
@@ -337,8 +340,11 @@ fn side_shape_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
         && facts.nearest_delta <= facts.nearest_guard()
         && facts.stats.robust_mean_gap > facts.spread_upper() + 0.012
     {
-        let target = (facts.metric_delta * 0.94).clamp(facts.metric_delta, desired_delta);
-        return (target < desired_delta).then_some(target);
+        return bounded_tightening_target(
+            facts.metric_delta * 0.94,
+            facts.metric_delta,
+            desired_delta,
+        );
     }
 
     if !facts.pair_class.has_digit() {
@@ -442,10 +448,11 @@ fn punctuation_spacing_target(facts: KerningFacts, desired_delta: f32) -> Option
     let base = (facts.config.gap_mad_em * 0.46).clamp(0.018, 0.035);
     let gap_excess = (facts.stats.robust_mean_gap - facts.config.target_gap_em).max(0.0);
     let gap_bonus = (gap_excess * 0.12).clamp(0.0, 0.014);
-    let target =
-        (facts.metric_delta.min(desired_delta) - base - gap_bonus).clamp(-0.120, desired_delta);
-
-    (target < desired_delta).then_some(target)
+    bounded_tightening_target(
+        facts.metric_delta.min(desired_delta) - base - gap_bonus,
+        -0.120,
+        desired_delta,
+    )
 }
 
 fn digit_digit_target(pair_geometry: PairGeometry) -> f32 {
@@ -516,8 +523,26 @@ fn lower_upper_overhang_target(facts: KerningFacts, desired_delta: f32) -> Optio
     } else {
         -0.095
     };
-    let target =
-        (desired_delta - shape_bonus - gap_bonus - round_bonus).clamp(lower_bound, desired_delta);
+    bounded_tightening_target(
+        desired_delta - shape_bonus - gap_bonus - round_bonus,
+        lower_bound,
+        desired_delta,
+    )
+}
+
+fn bounded_tightening_target(
+    proposed_delta: f32,
+    lower_bound: f32,
+    desired_delta: f32,
+) -> Option<f32> {
+    if !proposed_delta.is_finite() || !lower_bound.is_finite() || !desired_delta.is_finite() {
+        return None;
+    }
+    if lower_bound >= desired_delta {
+        return None;
+    }
+
+    let target = proposed_delta.clamp(lower_bound, desired_delta);
     (target < desired_delta).then_some(target)
 }
 
