@@ -66,6 +66,12 @@ def reset_indesign_after_failure() -> list[Path]:
     return clear_indesign_recovery_state(include_scripting_state=True)
 
 
+def cleanup_indesign_automation_state() -> list[Path]:
+    """Remove any modal-prone InDesign state left after an automation run."""
+    kill_indesign()
+    return clear_indesign_recovery_state(include_scripting_state=True)
+
+
 def run_indesign_case_command(
     command: list[str],
     cwd: Path,

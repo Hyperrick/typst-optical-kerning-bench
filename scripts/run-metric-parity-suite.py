@@ -15,6 +15,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from indesign_preflight import (
     clear_indesign_recovery_state,
+    cleanup_indesign_automation_state,
     prepare_indesign_for_automation,
     reset_indesign_after_failure,
     run_indesign_case_command,
@@ -415,30 +416,37 @@ def paste_center(canvas: Image.Image, image_path: Path, box: tuple[int, int, int
 def main() -> None:
     args = parse_args()
     root = repo_root()
-    out = root / args.output
-    out.mkdir(parents=True, exist_ok=True)
-    if args.skip_indesign_preflight:
-        prepare_indesign_for_automation()
-    else:
-        run_indesign_preflight(root, args.preflight_timeout, "metric")
-    specs = load_font_specs(root, args.font_specs)
-    matrix = load_sample_matrix(root, args)
-    entries = []
-    for font_id, samples in matrix.items():
-        if font_id not in specs:
-            raise SystemExit(f"Missing font spec for {font_id}")
-        for sample in samples:
-            entries.append(run_case(root, args, specs[font_id], sample, out))
-            gate = entries[-1]["metricGate"]["status"]
-            width = entries[-1].get("comparisons", {}).get("metricParity", {}).get("widthDeltaEm")
-            print(f"{font_id} {sample}: {gate}; metric={width if width is not None else 'n/a'}em")
-    report = write_reports(root, args, entries)
-    failed = report["caseCount"] - report["validCaseCount"]
-    print(f"Summary: {args.output}/summary.json")
-    print(f"Contact sheet: {args.output}/contact-sheet.png")
-    print(f"Metric parity: {report['validCaseCount']} / {report['caseCount']} valid; failed={failed}")
-    if failed:
-        sys.exit(1)
+    try:
+        out = root / args.output
+        out.mkdir(parents=True, exist_ok=True)
+        if args.skip_indesign_preflight:
+            prepare_indesign_for_automation()
+        else:
+            run_indesign_preflight(root, args.preflight_timeout, "metric")
+        specs = load_font_specs(root, args.font_specs)
+        matrix = load_sample_matrix(root, args)
+        entries = []
+        for font_id, samples in matrix.items():
+            if font_id not in specs:
+                raise SystemExit(f"Missing font spec for {font_id}")
+            for sample in samples:
+                entries.append(run_case(root, args, specs[font_id], sample, out))
+                gate = entries[-1]["metricGate"]["status"]
+                width = entries[-1].get("comparisons", {}).get("metricParity", {}).get("widthDeltaEm")
+                print(f"{font_id} {sample}: {gate}; metric={width if width is not None else 'n/a'}em")
+        report = write_reports(root, args, entries)
+        failed = report["caseCount"] - report["validCaseCount"]
+        print(f"Summary: {args.output}/summary.json")
+        print(f"Contact sheet: {args.output}/contact-sheet.png")
+        print(f"Metric parity: {report['validCaseCount']} / {report['caseCount']} valid; failed={failed}")
+        if failed:
+            sys.exit(1)
+    finally:
+        removed = cleanup_indesign_automation_state()
+        if removed:
+            print("InDesign cleanup removed recovery state:", file=sys.stderr)
+            for path in removed:
+                print(f"- {path}", file=sys.stderr)
 
 
 if __name__ == "__main__":

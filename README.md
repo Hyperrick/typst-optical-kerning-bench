@@ -42,7 +42,9 @@ scripts/run-optical-comparison-suite.py
 
 The suite performs a small InDesign automation preflight before writing metric
 or optical baselines. If InDesign is stuck behind a modal dialog or is not
-scriptable, the run stops before any render-error baseline is written.
+scriptable, the run stops before any render-error baseline is written. At the
+end of every suite run, InDesign is closed and crash-recovery state is removed
+so a later run is not blocked by a localized "restore documents" modal.
 
 ## InDesign Baselines
 
@@ -85,7 +87,7 @@ sources that shaped the current benchmark rules.
 
 The current leading candidate is `guarded-profile-hybrid`. It combines
 metric-prior kerning, contact-zone awareness, shaped ligature handling, and
-V22 run-context tuning for sans-like, serif, and connected-script words. See
+V23 run-context tuning for sans-like, serif, and connected-script words. See
 [`docs/algorithms.md`](docs/algorithms.md) and
 [`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).
 

@@ -388,6 +388,27 @@ fn script_ligature_run_opens_short_ffi_script_runs_more() {
 }
 
 #[test]
+fn script_ligature_run_softens_long_fully_connected_runs_without_opening_signal() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        script_ligature_run_like: true,
+        letter_pairs: 6,
+        connected_letter_pairs: 6,
+        max_cluster_chars: 3,
+        ..RunContext::default()
+    };
+
+    let delta =
+        script_ligature_run_delta(0.0, 0.0, -0.050, class, context, test_config(0.158, 0.050));
+
+    assert!(delta > 0.017);
+    assert!(delta < 0.019);
+}
+
+#[test]
 fn script_upper_run_caps_long_connected_openings() {
     let mut results = vec![
         guarded_run_result_with_metrics('A', 'V', 0.0, 0.0, 0.0, 0.021),

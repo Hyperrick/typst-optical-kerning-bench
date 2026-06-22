@@ -14,6 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from indesign_preflight import (
     clear_indesign_recovery_state,
+    cleanup_indesign_automation_state,
     prepare_indesign_for_automation,
     reset_indesign_after_failure,
     run_indesign_case_command,
@@ -523,28 +524,35 @@ def paste_center(canvas: Image.Image, image_path: Path, box: tuple[int, int, int
 def main() -> None:
     args = parse_args()
     root = repo_root()
-    out = root / args.output
-    out.mkdir(parents=True, exist_ok=True)
-    if not args.reuse_indesign_from:
-        if args.skip_indesign_preflight:
-            prepare_indesign_for_automation()
-        else:
-            run_indesign_preflight(root, args.preflight_timeout, "optical")
-    baseline, cases = load_cases(root, args)
-    entries = []
-    for case in cases:
-        entry = run_case(root, args, baseline, case, out)
-        entries.append(entry)
-        score = entry.get("opticalScore", {})
-        print(
-            f"{entry['fontId']} {entry['sample']}: "
-            f"width={score.get('widthDeltaEm', 'n/a')}em; "
-            f"ink={score.get('inkPositionMeanAbsEm', 'n/a')}em"
-        )
-    report = write_reports(root, args, baseline, entries)
-    print(f"Summary: {args.output}/summary.json")
-    print(f"Contact sheet: {args.output}/contact-sheet.png")
-    print(f"Measured: {report['measuredCaseCount']} / {report['caseCount']}")
+    try:
+        out = root / args.output
+        out.mkdir(parents=True, exist_ok=True)
+        if not args.reuse_indesign_from:
+            if args.skip_indesign_preflight:
+                prepare_indesign_for_automation()
+            else:
+                run_indesign_preflight(root, args.preflight_timeout, "optical")
+        baseline, cases = load_cases(root, args)
+        entries = []
+        for case in cases:
+            entry = run_case(root, args, baseline, case, out)
+            entries.append(entry)
+            score = entry.get("opticalScore", {})
+            print(
+                f"{entry['fontId']} {entry['sample']}: "
+                f"width={score.get('widthDeltaEm', 'n/a')}em; "
+                f"ink={score.get('inkPositionMeanAbsEm', 'n/a')}em"
+            )
+        report = write_reports(root, args, baseline, entries)
+        print(f"Summary: {args.output}/summary.json")
+        print(f"Contact sheet: {args.output}/contact-sheet.png")
+        print(f"Measured: {report['measuredCaseCount']} / {report['caseCount']}")
+    finally:
+        removed = cleanup_indesign_automation_state()
+        if removed:
+            print("InDesign cleanup removed recovery state:", file=sys.stderr)
+            for path in removed:
+                print(f"- {path}", file=sys.stderr)
 
 
 if __name__ == "__main__":

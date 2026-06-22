@@ -156,6 +156,21 @@ runs when the unkerned local contour gap is already near-touching. This lets the
 guard override a font metric opening only in a narrow situation where InDesign
 Optical also behaves more tightly.
 
+## V23 Long Script Ligature Run Notes
+
+V23 narrows the connected-script ligature handling for one shape class: long
+fully connected lowercase script runs with multi-character clusters, no metric
+tightening, and no optical request to open the pair. Earlier connected-script
+rules opened these runs uniformly, which was too strong for long words where
+InDesign Optical keeps the connected baseline relatively compact.
+
+The rule is still dynamic. It requires at least six adjacent letter pairs, all
+letter pairs to be connected, no metric-tightened letter pairs, and no
+outline-profile opening signal. When those conditions hold, the script
+ligature-run correction is capped to a smaller positive delta. This fixed the
+remaining Lobster `efficient` over-opening without changing the no-ligature
+suite or the shorter connected-script controls.
+
 ## Guarded Constraint Model
 
 The guarded candidate is intentionally not a single lightweight heuristic. It is

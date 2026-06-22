@@ -340,6 +340,14 @@ fn script_ligature_run_opening_amount(config: EvaluationConfig, context: RunCont
         return base.min((config.target_gap_em * 0.090).clamp(0.013, 0.018));
     }
 
+    if context.letter_pairs >= 6
+        && context.metric_tightened_letter_pairs == 0
+        && context.optical_opening_letter_pairs == 0
+        && context.connected_letter_pairs == context.letter_pairs
+    {
+        return base.min((config.target_gap_em * 0.115).clamp(0.016, 0.020));
+    }
+
     base
 }
 

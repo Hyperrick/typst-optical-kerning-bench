@@ -59,6 +59,10 @@ preflight. If InDesign is blocked by a modal dialog, crash recovery, or another
 non-scriptable state, the suite exits before writing a baseline. This prevents
 large all-`render-error` baselines from being committed accidentally.
 
+After the suite finishes or aborts, the runner closes InDesign and removes
+InDesign recovery and scripting state. This keeps Adobe's crash-recovery
+"restore documents" dialog from blocking the next automated run.
+
 ## Current Sample Matrix
 
 ```text

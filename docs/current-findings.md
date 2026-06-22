@@ -4,10 +4,11 @@ Generated on 2026-06-22 from the pinned corpus after dynamic font calibration,
 Rustybuzz glyph-run shaping, the guarded V5 contact-zone pass, V6 measurement
 upgrades, the V8 sans run-context pass, script-run V13 tuning, the first
 ligature-parity preparation pass, the V14 digit-run context pass, and the V15
-compact-sans / long-caps pass. The current V21 pass adds shaped sans-lowercase
-run correction for ligature-capable words. V22 adds wide-serif ligature-run
-tuning, short connected-script lowercase tuning, and an InDesign startup cleanup
-for crash-recovery modals.
+compact-sans / long-caps pass. V21 adds shaped sans-lowercase run correction
+for ligature-capable words. V22 adds wide-serif ligature-run tuning and short
+connected-script lowercase tuning. The current V23 pass softens long fully
+connected script ligature runs and adds end-of-suite InDesign cleanup for
+crash-recovery modals.
 
 ## Commands
 
@@ -97,6 +98,22 @@ scripts/run-optical-comparison-suite.py \
   --baseline-output baselines/optical-comparison-suite-five-font-v22.json \
   --retries 1 \
   --preflight-timeout 45
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-ligature-valid-suite.json \
+  --metric-baseline baselines/metric-ligature-suite-v1.json \
+  --reuse-indesign-from renders/optical-comparison-suite/ligatures-100pt-v20-valid-complete \
+  --output renders/optical-comparison-suite/ligatures-100pt-v23 \
+  --baseline-output baselines/optical-ligature-suite-v23.json \
+  --retries 1 \
+  --preflight-timeout 45
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-cross-font-suite.json \
+  --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15 \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v23 \
+  --baseline-output baselines/optical-comparison-suite-five-font-v23.json \
+  --retries 1 \
+  --preflight-timeout 45
 cargo test
 ```
 
@@ -143,6 +160,11 @@ cargo test
   connected-script run tuning.
 - `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v22/summary.json`:
   30-case no-ligature regression check after V22. It is unchanged from V21.
+- `renders/optical-comparison-suite/ligatures-100pt-v23/summary.json`:
+  31-case ligature-capable optical matrix after long connected-script
+  ligature-run softening.
+- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v23/summary.json`:
+  30-case no-ligature regression check after V23. It is unchanged from V22.
 - `renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures/summary.json`:
   individual glyph shape parity before word or kerning comparison.
 
@@ -290,6 +312,14 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   (`0.0360em` to `0.0074em`).
 - The V22 no-ligature regression suite is unchanged from V21: mean score
   `0.0177em`, worst case `0.0384em`, and zero changed cases.
+- V23 adds a narrow cap for long, fully connected script ligature runs when all
+  letter pairs are connected, no metric tightening exists, and the outline
+  profile does not request an opening. The ligature suite mean score drops from
+  V22 `0.0134em` to `0.0127em`; worst case drops from `0.0360em` to
+  `0.0288em`. The only changed measured case is Lobster `efficient`
+  (`0.0360em` to `0.0144em`, width `-0.0360em` to `-0.0024em`).
+- The V23 no-ligature regression suite is unchanged from V22: mean score
+  `0.0177em`, worst case `0.0384em`, and zero changed cases.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 - Ligature-sensitive benchmarking now has its own sandbox font variant. Unlike
@@ -300,11 +330,13 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   modal. The suite now starts automation by killing InDesign, clearing recovery
   and scripting state, and then running the preflight. Individual case renders
   also have a timeout, so a modal or non-scriptable state logs as a failed
-  attempt, resets InDesign, and retries instead of hanging indefinitely.
+  attempt, resets InDesign, and retries instead of hanging indefinitely. Metric
+  and optical suite runners also clean up InDesign and recovery state in a
+  `finally` block so a later run is not blocked by stale crash recovery.
 
 ## Next Question
 
 The next benchmark layer can either focus on the remaining ligature outliers
-(`Lobster efficient`, `Libre Baskerville final`) or start turning the current
-evidence into the Typst-facing article/paper while keeping both V22 suites as
-the current reproducible baseline.
+(`Libre Baskerville final`, Comic Neue word spacing) or start turning the
+current evidence into the Typst-facing article/paper while keeping both V23
+suites as the current reproducible baseline.
