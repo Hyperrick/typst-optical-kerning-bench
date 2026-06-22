@@ -43,6 +43,7 @@ impl ShapingOptions {
         if !self.ligatures {
             features.push(Feature::new(Tag::from_bytes(b"liga"), 0, ..));
             features.push(Feature::new(Tag::from_bytes(b"clig"), 0, ..));
+            features.push(Feature::new(Tag::from_bytes(b"calt"), 0, ..));
         }
         features
     }
@@ -59,7 +60,8 @@ impl ShapedRun {
     pub fn adjacent_pairs(&self) -> Vec<ShapedGlyphPair> {
         self.glyphs
             .windows(2)
-            .filter_map(|window| {
+            .enumerate()
+            .filter_map(|(left_index, window)| {
                 let left = &window[0];
                 let right = &window[1];
                 if left.cluster_start == right.cluster_start
@@ -68,7 +70,7 @@ impl ShapedRun {
                 {
                     return None;
                 }
-                Some(ShapedGlyphPair::new(left, right))
+                Some(ShapedGlyphPair::new(left_index, left, right))
             })
             .collect()
     }
@@ -91,6 +93,10 @@ pub struct ShapedGlyphPair {
     pub key: String,
     pub display: String,
     pub shaping_text: String,
+    #[serde(default)]
+    pub left_index: usize,
+    #[serde(default)]
+    pub right_index: usize,
     pub left_glyph_id: u16,
     pub right_glyph_id: u16,
     pub left_cluster: String,
@@ -99,12 +105,14 @@ pub struct ShapedGlyphPair {
 }
 
 impl ShapedGlyphPair {
-    pub fn new(left: &ShapedGlyph, right: &ShapedGlyph) -> Self {
+    pub fn new(left_index: usize, left: &ShapedGlyph, right: &ShapedGlyph) -> Self {
         let display = format!("{}|{}", left.cluster_text, right.cluster_text);
         Self {
             key: glyph_pair_key(left, right),
             display,
             shaping_text: format!("{}{}", left.cluster_text, right.cluster_text),
+            left_index,
+            right_index: left_index + 1,
             left_glyph_id: left.glyph_id,
             right_glyph_id: right.glyph_id,
             left_cluster: left.cluster_text.clone(),
@@ -196,6 +204,22 @@ pub fn metric_shaped_pair_delta_em(
     Ok(total_advance(&with) - total_advance(&without))
 }
 
+pub fn metric_shaped_run_pair_deltas_em(
+    font: &FontKit,
+    run: &ShapedRun,
+    ligatures: bool,
+) -> Result<Vec<Option<f32>>> {
+    let with = shape_text(
+        font,
+        &run.text,
+        ShapingOptions {
+            kerning: true,
+            ligatures,
+        },
+    )?;
+    Ok(metric_pair_deltas_from_aligned_runs(run, &with))
+}
+
 fn shaped_advance_em(font: &FontKit, text: &str, options: ShapingOptions) -> Result<f32> {
     Ok(total_advance(&shape_text(font, text, options)?))
 }
@@ -208,6 +232,36 @@ fn same_pair_shape(run: &ShapedRun, pair: &ShapedGlyphPair) -> bool {
     run.glyphs.len() == 2
         && run.glyphs[0].glyph_id == pair.left_glyph_id
         && run.glyphs[1].glyph_id == pair.right_glyph_id
+}
+
+fn metric_pair_deltas_from_aligned_runs(without: &ShapedRun, with: &ShapedRun) -> Vec<Option<f32>> {
+    let pairs = without.adjacent_pairs();
+    if !same_run_shape(without, with) {
+        return vec![None; pairs.len()];
+    }
+
+    pairs
+        .iter()
+        .map(|pair| {
+            let without_glyph = without.glyphs.get(pair.left_index)?;
+            let with_glyph = with.glyphs.get(pair.left_index)?;
+            Some(with_glyph.x_advance_em - without_glyph.x_advance_em)
+        })
+        .collect()
+}
+
+fn same_run_shape(without: &ShapedRun, with: &ShapedRun) -> bool {
+    without.glyphs.len() == with.glyphs.len()
+        && without
+            .glyphs
+            .iter()
+            .zip(&with.glyphs)
+            .all(|(left, right)| {
+                left.glyph_id == right.glyph_id
+                    && left.cluster_start == right.cluster_start
+                    && left.cluster_end == right.cluster_end
+                    && left.cluster_text == right.cluster_text
+            })
 }
 
 fn rustybuzz_face(font: &FontKit) -> Result<rustybuzz::Face<'_>> {
@@ -269,9 +323,94 @@ pub fn glyph_id(id: u16) -> GlyphId {
 mod tests {
     use super::*;
 
+    fn test_glyph(index: usize, text: &str, glyph_id: u16, advance: f32) -> ShapedGlyph {
+        ShapedGlyph {
+            glyph_id,
+            cluster_start: index,
+            cluster_end: index + text.len(),
+            cluster_text: text.to_owned(),
+            x_advance_em: advance,
+            y_advance_em: 0.0,
+            x_offset_em: 0.0,
+            y_offset_em: 0.0,
+        }
+    }
+
+    fn test_run(glyphs: Vec<ShapedGlyph>) -> ShapedRun {
+        ShapedRun {
+            text: glyphs
+                .iter()
+                .map(|glyph| glyph.cluster_text.as_str())
+                .collect(),
+            options: ShapingOptions {
+                kerning: false,
+                ligatures: false,
+            },
+            glyphs,
+        }
+    }
+
     #[test]
     fn cluster_ranges_expand_to_next_cluster() {
         let ranges = cluster_ranges("Goldfish", [0, 1, 2, 3, 4, 6, 7]);
         assert_eq!(ranges.get(&4), Some(&6));
+    }
+
+    #[test]
+    fn no_ligature_options_disable_contextual_alternates() {
+        let features = ShapingOptions {
+            kerning: false,
+            ligatures: false,
+        }
+        .features();
+
+        assert!(
+            features
+                .iter()
+                .any(|feature| feature.tag == Tag::from_bytes(b"calt") && feature.value == 0)
+        );
+    }
+
+    #[test]
+    fn run_metric_deltas_use_aligned_glyph_advances() {
+        let without = test_run(vec![
+            test_glyph(0, "T", 157, 0.697),
+            test_glyph(1, "o", 472, 0.451),
+            test_glyph(2, "T", 157, 0.697),
+            test_glyph(3, "a", 365, 0.470),
+            test_glyph(4, "L", 92, 0.673),
+        ]);
+        let with = test_run(vec![
+            test_glyph(0, "T", 157, 0.607),
+            test_glyph(1, "o", 472, 0.451),
+            test_glyph(2, "T", 157, 0.602),
+            test_glyph(3, "a", 365, 0.470),
+            test_glyph(4, "L", 92, 0.673),
+        ]);
+
+        let deltas = metric_pair_deltas_from_aligned_runs(&without, &with);
+
+        assert_eq!(deltas.len(), 4);
+        assert!((deltas[0].unwrap() + 0.090).abs() < 0.001);
+        assert_eq!(deltas[1], Some(0.0));
+        assert!((deltas[2].unwrap() + 0.095).abs() < 0.001);
+        assert_eq!(deltas[3], Some(0.0));
+    }
+
+    #[test]
+    fn run_metric_deltas_fall_back_when_glyphs_change() {
+        let without = test_run(vec![
+            test_glyph(0, "T", 157, 0.697),
+            test_glyph(1, "o", 472, 0.451),
+        ]);
+        let with = test_run(vec![
+            test_glyph(0, "T", 157, 0.607),
+            test_glyph(1, "o", 670, 0.453),
+        ]);
+
+        assert_eq!(
+            metric_pair_deltas_from_aligned_runs(&without, &with),
+            vec![None]
+        );
     }
 }

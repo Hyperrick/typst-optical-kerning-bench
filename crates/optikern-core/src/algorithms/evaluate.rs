@@ -5,7 +5,10 @@ use crate::class::PairClass;
 use crate::font::FontKit;
 use crate::outline::FlattenOptions;
 use crate::profile::gap_stats;
-use crate::shape::{ShapedGlyphPair, ShapingOptions, metric_shaped_pair_delta_em, shape_text};
+use crate::shape::{
+    ShapedGlyphPair, ShapingOptions, metric_shaped_pair_delta_em, metric_shaped_run_pair_deltas_em,
+    shape_text,
+};
 
 use super::basic::{distribution_delta, metric_prior_hybrid_for_class, nearest_distance_delta};
 use super::geometry::PairGeometry;
@@ -39,6 +42,16 @@ pub fn evaluate_shaped_pair_with_config(
     config: EvaluationConfig,
     ligatures: bool,
 ) -> Result<AlgorithmSet> {
+    let metric_delta = metric_shaped_pair_delta_em(font, pair, ligatures).unwrap_or(0.0);
+    evaluate_shaped_pair_with_metric_delta(font, pair, config, metric_delta)
+}
+
+fn evaluate_shaped_pair_with_metric_delta(
+    font: &FontKit,
+    pair: &ShapedGlyphPair,
+    config: EvaluationConfig,
+    metric_delta: f32,
+) -> Result<AlgorithmSet> {
     let flatten = FlattenOptions::default();
     let (_left_metrics, left_outline) = font.outline_by_id(GlyphId(pair.left_glyph_id), flatten)?;
     let (_right_metrics, right_outline) =
@@ -52,7 +65,6 @@ pub fn evaluate_shaped_pair_with_config(
     .ok_or_else(|| anyhow!("not enough outline overlap for pair {:?}", pair.display))?;
     let pair_class = PairClass::from_pair(pair);
     let pair_config = config.for_pair_class(pair_class);
-    let metric_delta = metric_shaped_pair_delta_em(font, pair, ligatures).unwrap_or(0.0);
     let optical_profile_delta = distribution_delta(stats.weighted_mean_gap, pair_config);
     let optical_robust_delta = distribution_delta(stats.robust_mean_gap, pair_config);
     let nearest_delta = nearest_distance_delta(stats, pair_config.target_gap_em);
@@ -132,10 +144,20 @@ pub fn evaluate_shaped_run_with_config(
     config: EvaluationConfig,
     ligatures: bool,
 ) -> Result<Vec<AlgorithmSet>> {
-    let mut results = run
-        .adjacent_pairs()
+    let run_metric_deltas = metric_shaped_run_pair_deltas_em(font, run, ligatures).ok();
+    let pairs = run.adjacent_pairs();
+    let mut results = pairs
         .into_iter()
-        .map(|pair| evaluate_shaped_pair_with_config(font, &pair, config, ligatures))
+        .enumerate()
+        .map(|(index, pair)| {
+            let metric_delta = run_metric_deltas
+                .as_ref()
+                .and_then(|deltas| deltas.get(index).copied().flatten())
+                .unwrap_or_else(|| {
+                    metric_shaped_pair_delta_em(font, &pair, ligatures).unwrap_or(0.0)
+                });
+            evaluate_shaped_pair_with_metric_delta(font, &pair, config, metric_delta)
+        })
         .collect::<Result<Vec<_>>>()?;
     apply_run_context_adjustments(&mut results, config);
     Ok(results)

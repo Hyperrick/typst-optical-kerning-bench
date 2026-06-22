@@ -274,7 +274,7 @@ fn render_sample_body(
         {
             continue;
         }
-        let pair = ShapedGlyphPair::new(shaped, next);
+        let pair = ShapedGlyphPair::new(index, shaped, next);
         let Some((label, delta)) = pair_delta(results, sample, sample_is_pair, &pair, mode) else {
             continue;
         };

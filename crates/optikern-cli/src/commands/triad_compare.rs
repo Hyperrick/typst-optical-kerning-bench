@@ -531,7 +531,7 @@ fn render_sample_body(
         {
             continue;
         }
-        let pair = ShapedGlyphPair::new(shaped, next);
+        let pair = ShapedGlyphPair::new(index, shaped, next);
         if let Some(delta) =
             output_delta(results, &case.sample, case.kind == SampleKind::Pair, &pair)
         {

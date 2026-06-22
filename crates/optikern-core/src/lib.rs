@@ -16,6 +16,6 @@ pub use outline::{FlattenOptions, GlyphOutline, LineSegment, Point};
 pub use profile::{GapStats, ProfileConfig};
 pub use shape::{
     ShapedGlyph, ShapedGlyphPair, ShapedRun, ShapingOptions, glyph_id, metric_pair_delta_em,
-    metric_shaped_pair_delta_em, shape_text,
+    metric_shaped_pair_delta_em, metric_shaped_run_pair_deltas_em, shape_text,
 };
 pub use svg::{SvgBounds, SvgGlyph, svg_glyph, svg_glyph_by_id};
