@@ -1,6 +1,17 @@
 use super::*;
 
 fn guarded_run_result(left: char, right: char, delta_em: f32, gap_min_em: f32) -> AlgorithmSet {
+    guarded_run_result_with_metrics(left, right, delta_em, 0.0, delta_em, gap_min_em)
+}
+
+fn guarded_run_result_with_metrics(
+    left: char,
+    right: char,
+    delta_em: f32,
+    metric_delta_em: f32,
+    optical_delta_em: f32,
+    gap_min_em: f32,
+) -> AlgorithmSet {
     AlgorithmSet {
         font_id: "test".to_owned(),
         pair: format!("{left}{right}"),
@@ -15,8 +26,8 @@ fn guarded_run_result(left: char, right: char, delta_em: f32, gap_min_em: f32) -
         outputs: vec![AlgorithmOutput {
             algorithm: Algorithm::GuardedProfileHybrid,
             delta_em,
-            metric_delta_em: 0.0,
-            optical_delta_em: delta_em,
+            metric_delta_em,
+            optical_delta_em,
             target_gap_em: 0.231,
             gap_distribution_mad_em: 0.056,
             gap_min_em,
@@ -236,6 +247,65 @@ fn script_mixed_case_ignores_sans_contexts() {
         context,
         test_config(0.170, 0.050),
     );
+
+    assert_eq!(delta, 0.0);
+}
+
+#[test]
+fn script_residual_balancer_tightens_script_lowercase_bridges() {
+    let mut results = vec![
+        guarded_run_result_with_metrics('O', 'p', -0.041, 0.0, 0.0, 0.086),
+        guarded_run_result_with_metrics('p', 'e', 0.0, 0.0, 0.017, -0.095),
+        guarded_run_result_with_metrics('e', 'n', 0.0, 0.0, 0.030, -0.079),
+        guarded_run_result_with_metrics('n', 'T', -0.120, 0.0, -0.055, 0.184),
+        guarded_run_result_with_metrics('T', 'y', -0.044, -0.030, -0.045, 0.282),
+        guarded_run_result_with_metrics('y', 'p', 0.0, 0.010, 0.024, -0.074),
+        guarded_run_result_with_metrics('p', 'e', 0.0, 0.0, 0.017, -0.095),
+    ];
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    apply_run_context_adjustments(&mut results, config);
+
+    assert!(guarded_delta(&results[0]) < -0.050);
+    assert!(guarded_delta(&results[1]) < 0.0);
+    assert!((guarded_delta(&results[3]) + 0.120).abs() < 0.001);
+    assert!((guarded_delta(&results[4]) + 0.044).abs() < 0.001);
+}
+
+#[test]
+fn script_residual_balancer_keeps_alternating_mixed_case_run() {
+    let mut results = vec![
+        guarded_run_result_with_metrics('T', 'o', -0.104, -0.090, -0.048, 0.264),
+        guarded_run_result_with_metrics('o', 'T', -0.120, 0.0, -0.082, 0.191),
+        guarded_run_result_with_metrics('T', 'a', -0.109, -0.095, -0.058, 0.273),
+        guarded_run_result_with_metrics('a', 'L', 0.0, 0.0, 0.007, -0.148),
+    ];
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    apply_run_context_adjustments(&mut results, config);
+
+    assert!((guarded_delta(&results[1]) + 0.120).abs() < 0.001);
+}
+
+#[test]
+fn script_residual_balancer_ignores_nonsevere_script_run() {
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Lower,
+    };
+    let balance = ScriptResidualBalance {
+        severe_metricless_mixed_pairs: 0,
+        metricless_excess_tightening_em: 0.120,
+    };
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    let delta = script_residual_balance_delta(-0.038, 0.0, 0.0, 0.100, class, balance, config);
 
     assert_eq!(delta, 0.0);
 }

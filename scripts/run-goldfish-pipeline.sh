@@ -18,6 +18,8 @@ Options:
   --ligatures BOOL      true or false. Default: false.
   --dpi DPI             Raster DPI. Default: 300.
   --output DIR          Output directory. Default derived from text/settings.
+  --reuse-indesign-from DIR
+                      Reuse existing InDesign PNG/JSON outputs from this case directory.
   --metric-only         Render only None and Metrics parity outputs.
   -h, --help            Show this help.
 USAGE
@@ -31,6 +33,7 @@ point_size="100"
 ligatures="false"
 dpi="300"
 output_dir=""
+reuse_indesign_from=""
 metric_only="false"
 
 while [[ $# -gt 0 ]]; do
@@ -43,6 +46,7 @@ while [[ $# -gt 0 ]]; do
     --ligatures) ligatures="$2"; shift 2 ;;
     --dpi) dpi="$2"; shift 2 ;;
     --output) output_dir="$2"; shift 2 ;;
+    --reuse-indesign-from) reuse_indesign_from="$2"; shift 2 ;;
     --metric-only) metric_only="true"; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
@@ -96,46 +100,59 @@ if [[ "$metric_only" == "false" ]]; then
     > "$output_dir/metrics/guarded-deltas.json"
 fi
 
-echo "== InDesign =="
-scripts/render-indesign-outlined-text.sh \
-  --font-family "$font_family" \
-  --text "$text" \
-  --kerning none \
-  --ligatures "$ligatures" \
-  --point-size "$point_size" \
-  --output-pdf "$repo_root/$output_dir/indesign/none.tmp.pdf" \
-  --output-indd "$repo_root/$output_dir/indesign/none.indd" \
-  --output-json "$repo_root/$output_dir/metrics/indesign-none.json"
-
-scripts/render-indesign-outlined-text.sh \
-  --font-family "$font_family" \
-  --text "$text" \
-  --kerning metrics \
-  --ligatures "$ligatures" \
-  --point-size "$point_size" \
-  --output-pdf "$repo_root/$output_dir/indesign/metric.tmp.pdf" \
-  --output-indd "$repo_root/$output_dir/indesign/metric.indd" \
-  --output-json "$repo_root/$output_dir/metrics/indesign-metric.json"
-
-if [[ "$metric_only" == "false" ]]; then
+if [[ -n "$reuse_indesign_from" ]]; then
+  echo "== InDesign (reused) =="
+  reuse_indesign_from="${reuse_indesign_from%/}"
+  for mode in none metric; do
+    cp "$reuse_indesign_from/indesign/${mode}-1.png" "$output_dir/indesign/${mode}-1.png"
+    cp "$reuse_indesign_from/metrics/indesign-${mode}.json" "$output_dir/metrics/indesign-${mode}.json"
+  done
+  if [[ "$metric_only" == "false" ]]; then
+    cp "$reuse_indesign_from/indesign/optical-1.png" "$output_dir/indesign/optical-1.png"
+    cp "$reuse_indesign_from/metrics/indesign-optical.json" "$output_dir/metrics/indesign-optical.json"
+  fi
+else
+  echo "== InDesign =="
   scripts/render-indesign-outlined-text.sh \
     --font-family "$font_family" \
     --text "$text" \
-    --kerning optical \
+    --kerning none \
     --ligatures "$ligatures" \
     --point-size "$point_size" \
-    --output-pdf "$repo_root/$output_dir/indesign/optical.tmp.pdf" \
-    --output-indd "$repo_root/$output_dir/indesign/optical.indd" \
-    --output-json "$repo_root/$output_dir/metrics/indesign-optical.json"
-fi
+    --output-pdf "$repo_root/$output_dir/indesign/none.tmp.pdf" \
+    --output-indd "$repo_root/$output_dir/indesign/none.indd" \
+    --output-json "$repo_root/$output_dir/metrics/indesign-none.json"
 
-pdftoppm -png -r "$dpi" "$output_dir/indesign/none.tmp.pdf" "$output_dir/indesign/none"
-pdftoppm -png -r "$dpi" "$output_dir/indesign/metric.tmp.pdf" "$output_dir/indesign/metric"
-if [[ "$metric_only" == "false" ]]; then
-  pdftoppm -png -r "$dpi" "$output_dir/indesign/optical.tmp.pdf" "$output_dir/indesign/optical"
+  scripts/render-indesign-outlined-text.sh \
+    --font-family "$font_family" \
+    --text "$text" \
+    --kerning metrics \
+    --ligatures "$ligatures" \
+    --point-size "$point_size" \
+    --output-pdf "$repo_root/$output_dir/indesign/metric.tmp.pdf" \
+    --output-indd "$repo_root/$output_dir/indesign/metric.indd" \
+    --output-json "$repo_root/$output_dir/metrics/indesign-metric.json"
+
+  if [[ "$metric_only" == "false" ]]; then
+    scripts/render-indesign-outlined-text.sh \
+      --font-family "$font_family" \
+      --text "$text" \
+      --kerning optical \
+      --ligatures "$ligatures" \
+      --point-size "$point_size" \
+      --output-pdf "$repo_root/$output_dir/indesign/optical.tmp.pdf" \
+      --output-indd "$repo_root/$output_dir/indesign/optical.indd" \
+      --output-json "$repo_root/$output_dir/metrics/indesign-optical.json"
+  fi
+
+  pdftoppm -png -r "$dpi" "$output_dir/indesign/none.tmp.pdf" "$output_dir/indesign/none"
+  pdftoppm -png -r "$dpi" "$output_dir/indesign/metric.tmp.pdf" "$output_dir/indesign/metric"
+  if [[ "$metric_only" == "false" ]]; then
+    pdftoppm -png -r "$dpi" "$output_dir/indesign/optical.tmp.pdf" "$output_dir/indesign/optical"
+  fi
+  rm -f "$output_dir/indesign/"*.tmp.pdf
+  rm -f "$output_dir/indesign/"*.idlk
 fi
-rm -f "$output_dir/indesign/"*.tmp.pdf
-rm -f "$output_dir/indesign/"*.idlk
 
 echo "== Typst =="
 python3 - "$output_dir" "$font_family" "$text" "$point_size" "$ligatures" "$metric_only" <<'PY'

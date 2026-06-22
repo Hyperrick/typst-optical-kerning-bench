@@ -12,8 +12,8 @@ use super::guarded::{
     wide_serif_display_delta,
 };
 use super::run_context::{
-    RunContext, apply_run_context_adjustments, connected_script_delta, sans_run_context_delta,
-    script_mixed_case_delta,
+    RunContext, ScriptResidualBalance, apply_run_context_adjustments, connected_script_delta,
+    sans_run_context_delta, script_mixed_case_delta, script_residual_balance_delta,
 };
 use super::{Algorithm, AlgorithmOutput, AlgorithmSet, EvaluationConfig};
 

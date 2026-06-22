@@ -46,6 +46,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--point-size", default="")
     parser.add_argument("--ligatures", choices=["true", "false", ""], default="")
     parser.add_argument(
+        "--reuse-indesign-from",
+        default="",
+        help="Reuse case-level InDesign PNG/JSON outputs from this suite output directory.",
+    )
+    parser.add_argument(
         "--retries",
         type=int,
         default=1,
@@ -152,6 +157,9 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
     ]
     if case.get("fontPath"):
         command[3:3] = ["--font-path", case["fontPath"]]
+    if args.reuse_indesign_from:
+        reuse_case_dir = root / args.reuse_indesign_from / font_id / slug(sample)
+        command.extend(["--reuse-indesign-from", str(reuse_case_dir)])
 
     log_dir = out / "logs" / font_id
     log_dir.mkdir(parents=True, exist_ok=True)

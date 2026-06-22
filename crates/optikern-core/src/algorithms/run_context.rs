@@ -7,6 +7,8 @@ const CONNECTED_JOIN_GAP_EM: f32 = -0.020;
 const CONNECTED_JOIN_OPENING_EM: f32 = 0.030;
 const CONNECTED_JOIN_MIN_POSITIVE_SUM_EM: f32 = 0.080;
 const SCRIPT_MIXED_MIN_PAIRS: usize = 2;
+const SCRIPT_RESIDUAL_MIN_LOWER_PAIRS: usize = 2;
+const SCRIPT_RESIDUAL_SEVERE_DELTA_EM: f32 = -0.080;
 
 pub(super) fn apply_run_context_adjustments(
     results: &mut [AlgorithmSet],
@@ -17,7 +19,7 @@ pub(super) fn apply_run_context_adjustments(
         return;
     }
 
-    for result in results {
+    for result in results.iter_mut() {
         let pair_class = PairClass::from_chars(result.left, result.right);
         let Some(output) = result
             .outputs
@@ -46,6 +48,7 @@ pub(super) fn apply_run_context_adjustments(
         );
         output.delta_em = delta;
     }
+    apply_script_residual_balancer(results, context, config);
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -85,6 +88,9 @@ impl RunContext {
                 if class.is_upper_lower() || class.is_lower_upper() {
                     context.mixed_case_pairs += 1;
                 }
+                if class.is_lower_lower() {
+                    context.lower_pairs += 1;
+                }
                 if output.gap_min_em < CONNECTED_JOIN_GAP_EM {
                     context.connected_letter_pairs += 1;
                     if output.delta_em > CONNECTED_JOIN_OPENING_EM {
@@ -102,9 +108,6 @@ impl RunContext {
                     && output.metric_delta_em < -0.050
                 {
                     context.strong_mixed_metric_pairs += 1;
-                }
-                if class.is_lower_lower() {
-                    context.lower_pairs += 1;
                 }
             }
         }
@@ -126,6 +129,131 @@ impl RunContext {
             || (self.sans_like
                 && (self.strong_upper_metric_pairs >= 2 || self.strong_mixed_metric_pairs >= 2))
     }
+}
+
+fn apply_script_residual_balancer(
+    results: &mut [AlgorithmSet],
+    context: RunContext,
+    config: EvaluationConfig,
+) {
+    let balance = ScriptResidualBalance::from_results(results, context, config);
+    if !balance.should_apply(config) {
+        return;
+    }
+
+    for result in results {
+        let pair_class = PairClass::from_chars(result.left, result.right);
+        let Some(output) = result
+            .outputs
+            .iter_mut()
+            .find(|output| output.algorithm == Algorithm::GuardedProfileHybrid)
+        else {
+            continue;
+        };
+        output.delta_em = normalized_delta(
+            output.delta_em
+                + script_residual_balance_delta(
+                    output.delta_em,
+                    output.metric_delta_em,
+                    output.optical_delta_em,
+                    output.gap_min_em,
+                    pair_class,
+                    balance,
+                    config,
+                ),
+        );
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub(super) struct ScriptResidualBalance {
+    pub(super) severe_metricless_mixed_pairs: usize,
+    pub(super) metricless_excess_tightening_em: f32,
+}
+
+impl ScriptResidualBalance {
+    fn from_results(
+        results: &[AlgorithmSet],
+        context: RunContext,
+        config: EvaluationConfig,
+    ) -> Self {
+        if !context.script_mixed_case_like
+            || context.lower_pairs < SCRIPT_RESIDUAL_MIN_LOWER_PAIRS
+            || !script_spacing_profile(config)
+        {
+            return Self::default();
+        }
+
+        let mut balance = Self::default();
+        for result in results {
+            let pair_class = PairClass::from_chars(result.left, result.right);
+            let Some(output) = result
+                .outputs
+                .iter()
+                .find(|output| output.algorithm == Algorithm::GuardedProfileHybrid)
+            else {
+                continue;
+            };
+
+            if !is_lower_involved_letter_pair(pair_class) || output.metric_delta_em < -dead_zone() {
+                continue;
+            }
+
+            let excess = output.optical_delta_em - output.delta_em;
+            if excess > dead_zone() {
+                balance.metricless_excess_tightening_em += excess;
+            }
+            if (pair_class.is_upper_lower() || pair_class.is_lower_upper())
+                && output.delta_em <= SCRIPT_RESIDUAL_SEVERE_DELTA_EM
+            {
+                balance.severe_metricless_mixed_pairs += 1;
+            }
+        }
+
+        balance
+    }
+
+    fn should_apply(self, config: EvaluationConfig) -> bool {
+        self.severe_metricless_mixed_pairs > 0
+            && self.metricless_excess_tightening_em >= script_residual_min_excess(config)
+    }
+}
+
+pub(super) fn script_residual_balance_delta(
+    adjusted_delta: f32,
+    metric_delta: f32,
+    optical_delta: f32,
+    gap_min_em: f32,
+    pair_class: PairClass,
+    balance: ScriptResidualBalance,
+    config: EvaluationConfig,
+) -> f32 {
+    if !balance.should_apply(config)
+        || !is_lower_involved_letter_pair(pair_class)
+        || metric_delta < -dead_zone()
+    {
+        return 0.0;
+    }
+
+    if pair_class.is_upper_lower() || pair_class.is_lower_upper() {
+        if adjusted_delta < -dead_zone() && adjusted_delta > SCRIPT_RESIDUAL_SEVERE_DELTA_EM {
+            let target = (adjusted_delta - script_residual_soft_mixed_amount(config))
+                .max(-script_residual_soft_mixed_bound(config));
+            return normalized_delta(target - adjusted_delta);
+        }
+    }
+
+    if pair_class.is_lower_lower()
+        && optical_delta > dead_zone()
+        && gap_min_em < CONNECTED_JOIN_GAP_EM
+    {
+        let target = -script_residual_lower_compaction_amount(config);
+        if adjusted_delta > target {
+            return normalized_delta(target - adjusted_delta);
+        }
+    }
+
+    0.0
 }
 
 pub(super) fn connected_script_delta(
@@ -244,6 +372,22 @@ fn script_mixed_opening_cap(config: EvaluationConfig) -> f32 {
 
 fn script_mixed_tightening_amount(config: EvaluationConfig) -> f32 {
     (config.target_gap_em * 0.24).clamp(0.035, 0.055)
+}
+
+fn script_residual_min_excess(config: EvaluationConfig) -> f32 {
+    (config.target_gap_em * 0.42).clamp(0.055, 0.085)
+}
+
+fn script_residual_soft_mixed_amount(config: EvaluationConfig) -> f32 {
+    (config.target_gap_em * 0.08).clamp(0.010, 0.016)
+}
+
+fn script_residual_soft_mixed_bound(config: EvaluationConfig) -> f32 {
+    (config.target_gap_em * 0.38).clamp(0.052, 0.070)
+}
+
+fn script_residual_lower_compaction_amount(config: EvaluationConfig) -> f32 {
+    (config.target_gap_em * 0.085).clamp(0.010, 0.018)
 }
 
 fn script_spacing_profile(config: EvaluationConfig) -> bool {
