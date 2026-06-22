@@ -413,19 +413,27 @@ def write_contact_sheet(out: Path, report: dict) -> None:
 
 
 def report_rows(report: dict) -> list[dict]:
-    if report.get("suite") == "cross-font":
-        return list(report["cases"])
+    sample_order = first_seen_order(entry["sample"] for entry in report["cases"])
+    font_order = first_seen_order(entry["fontId"] for entry in report["cases"])
     return sorted(
         report["cases"],
-        key=lambda entry: entry.get("opticalScore", {}).get("scoreEm", -1),
-        reverse=True,
+        key=lambda entry: (
+            sample_order[entry["sample"]],
+            font_order[entry["fontId"]],
+        ),
     )
 
 
+def first_seen_order(values) -> dict[str, int]:
+    order = {}
+    for value in values:
+        if value not in order:
+            order[value] = len(order)
+    return order
+
+
 def report_order_label(report: dict) -> str:
-    if report.get("suite") == "cross-font":
-        return "grouped by sample; fonts keep suite order"
-    return "sorted by worst guarded-vs-InDesign-optical score"
+    return "grouped by sample; fonts keep suite order"
 
 
 def is_group_start(report: dict, rows: list[dict], index: int) -> bool:
@@ -433,9 +441,7 @@ def is_group_start(report: dict, rows: list[dict], index: int) -> bool:
 
 
 def report_group_key(report: dict, entry: dict) -> str:
-    if report.get("suite") == "cross-font":
-        return entry["sample"]
-    return entry["fontId"]
+    return entry["sample"]
 
 
 def paste_center(canvas: Image.Image, image_path: Path, box: tuple[int, int, int, int]) -> None:

@@ -309,3 +309,75 @@ fn script_residual_balancer_ignores_nonsevere_script_run() {
 
     assert_eq!(delta, 0.0);
 }
+
+#[test]
+fn script_lower_run_compacts_metricless_connected_lower_pairs() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        script_lower_run_like: true,
+        lower_pairs: 6,
+        metricless_lower_pairs: 6,
+        connected_lower_pairs: 6,
+        ..RunContext::default()
+    };
+    let mut config = test_config(0.158, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    let delta = script_lower_run_delta(0.0, 0.0, 0.0, -0.050, class, context, config);
+
+    assert!(delta < -0.008);
+    assert!(delta > -0.013);
+}
+
+#[test]
+fn script_lower_run_keeps_metric_or_opening_pairs() {
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Lower,
+    };
+    let context = RunContext {
+        script_lower_run_like: true,
+        lower_pairs: 6,
+        metricless_lower_pairs: 6,
+        connected_lower_pairs: 6,
+        ..RunContext::default()
+    };
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    assert_eq!(
+        script_lower_run_delta(0.0, -0.010, 0.0, -0.050, class, context, config),
+        0.0
+    );
+    assert_eq!(
+        script_lower_run_delta(0.0, 0.0, 0.018, -0.050, class, context, config),
+        0.0
+    );
+}
+
+#[test]
+fn script_lower_run_does_not_mark_pacifico_like_mixed_lower_run() {
+    let mut results = vec![
+        guarded_run_result_with_metrics('G', 'o', 0.0, 0.0, 0.0, -0.075),
+        guarded_run_result_with_metrics('o', 'l', 0.0, 0.0, 0.0, -0.078),
+        guarded_run_result_with_metrics('l', 'd', 0.0, -0.010, 0.0, -0.094),
+        guarded_run_result_with_metrics('d', 'f', 0.0, 0.0, 0.018, -0.075),
+        guarded_run_result_with_metrics('f', 'i', 0.0, -0.020, 0.0, -0.052),
+        guarded_run_result_with_metrics('i', 's', 0.0, 0.0, 0.0, -0.115),
+        guarded_run_result_with_metrics('s', 'h', 0.0, 0.0, 0.0, -0.074),
+    ];
+    let mut config = test_config(0.170, 0.050);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+
+    apply_run_context_adjustments(&mut results, config);
+
+    assert_eq!(guarded_delta(&results[1]), 0.0);
+    assert_eq!(guarded_delta(&results[3]), 0.0);
+    assert_eq!(guarded_delta(&results[5]), 0.0);
+}
