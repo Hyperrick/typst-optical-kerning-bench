@@ -216,6 +216,64 @@ fn guarded_hybrid_tightens_round_to_upper_overhang() {
 }
 
 #[test]
+fn guarded_hybrid_closes_metricless_serif_round_to_upper_gap() {
+    let stats = GapStats {
+        min_gap: 0.331,
+        weighted_mean_gap: 0.363,
+        robust_mean_gap: 0.353,
+        mad: 0.019,
+        samples: 80,
+    };
+    let mut config = test_config(0.231, 0.056);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+    let class = PairClass {
+        left: ClusterClass::Lower,
+        right: ClusterClass::Upper,
+    };
+    let geometry = PairGeometry {
+        right_top_left_overhang: 0.26,
+        left_right_side: SideFeatures {
+            roundness: 0.052,
+            stemness: 0.20,
+        },
+        right_left_side: SideFeatures::default(),
+    };
+
+    let delta = guarded_profile_hybrid(0.0, -0.047, 0.0, stats, config, class, geometry);
+    assert!(delta < -0.125);
+    assert!(delta > -0.145);
+}
+
+#[test]
+fn guarded_hybrid_preserves_strong_serif_upper_to_round_lower_metric() {
+    let stats = GapStats {
+        min_gap: 0.320,
+        weighted_mean_gap: 0.362,
+        robust_mean_gap: 0.346,
+        mad: 0.018,
+        samples: 80,
+    };
+    let mut config = test_config(0.231, 0.056);
+    config.profile.x_height = 0.48;
+    config.profile.cap_height = 0.78;
+    let class = PairClass {
+        left: ClusterClass::Upper,
+        right: ClusterClass::Lower,
+    };
+    let geometry = PairGeometry {
+        right_left_side: SideFeatures {
+            roundness: 0.052,
+            stemness: 0.20,
+        },
+        ..PairGeometry::default()
+    };
+
+    let delta = guarded_profile_hybrid(-0.105, -0.045, 0.0, stats, config, class, geometry);
+    assert!((delta + 0.105).abs() < 0.001);
+}
+
+#[test]
 fn suppresses_false_diagonal_opening_when_collision_is_only_local() {
     let stats = GapStats {
         min_gap: -0.013,

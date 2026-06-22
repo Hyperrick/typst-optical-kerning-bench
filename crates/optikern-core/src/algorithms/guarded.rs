@@ -345,8 +345,13 @@ fn side_shape_target(facts: KerningFacts, desired_delta: f32) -> Option<f32> {
         && facts.nearest_delta <= facts.nearest_guard()
         && facts.stats.robust_mean_gap > facts.spread_upper() + 0.012
     {
+        let metric_scale = if serif_mixed_gap_excess(facts) > 0.030 {
+            1.0
+        } else {
+            0.94
+        };
         return bounded_tightening_target(
-            facts.metric_delta * 0.94,
+            facts.metric_delta * metric_scale,
             facts.metric_delta,
             desired_delta,
         );
@@ -523,16 +528,42 @@ fn lower_upper_overhang_target(facts: KerningFacts, desired_delta: f32) -> Optio
     } else {
         0.0
     };
-    let lower_bound = if facts.pair_geometry.left_right_side.is_round_like() && overhang > 0.18 {
+    let serif_gap_excess = serif_mixed_gap_excess(facts);
+    let serif_gap_bonus = if serif_gap_excess > 0.030
+        && facts.pair_geometry.left_right_side.is_round_like()
+        && overhang > 0.18
+    {
+        (serif_gap_excess * 0.30).clamp(0.0, 0.020)
+    } else {
+        0.0
+    };
+    let lower_bound = if serif_gap_bonus > 0.0 {
+        -0.140
+    } else if facts.pair_geometry.left_right_side.is_round_like() && overhang > 0.18 {
         -0.120
     } else {
         -0.095
     };
     bounded_tightening_target(
-        desired_delta - shape_bonus - gap_bonus - round_bonus,
+        desired_delta - shape_bonus - gap_bonus - round_bonus - serif_gap_bonus,
         lower_bound,
         desired_delta,
     )
+}
+
+fn serif_mixed_gap_excess(facts: KerningFacts) -> f32 {
+    if facts.config.profile.cap_height <= 0.0 {
+        return 0.0;
+    }
+    let x_to_cap = facts.config.profile.x_height / facts.config.profile.cap_height;
+    if sans_like_spacing_profile(facts.config)
+        || facts.config.target_gap_em < 0.220
+        || x_to_cap > 0.72
+    {
+        return 0.0;
+    }
+
+    (facts.stats.robust_mean_gap - facts.spread_upper()).max(0.0)
 }
 
 fn bounded_tightening_target(

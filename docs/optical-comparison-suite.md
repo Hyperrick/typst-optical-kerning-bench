@@ -115,39 +115,45 @@ magenta = Typst Guarded Optical
 black   = overlap
 ```
 
-## Current Result: V15
+## Current Result: V25
 
 The current no-ligature five-font matrix compares InDesign Optical against
-Typst Guarded Optical for 30 rows. V15 builds on the V14 digit-run context with
-compact-sans and long-cap run handling. Compared with V14, the mean score
-improved from `0.0240em` to `0.0177em`; worst case improved from `0.0648em` to
-`0.0384em`, with no measured regression above `0.001em`.
+Typst Guarded Optical for 30 rows. The current V25 pass builds on V15 compact
+sans / long-cap handling and the later ligature work. Compared with the early
+V14/V15 baseline, the mean score improved from `0.0240em` to `0.0170em`; worst
+case improved from `0.0648em` to `0.0304em`. Compared with V24, exactly one
+no-ligature case changed: EB Garamond `ToTaL`.
 
-V15 five-font worst cases by combined optical score:
+V25 five-font worst cases by combined optical score:
 
 ```text
-EB ToTaL:             -0.0384em width, 0.0294em ink
 Libre AVATAR:         +0.0168em width, 0.0304em ink
 Pacifico AVATAR:      -0.0120em width, 0.0253em ink
 Pacifico OpenType:    -0.0168em width, 0.0242em ink
 Comic Neue Goldfish:  +0.0240em width, 0.0130em ink
 EB OpenType:          -0.0240em width, 0.0103em ink
 Pacifico ToTaL:       -0.0120em width, 0.0239em ink
+EB 10.000:            +0.0192em width, 0.0216em ink
 ```
 
 In the comparison metric, negative width means the Typst Guarded output is
 wider than InDesign Optical; positive width means Typst Guarded is narrower.
 
-The V15 focus suite covers `Goldfish`, `ToTaL`, `OpenType`, and `AVATAR`
-across all five fonts. It catches the compact-sans `OpenType` regression that a
-smaller focus sheet missed, so it is now the preferred fast iteration suite.
+The cross-font suite covers `Goldfish`, `AVATAR`, `WAVY`, `ToTaL`, `OpenType`,
+and `10.000` across all five no-ligature fonts. It catches compact-sans,
+serif, script, and numeric regressions that smaller focus sheets missed.
+
+For quick mixed-case regression checks, `corpus/samples/optical-total-target-suite.json`
+runs only `ToTaL` across the five no-ligature fonts. V25 uses this slice to
+prove that the EB Garamond improvement does not move Libre Baskerville, Inter,
+Pacifico, or Comic Neue.
 
 ## Interpretation
 
 The current guarded algorithm is much closer to InDesign Optical than V1, but
 still has targeted failures.
 
-Four patterns stand out after V15:
+Four patterns stand out after V25:
 
 - **Sans context improved**: Inter `OpenType`, `ToTaL`, and `WAVY` are now
   close to InDesign Optical. The run-level V8 pass uses computed sans-like font
@@ -157,8 +163,9 @@ Four patterns stand out after V15:
   `-0.0958em` to `-0.0550em` instead of trusting the inflated profile mean.
 - **Inter AVATAR remains the sans stress case**: it is much closer than before,
   but still the largest Inter row in the cross-font sheet.
-- **Libre/EB display caps are now the main failures**: Libre `AVATAR`, EB
-  `AVATAR`, and EB `ToTaL` need serif-specific contour safeguards.
+- **Remaining top cases are visual, not metric-parity failures**: Libre
+  `AVATAR`, Pacifico `AVATAR`, Pacifico `OpenType`, and EB `OpenType` are the
+  next no-ligature review targets.
 - **Numeric and punctuation runs are now separate**: the V14 digit-run context
   tightens long metricless digit runs when the local gaps and font spacing show
   that ordinary pair guards are too weak. This is dynamic, not a font-name or
@@ -183,8 +190,8 @@ three focused changes:
 
 1. Preserve and broaden the local aperture/collision guard for metricless
    upper-lower pairs without making good `Goldfish` rows wider.
-2. Treat Libre `AVATAR`, EB `AVATAR`, and EB `ToTaL` as visual tuning targets,
+2. Treat Libre `AVATAR`, Pacifico `AVATAR`, and Pacifico `OpenType` as visual tuning targets,
    not as hard failures.
-3. Treat EB `ToTaL`, Pacifico `AVATAR`, and Pacifico `OpenType` as the next
+3. Treat EB `OpenType`, EB `10.000`, and Pacifico `WAVY` as secondary
    visual tuning targets, while keeping V14 digit-run and V15 compact-sans
    improvements locked by tests.

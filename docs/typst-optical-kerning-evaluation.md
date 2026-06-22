@@ -18,8 +18,8 @@ patch. It is evidence for an implementation direction:
   run is an outlier,
 - compare rendered output against an industry publishing reference.
 
-The current V24 candidate improves the ligature-capable suite while leaving the
-established no-ligature suite unchanged. The code path remains deterministic,
+The current V25 candidate improves the largest no-ligature outlier while
+leaving the V24 ligature suite unchanged. The code path remains deterministic,
 Rust-first, outline-based, and cacheable.
 
 ## Abstract
@@ -36,7 +36,7 @@ word-level run context. It is evaluated against scripted InDesign Optical
 exports and Typst-rendered candidates after first proving that InDesign Metrics
 and Typst Metrics render the same shaped text closely enough to compare.
 
-![Ligature-capable suite excerpt](figures/v24-ligature-sheet-excerpt.png)
+![Ligature-capable suite excerpt](figures/v25-ligature-sheet-excerpt.png)
 
 ## Motivation
 
@@ -145,7 +145,7 @@ font substitutes `fi`, the algorithm evaluates `d|fi` and `fi|s`; it does not
 kern inside the ligature glyph. If ligatures are disabled, `f|i` becomes an
 ordinary adjacent pair again.
 
-![No-ligature suite excerpt](figures/v24-no-ligature-sheet-excerpt.png)
+![No-ligature suite excerpt](figures/v25-no-ligature-sheet-excerpt.png)
 
 ## Algorithm Shape
 
@@ -188,27 +188,28 @@ This is closer to what would be maintainable in Typst than an opaque score
 function. Each guard is small and testable, and each new rule must prove that it
 fixes a class of shapes without destabilizing the regression suite.
 
-## Current V24 Results
+## Current V25 Results
 
 Current reproducible artifacts:
 
-- `renders/optical-comparison-suite/ligatures-100pt-v24/summary.json`
-- `renders/optical-comparison-suite/ligatures-100pt-v24/contact-sheet.png`
-- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24/summary.json`
-- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24/contact-sheet.png`
-- `baselines/optical-ligature-suite-v24.json`
-- `baselines/optical-comparison-suite-five-font-v24.json`
+- `renders/optical-comparison-suite/ligatures-100pt-v25/summary.json`
+- `renders/optical-comparison-suite/ligatures-100pt-v25/contact-sheet.png`
+- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25/summary.json`
+- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25/contact-sheet.png`
+- `baselines/optical-ligature-suite-v25.json`
+- `baselines/optical-comparison-suite-five-font-v25.json`
 
 Summary:
 
 | Suite | Cases | Mean score | Worst score | Regression note |
 | --- | ---: | ---: | ---: | --- |
 | Ligatures V23 | 31 | `0.0127em` | `0.0288em` | previous baseline |
-| Ligatures V24 | 31 | `0.0123em` | `0.0240em` | only Libre `final` changed |
-| No ligatures V23 | 30 | `0.0177em` | `0.0384em` | previous baseline |
-| No ligatures V24 | 30 | `0.0177em` | `0.0384em` | zero changed cases |
+| Ligatures V24 | 31 | `0.0123em` | `0.0240em` | fixed Libre `final` |
+| Ligatures V25 | 31 | `0.0123em` | `0.0240em` | zero changed cases |
+| No ligatures V24 | 30 | `0.0177em` | `0.0384em` | previous baseline |
+| No ligatures V25 | 30 | `0.0170em` | `0.0304em` | only EB `ToTaL` changed |
 
-V24 specifically fixes a short wide-serif `fi` ligature word:
+V24 specifically fixed a short wide-serif `fi` ligature word:
 
 ```text
 Libre Baskerville / final
@@ -217,18 +218,23 @@ width: +0.0288em -> +0.0168em
 ink:   0.0081em -> 0.0067em
 ```
 
-![V24 Libre Baskerville final](figures/v24-libre-final-ligature.png)
+![V25 Libre Baskerville final](figures/v25-libre-final-ligature.png)
 
-The no-ligature suite is unchanged, which is important evidence that the
-ligature-specific rule does not destabilize established no-ligature behavior.
+V25 then improves the largest remaining no-ligature outlier:
 
-![No-ligature control](figures/v24-eb-total-no-ligature-control.png)
+```text
+EB Garamond / ToTaL
+score: 0.0384em -> 0.0168em
+width: -0.0384em -> -0.0168em
+ink:   0.0294em -> 0.0159em
+```
 
-The no-ligature control is intentionally not perfect. It shows the current
-largest remaining no-ligature score, EB Garamond `ToTaL`, and demonstrates that
-V24 did not silently change this established suite. This is useful when
-reviewing future changes: the benchmark should improve targeted shape classes
-without making unrelated controls drift.
+![V25 EB Garamond ToTaL](figures/v25-eb-total-no-ligature-target.png)
+
+The full V25 comparison is deliberately conservative. The no-ligature suite has
+exactly one changed case, EB Garamond `ToTaL`; the ligature suite has zero
+changed cases. This is useful review evidence: the benchmark should improve a
+targeted shape class without making unrelated controls drift.
 
 ## Reproduction Commands
 
@@ -238,18 +244,18 @@ cargo test
 scripts/run-optical-comparison-suite.py \
   --suite-file corpus/samples/optical-ligature-valid-suite.json \
   --metric-baseline baselines/metric-ligature-suite-v1.json \
-  --reuse-indesign-from renders/optical-comparison-suite/ligatures-100pt-v20-valid-complete \
-  --output renders/optical-comparison-suite/ligatures-100pt-v24 \
-  --baseline-output baselines/optical-ligature-suite-v24.json \
+  --reuse-indesign-from renders/optical-comparison-suite/ligatures-100pt-v24 \
+  --output renders/optical-comparison-suite/ligatures-100pt-v25 \
+  --baseline-output baselines/optical-ligature-suite-v25.json \
   --retries 1 \
   --preflight-timeout 45
 
 scripts/run-optical-comparison-suite.py \
   --suite-file corpus/samples/optical-cross-font-suite.json \
   --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
-  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15 \
-  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24 \
-  --baseline-output baselines/optical-comparison-suite-five-font-v24.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24 \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25 \
+  --baseline-output baselines/optical-comparison-suite-five-font-v25.json \
   --retries 1 \
   --preflight-timeout 45
 
@@ -302,13 +308,13 @@ controls.
 The following files are the best starting points for review:
 
 - `docs/algorithms.md`: current heuristic and guard notes.
-- `docs/current-findings.md`: chronological benchmark findings through V24.
+- `docs/current-findings.md`: chronological benchmark findings through V25.
 - `docs/metric-parity-suite.md`: why metric parity is a hard gate.
 - `docs/indesign-baseline.md`: how InDesign documents are constructed.
 - `docs/glyph-shape-parity.md`: how font/rendering mismatches are separated
   from kerning mismatches.
-- `baselines/optical-ligature-suite-v24.json`: compact V24 ligature evidence.
-- `baselines/optical-comparison-suite-five-font-v24.json`: compact V24
+- `baselines/optical-ligature-suite-v25.json`: compact V25 ligature evidence.
+- `baselines/optical-comparison-suite-five-font-v25.json`: compact V25
   no-ligature evidence.
 
 The large rendered artifacts under `renders/` are intentionally generated

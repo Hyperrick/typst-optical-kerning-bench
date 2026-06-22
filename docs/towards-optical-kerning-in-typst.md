@@ -12,7 +12,7 @@ incomplete or visually weak. The technical question is which kind of optical
 kerning can fit Typst's values: deterministic output, fast rendering, low
 dependency cost, and code that maintainers can understand.
 
-![Ligature-capable suite excerpt](figures/v24-ligature-sheet-excerpt.png)
+![Ligature-capable suite excerpt](figures/v25-ligature-sheet-excerpt.png)
 
 ## Why This Benchmark Exists
 
@@ -114,19 +114,19 @@ If ligatures are disabled, `f|i` becomes a real adjacent pair again. The
 benchmark keeps both modes because Typst would have to respect the active text
 feature settings.
 
-## Current V24 Result
+## Current V25 Result
 
-The current V24 candidate is evaluated in two suites:
+The current V25 candidate is evaluated in two suites:
 
 | Suite | Cases | Mean score | Worst score | Note |
 | --- | ---: | ---: | ---: | --- |
 | Ligatures V23 | 31 | `0.0127em` | `0.0288em` | previous baseline |
 | Ligatures V24 | 31 | `0.0123em` | `0.0240em` | improved Libre `final` |
-| No ligatures V23 | 30 | `0.0177em` | `0.0384em` | previous baseline |
-| No ligatures V24 | 30 | `0.0177em` | `0.0384em` | unchanged controls |
+| Ligatures V25 | 31 | `0.0123em` | `0.0240em` | unchanged controls |
+| No ligatures V24 | 30 | `0.0177em` | `0.0384em` | previous baseline |
+| No ligatures V25 | 30 | `0.0170em` | `0.0304em` | improved EB `ToTaL` |
 
-V24 fixed a short wide-serif ligature word without moving the established
-no-ligature suite:
+V24 fixed a short wide-serif ligature word:
 
 ```text
 Libre Baskerville / final
@@ -135,13 +135,23 @@ width: +0.0288em -> +0.0168em
 ink:   0.0081em -> 0.0067em
 ```
 
-![V24 Libre Baskerville final](figures/v24-libre-final-ligature.png)
+![V25 Libre Baskerville final](figures/v25-libre-final-ligature.png)
 
-The unchanged no-ligature control is important. Optical kerning rules are easy
-to overfit. A new rule should improve a named shape class without silently
+V25 then improves the largest no-ligature outlier:
+
+```text
+EB Garamond / ToTaL
+score: 0.0384em -> 0.0168em
+width: -0.0384em -> -0.0168em
+ink:   0.0294em -> 0.0159em
+```
+
+![V25 EB Garamond ToTaL](figures/v25-eb-total-no-ligature-target.png)
+
+The controlled scope is important. Optical kerning rules are easy to overfit.
+V25 changes exactly one no-ligature case and zero ligature cases in the current
+benchmark. A new rule should improve a named shape class without silently
 drifting unrelated words.
-
-![No-ligature control](figures/v24-eb-total-no-ligature-control.png)
 
 ## What This Suggests For Typst
 
@@ -180,7 +190,7 @@ The technical review document is
 [`typst-optical-kerning-evaluation.md`](typst-optical-kerning-evaluation.md).
 The algorithm notes are in [`algorithms.md`](algorithms.md).
 
-The core reproduction commands for the V24 evidence are:
+The core reproduction commands for the V25 evidence are:
 
 ```sh
 cargo test
@@ -188,18 +198,18 @@ cargo test
 scripts/run-optical-comparison-suite.py \
   --suite-file corpus/samples/optical-ligature-valid-suite.json \
   --metric-baseline baselines/metric-ligature-suite-v1.json \
-  --reuse-indesign-from renders/optical-comparison-suite/ligatures-100pt-v20-valid-complete \
-  --output renders/optical-comparison-suite/ligatures-100pt-v24 \
-  --baseline-output baselines/optical-ligature-suite-v24.json \
+  --reuse-indesign-from renders/optical-comparison-suite/ligatures-100pt-v24 \
+  --output renders/optical-comparison-suite/ligatures-100pt-v25 \
+  --baseline-output baselines/optical-ligature-suite-v25.json \
   --retries 1 \
   --preflight-timeout 45
 
 scripts/run-optical-comparison-suite.py \
   --suite-file corpus/samples/optical-cross-font-suite.json \
   --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
-  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-v15 \
-  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24 \
-  --baseline-output baselines/optical-comparison-suite-five-font-v24.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24 \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25 \
+  --baseline-output baselines/optical-comparison-suite-five-font-v25.json \
   --retries 1 \
   --preflight-timeout 45
 

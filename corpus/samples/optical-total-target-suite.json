@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "name": "total-target",
+  "description": "Targeted ToTaL mixed-case regression slice across the no-ligature cross-font matrix.",
+  "cases": [
+    {"fontId": "eb-garamond", "sample": "ToTaL"},
+    {"fontId": "libre-baskerville", "sample": "ToTaL"},
+    {"fontId": "inter", "sample": "ToTaL"},
+    {"fontId": "pacifico", "sample": "ToTaL"},
+    {"fontId": "comic-neue", "sample": "ToTaL"}
+  ]
+}

@@ -38,6 +38,7 @@ scripts/run-goldfish-parity.py --baseline-output baselines/goldfish-parity-v1.js
 scripts/run-goldfish-parity.py --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json
 scripts/run-metric-parity-suite.py
 scripts/run-optical-comparison-suite.py
+scripts/run-optical-comparison-suite.py --suite-file corpus/samples/optical-total-target-suite.json
 scripts/build-paper-figures.py
 ```
 
@@ -91,7 +92,7 @@ sources that shaped the current benchmark rules.
 
 The current leading candidate is `guarded-profile-hybrid`. It combines
 metric-prior kerning, contact-zone awareness, shaped ligature handling, and
-V24 run-context tuning for sans-like, serif, and connected-script words. See
+V25 run-context tuning for sans-like, serif, and connected-script words. See
 [`docs/algorithms.md`](docs/algorithms.md) and
 [`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).
 For a short public narrative, see

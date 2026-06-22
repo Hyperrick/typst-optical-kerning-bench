@@ -188,6 +188,29 @@ small negative delta when the robust gap is already compact. This improves the
 short `fi` word case without changing the no-ligature suite or longer `ffi`
 words such as `office`.
 
+## V25 Serif Mixed-Case Gap Notes
+
+V25 tightens one remaining no-ligature failure class without touching the
+ligature suite. The target case was EB Garamond `ToTaL`, where the word was
+still visibly wider than InDesign Optical after V24.
+
+The rule is dynamic and limited to serif-like mixed-case geometry. When a
+font-local serif profile has a clear robust gap excess, an upper-to-round-lower
+pair with strong metric kerning is allowed to keep the full metric value instead
+of being softened. A metricless round-lower-to-upper overhang pair in the same
+shape class can also close slightly beyond the previous cap. This affects the
+`T|o` and `o|T` shape class without naming the font or sample.
+
+In the V25 no-ligature suite, only EB Garamond `ToTaL` changed:
+
+```text
+score: 0.0384em -> 0.0168em
+width: -0.0384em -> -0.0168em
+ink:   0.0294em -> 0.0159em
+```
+
+The V25 ligature suite stayed unchanged from V24.
+
 ## Guarded Constraint Model
 
 The guarded candidate is intentionally not a single lightweight heuristic. It is

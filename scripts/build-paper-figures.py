@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Build small committed paper figures from generated V24 renders."
+        description="Build small committed paper figures from generated V25 renders."
     )
     parser.add_argument(
         "--output",
@@ -146,34 +146,34 @@ def main() -> None:
     compose_triptych(
         root,
         output,
-        "Short serif ligature word: V24 target case",
+        "Ligature control: unchanged by V25",
         "Libre Baskerville, ligatures enabled, text: final",
         [
-            "renders/optical-comparison-suite/ligatures-100pt-v24/libre-baskerville/final/crops/indesign-optical-ink.png",
-            "renders/optical-comparison-suite/ligatures-100pt-v24/libre-baskerville/final/crops/typst-guarded-ink.png",
-            "renders/optical-comparison-suite/ligatures-100pt-v24/libre-baskerville/final/overlays/optical-vs-guarded.png",
+            "renders/optical-comparison-suite/ligatures-100pt-v25/libre-baskerville/final/crops/indesign-optical-ink.png",
+            "renders/optical-comparison-suite/ligatures-100pt-v25/libre-baskerville/final/crops/typst-guarded-ink.png",
+            "renders/optical-comparison-suite/ligatures-100pt-v25/libre-baskerville/final/overlays/optical-vs-guarded.png",
         ],
         ["InDesign Optical", "Typst Guarded Optical", "Overlay"],
-        "v24-libre-final-ligature.png",
+        "v25-libre-final-ligature.png",
     )
     compose_triptych(
         root,
         output,
-        "No-ligature control: unchanged by V24",
+        "No-ligature target case: improved by V25",
         "EB Garamond, ligatures disabled, text: ToTaL",
         [
-            "renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24/eb-garamond/total/crops/indesign-optical-ink.png",
-            "renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24/eb-garamond/total/crops/typst-guarded-ink.png",
-            "renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24/eb-garamond/total/overlays/optical-vs-guarded.png",
+            "renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25/eb-garamond/total/crops/indesign-optical-ink.png",
+            "renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25/eb-garamond/total/crops/typst-guarded-ink.png",
+            "renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25/eb-garamond/total/overlays/optical-vs-guarded.png",
         ],
         ["InDesign Optical", "Typst Guarded Optical", "Overlay"],
-        "v24-eb-total-no-ligature-control.png",
+        "v25-eb-total-no-ligature-target.png",
     )
     crop_contact(
         root,
         output,
-        "renders/optical-comparison-suite/ligatures-100pt-v24/contact-sheet.png",
-        "v24-ligature-sheet-excerpt.png",
+        "renders/optical-comparison-suite/ligatures-100pt-v25/contact-sheet.png",
+        "v25-ligature-sheet-excerpt.png",
         "Ligature-capable suite excerpt",
         "Columns: InDesign Optical, Typst Guarded Optical, overlay",
         0,
@@ -182,8 +182,8 @@ def main() -> None:
     crop_contact(
         root,
         output,
-        "renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24/contact-sheet.png",
-        "v24-no-ligature-sheet-excerpt.png",
+        "renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25/contact-sheet.png",
+        "v25-no-ligature-sheet-excerpt.png",
         "No-ligature suite excerpt",
         "Columns: InDesign Optical, Typst Guarded Optical, overlay",
         0,

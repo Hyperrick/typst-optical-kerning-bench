@@ -8,8 +8,19 @@ compact-sans / long-caps pass. V21 adds shaped sans-lowercase run correction
 for ligature-capable words. V22 adds wide-serif ligature-run tuning and short
 connected-script lowercase tuning. V23 softens long fully connected script
 ligature runs and adds end-of-suite InDesign cleanup for crash-recovery modals.
-The current V24 pass relaxes over-compaction in short wide-serif `fi` ligature
-words.
+V24 relaxes over-compaction in short wide-serif `fi` ligature words. V25
+improves the largest remaining no-ligature outlier, EB Garamond
+`ToTaL`, while leaving the V24 ligature suite unchanged.
+
+Current V25 summary:
+
+- No-ligature suite: 30/30 measured, mean score `0.0177em -> 0.0170em`,
+  worst score `0.0384em -> 0.0304em`.
+- Changed no-ligature cases: only EB Garamond `ToTaL`
+  (`0.0384em -> 0.0168em`, width `-0.0384em -> -0.0168em`,
+  ink `0.0294em -> 0.0159em`).
+- Ligature suite: 31/31 measured, mean score `0.0123em`, worst score
+  `0.0240em`, zero changed cases from V24.
 
 ## Commands
 
@@ -131,6 +142,22 @@ scripts/run-optical-comparison-suite.py \
   --baseline-output baselines/optical-comparison-suite-five-font-v24.json \
   --retries 1 \
   --preflight-timeout 45
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-ligature-valid-suite.json \
+  --metric-baseline baselines/metric-ligature-suite-v1.json \
+  --reuse-indesign-from renders/optical-comparison-suite/ligatures-100pt-v24 \
+  --output renders/optical-comparison-suite/ligatures-100pt-v25 \
+  --baseline-output baselines/optical-ligature-suite-v25.json \
+  --retries 0 \
+  --preflight-timeout 45
+scripts/run-optical-comparison-suite.py \
+  --suite-file corpus/samples/optical-cross-font-suite.json \
+  --metric-baseline baselines/metric-parity-suite-five-font-cross-font.json \
+  --reuse-indesign-from renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24 \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25 \
+  --baseline-output baselines/optical-comparison-suite-five-font-v25.json \
+  --retries 0 \
+  --preflight-timeout 45
 cargo test
 ```
 
@@ -187,6 +214,11 @@ cargo test
   compaction relief.
 - `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v24/summary.json`:
   30-case no-ligature regression check after V24. It is unchanged from V23.
+- `renders/optical-comparison-suite/ligatures-100pt-v25/summary.json`:
+  31-case ligature-capable regression check after V25. It is unchanged from V24.
+- `renders/optical-comparison-suite/no-ligatures-100pt-five-font-v25/summary.json`:
+  30-case no-ligature regression check after V25. Only EB Garamond `ToTaL`
+  changes from V24.
 - `renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures/summary.json`:
   individual glyph shape parity before word or kerning comparison.
 
@@ -350,6 +382,12 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   `0.0168em`, width `+0.0288em` to `+0.0168em`).
 - The V24 no-ligature regression suite is unchanged from V23: mean score
   `0.0177em`, worst case `0.0384em`, and zero changed cases.
+- V25 keeps the V24 ligature suite unchanged and improves the no-ligature suite
+  by tightening a dynamic serif mixed-case gap class. Only EB Garamond `ToTaL`
+  changes: score `0.0384em -> 0.0168em`, width
+  `-0.0384em -> -0.0168em`, ink `0.0294em -> 0.0159em`. The no-ligature mean
+  score moves from `0.0177em` to `0.0170em`, and the worst score moves from
+  `0.0384em` to `0.0304em`.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 - Ligature-sensitive benchmarking now has its own sandbox font variant. Unlike
@@ -371,5 +409,5 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
 
 The next benchmark layer can either focus on the remaining ligature outliers
 (`Comic Neue word spacing`, Inter/Pacifico small ink-position differences) or
-continue turning the current evidence into the Typst-facing article/paper while keeping both V24
+continue turning the current evidence into the Typst-facing article/paper while keeping both V25
 suites as the current reproducible baseline.
