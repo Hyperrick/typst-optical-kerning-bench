@@ -61,7 +61,10 @@ large all-`render-error` baselines from being committed accidentally.
 
 After the suite finishes or aborts, the runner closes InDesign and removes
 InDesign recovery and scripting state. This keeps Adobe's crash-recovery
-"restore documents" dialog from blocking the next automated run.
+"restore documents" dialog from blocking the next automated run. While
+InDesign is starting, a best-effort watcher also clicks known negative recovery
+buttons, because some crashes show the modal after the process is already
+running and before ExtendScript accepts commands.
 
 ## Current Sample Matrix
 

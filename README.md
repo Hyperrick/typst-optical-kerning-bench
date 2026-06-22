@@ -45,7 +45,10 @@ The suite performs a small InDesign automation preflight before writing metric
 or optical baselines. If InDesign is stuck behind a modal dialog or is not
 scriptable, the run stops before any render-error baseline is written. At the
 end of every suite run, InDesign is closed and crash-recovery state is removed
-so a later run is not blocked by a localized "restore documents" modal.
+so a later run is not blocked by a localized "restore documents" modal. During
+InDesign startup, the runner also watches for known negative recovery buttons
+such as "No", "Cancel", or "Nicht wiederherstellen" and dismisses them as a
+best-effort fallback.
 
 ## InDesign Baselines
 

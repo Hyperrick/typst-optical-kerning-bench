@@ -358,10 +358,13 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   EB Garamond Liga shapes as `G|o`, `o|l`, `l|d`, `d|fi`, `fi|s`, and `s|h`.
 - InDesign crash recovery can leave a blocking "restore documents" startup
   modal. The suite now starts automation by killing InDesign, clearing recovery
-  and scripting state, and then running the preflight. Individual case renders
-  also have a timeout, so a modal or non-scriptable state logs as a failed
-  attempt, resets InDesign, and retries instead of hanging indefinitely. Metric
-  and optical suite runners also clean up InDesign and recovery state in a
+  and scripting state, and then running the preflight. While InDesign starts,
+  a best-effort watcher clicks known negative recovery buttons such as `No`,
+  `Cancel`, and `Nicht wiederherstellen`, because the modal can appear after
+  launch but before ExtendScript is scriptable. Individual case renders also
+  have a timeout, so a modal or non-scriptable state logs as a failed attempt,
+  resets InDesign, and retries instead of hanging indefinitely. Metric and
+  optical suite runners also clean up InDesign and recovery state in a
   `finally` block so a later run is not blocked by stale crash recovery.
 
 ## Next Question
