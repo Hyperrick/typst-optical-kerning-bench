@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "name": "full",
+  "description": "Full metric-valid optical comparison suite. This mirrors the current 30-case baseline while keeping the case list explicit.",
+  "cases": [
+    {
+      "fontId": "eb-garamond",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "AV"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "VA"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "WA"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "To"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "WAVY"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "AV"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "VA"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "WA"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "To"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "AVATAR"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "WAVY"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "ToTaL"
+    },
+    {
+      "fontId": "inter",
+      "sample": "Goldfish"
+    },
+    {
+      "fontId": "inter",
+      "sample": "WAVY"
+    },
+    {
+      "fontId": "inter",
+      "sample": "WAYFINDER"
+    },
+    {
+      "fontId": "inter",
+      "sample": "LANDMARK"
+    },
+    {
+      "fontId": "inter",
+      "sample": "valley"
+    },
+    {
+      "fontId": "inter",
+      "sample": "yellow"
+    },
+    {
+      "fontId": "inter",
+      "sample": "lorem"
+    },
+    {
+      "fontId": "inter",
+      "sample": "ipsum"
+    },
+    {
+      "fontId": "inter",
+      "sample": "OpenType"
+    },
+    {
+      "fontId": "inter",
+      "sample": "0123456789"
+    },
+    {
+      "fontId": "inter",
+      "sample": "1001"
+    },
+    {
+      "fontId": "inter",
+      "sample": "10.000"
+    },
+    {
+      "fontId": "inter",
+      "sample": "A10"
+    },
+    {
+      "fontId": "inter",
+      "sample": "V2.0"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "name": "fast",
+  "description": "Small optical comparison loop for algorithm iteration. Keeps the existing single-case InDesign render path and selects known failures plus controls.",
+  "cases": [
+    {
+      "fontId": "inter",
+      "sample": "OpenType",
+      "group": "failure"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "ToTaL",
+      "group": "failure"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "WAVY",
+      "group": "failure"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "AVATAR",
+      "group": "failure"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "AV",
+      "group": "failure"
+    },
+    {
+      "fontId": "inter",
+      "sample": "valley",
+      "group": "failure"
+    },
+    {
+      "fontId": "inter",
+      "sample": "ipsum",
+      "group": "failure"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "AV",
+      "group": "control"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "WA",
+      "group": "control"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "Goldfish",
+      "group": "control"
+    },
+    {
+      "fontId": "inter",
+      "sample": "LANDMARK",
+      "group": "control"
+    },
+    {
+      "fontId": "inter",
+      "sample": "10.000",
+      "group": "control"
+    }
+  ]
+}

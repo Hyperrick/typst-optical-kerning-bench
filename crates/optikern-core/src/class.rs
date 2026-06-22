@@ -48,6 +48,10 @@ impl PairClass {
         self.left == ClusterClass::Lower && self.right == ClusterClass::Upper
     }
 
+    pub(crate) fn is_lower_lower(self) -> bool {
+        self.left == ClusterClass::Lower && self.right == ClusterClass::Lower
+    }
+
     pub(crate) fn is_upper_digit(self) -> bool {
         self.left == ClusterClass::Upper && self.right == ClusterClass::Digit
     }

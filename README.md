@@ -169,10 +169,8 @@ See [`docs/metric-parity-suite.md`](docs/metric-parity-suite.md).
 Once metric parity passes, run the optical comparison suite:
 
 ```sh
-scripts/run-optical-comparison-suite.py \
-  --metric-baseline baselines/metric-parity-suite-v1.json \
-  --output renders/optical-comparison-suite/no-ligatures-100pt \
-  --baseline-output baselines/optical-comparison-suite-v1.json
+scripts/run-optical-comparison-suite.py --suite fast
+scripts/run-optical-comparison-suite.py --suite full
 ```
 
 See [`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).

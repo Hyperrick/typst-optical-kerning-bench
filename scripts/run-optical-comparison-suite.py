@@ -19,22 +19,46 @@ def parse_args() -> argparse.Namespace:
         description="Compare InDesign Optical against Typst Guarded Optical for metric-valid samples."
     )
     parser.add_argument(
+        "--suite",
+        choices=["fast", "full"],
+        default="full",
+        help="Case set to render. Defaults to full.",
+    )
+    parser.add_argument(
+        "--suite-file",
+        default="",
+        help="Optional explicit suite JSON file. Overrides --suite.",
+    )
+    parser.add_argument(
         "--metric-baseline",
         default="baselines/metric-parity-suite-v1.json",
         help="Metric parity baseline; only valid cases are rendered.",
     )
     parser.add_argument(
         "--output",
-        default="renders/optical-comparison-suite/no-ligatures-100pt",
+        default="",
     )
     parser.add_argument(
         "--baseline-output",
-        default="baselines/optical-comparison-suite-v1.json",
+        default="",
     )
     parser.add_argument("--dpi", default="")
     parser.add_argument("--point-size", default="")
     parser.add_argument("--ligatures", choices=["true", "false", ""], default="")
-    return parser.parse_args()
+    args = parser.parse_args()
+    name = suite_name(args)
+    if not args.output:
+        args.output = f"renders/optical-comparison-suite/no-ligatures-100pt-{name}"
+    if not args.baseline_output:
+        args.baseline_output = f"baselines/optical-comparison-suite-{name}.json"
+    return args
+
+
+def suite_name(args: argparse.Namespace) -> str:
+    if not args.suite_file:
+        return args.suite
+    stem = Path(args.suite_file).stem
+    return stem.removeprefix("optical-").removesuffix("-suite")
 
 
 def repo_root() -> Path:
@@ -51,12 +75,42 @@ def relative_to_out(path: Path, out: Path) -> str:
 
 def load_cases(root: Path, args: argparse.Namespace) -> tuple[dict, list[dict]]:
     baseline = json.loads((root / args.metric_baseline).read_text(encoding="utf-8"))
-    cases = [
+    valid_cases = [
         case
         for case in baseline["cases"]
         if case.get("metricGate", {}).get("validForOpticalTuning") is True
     ]
-    return baseline, cases
+    suite_path = suite_file(root, args)
+    if suite_path is None:
+        return baseline, valid_cases
+    suite = json.loads(suite_path.read_text(encoding="utf-8"))
+    return baseline, select_suite_cases(valid_cases, suite, suite_path)
+
+
+def suite_file(root: Path, args: argparse.Namespace) -> Path | None:
+    if args.suite_file:
+        return root / args.suite_file
+    return root / "corpus/samples" / f"optical-{args.suite}-suite.json"
+
+
+def select_suite_cases(valid_cases: list[dict], suite: dict, suite_path: Path) -> list[dict]:
+    by_key = {(case["fontId"], case["sample"]): case for case in valid_cases}
+    selected = []
+    seen = set()
+    for item in suite.get("cases", []):
+        key = (item["fontId"], item["sample"])
+        if key in seen:
+            raise SystemExit(f"Duplicate suite case in {suite_path}: {key[0]} / {key[1]}")
+        seen.add(key)
+        case = by_key.get(key)
+        if case is None:
+            raise SystemExit(
+                f"Suite case is missing from valid metric baseline cases: {key[0]} / {key[1]}"
+            )
+        selected.append(case)
+    if not selected:
+        raise SystemExit(f"Suite file has no cases: {suite_path}")
+    return selected
 
 
 def case_value(args_value: str, baseline_value) -> str:
@@ -186,6 +240,7 @@ def write_reports(root: Path, args: argparse.Namespace, baseline: dict, entries:
     report = {
         "schemaVersion": 1,
         "purpose": "InDesign Optical vs Typst Guarded Optical comparison for metric-valid samples.",
+        "suite": args.suite_file or args.suite,
         "metricBaseline": args.metric_baseline,
         "pointSize": float(case_value(args.point_size, baseline["pointSize"])),
         "ligatures": case_value(args.ligatures, baseline["ligatures"]) == "true",

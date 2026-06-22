@@ -5,7 +5,7 @@ on run argv
 	if (count of argv) is greater than 1 then set scriptArgs to items 2 thru -1 of argv
 	set jsxFile to POSIX file jsxPath as alias
 	tell application id "com.adobe.InDesign"
-		activate
+		close every document saving no
 		do script jsxFile language javascript with arguments scriptArgs
 	end tell
 end run

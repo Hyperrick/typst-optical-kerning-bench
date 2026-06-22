@@ -353,6 +353,31 @@ fn guarded_profile_hybrid(
         config,
         pair_class,
     );
+    adjusted = suppress_false_diagonal_opening(
+        adjusted,
+        metric_delta,
+        stats,
+        config,
+        pair_class,
+        pair_geometry,
+    );
+    adjusted += wide_serif_display_delta(
+        metric_delta,
+        adjusted,
+        nearest_delta,
+        stats,
+        config,
+        pair_class,
+        pair_geometry,
+    );
+    adjusted += sans_lowercase_compaction_delta(
+        metric_delta,
+        adjusted,
+        nearest_delta,
+        stats,
+        config,
+        pair_class,
+    );
 
     normalized_delta(
         adjusted
@@ -365,6 +390,162 @@ fn guarded_profile_hybrid(
                 pair_class,
             ),
     )
+}
+
+fn suppress_false_diagonal_opening(
+    adjusted_delta: f32,
+    metric_delta: f32,
+    stats: GapStats,
+    config: EvaluationConfig,
+    pair_class: PairClass,
+    pair_geometry: PairGeometry,
+) -> f32 {
+    if adjusted_delta <= 0.0 || metric_delta > dead_zone() || !pair_class.is_upper_upper() {
+        return adjusted_delta;
+    }
+
+    if config.target_gap_em < 0.255 || config.profile.x_height / config.profile.cap_height > 0.72 {
+        return adjusted_delta;
+    }
+
+    if !pair_geometry.has_diagonal_pair() {
+        return adjusted_delta;
+    }
+
+    let spread = (config.gap_mad_em * 1.35).clamp(0.035, 0.14);
+    let upper = config.target_gap_em + spread;
+    if stats.min_gap > -0.020 && stats.robust_mean_gap > upper {
+        0.0
+    } else {
+        adjusted_delta
+    }
+}
+
+fn wide_serif_display_delta(
+    metric_delta: f32,
+    adjusted_delta: f32,
+    nearest_delta: f32,
+    stats: GapStats,
+    config: EvaluationConfig,
+    pair_class: PairClass,
+    pair_geometry: PairGeometry,
+) -> f32 {
+    if config.target_gap_em < 0.255 || config.profile.x_height / config.profile.cap_height > 0.72 {
+        return 0.0;
+    }
+
+    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
+    let safe_min = (config.target_gap_em * 0.48).clamp(0.11, 0.16);
+    if nearest_delta > nearest_guard || stats.min_gap <= safe_min || aperture_risk(stats, config) {
+        return 0.0;
+    }
+
+    if pair_class.is_upper_upper() {
+        return serif_diagonal_upper_delta(
+            metric_delta,
+            adjusted_delta,
+            stats,
+            config,
+            pair_geometry,
+        );
+    }
+
+    if pair_class.is_upper_lower() || pair_class.is_lower_upper() {
+        return serif_mixed_case_delta(metric_delta, adjusted_delta, stats, config, pair_geometry);
+    }
+
+    0.0
+}
+
+fn serif_diagonal_upper_delta(
+    metric_delta: f32,
+    adjusted_delta: f32,
+    stats: GapStats,
+    config: EvaluationConfig,
+    pair_geometry: PairGeometry,
+) -> f32 {
+    if !pair_geometry.has_diagonal_pair() || metric_delta < -0.105 || adjusted_delta < -0.120 {
+        return 0.0;
+    }
+
+    let spread = (config.gap_mad_em * 1.35).clamp(0.035, 0.14);
+    let upper = config.target_gap_em + spread;
+    let gap_bonus = ((stats.robust_mean_gap - upper).max(0.0) * 0.18).clamp(0.0, 0.014);
+    let base = if metric_delta.abs() < dead_zone() {
+        0.030
+    } else {
+        0.022
+    };
+    let target = (adjusted_delta.min(metric_delta.min(0.0)) - base - gap_bonus)
+        .clamp(-0.125, adjusted_delta);
+    normalized_delta(target - adjusted_delta)
+}
+
+fn serif_mixed_case_delta(
+    metric_delta: f32,
+    adjusted_delta: f32,
+    stats: GapStats,
+    config: EvaluationConfig,
+    pair_geometry: PairGeometry,
+) -> f32 {
+    if metric_delta > -dead_zone() || adjusted_delta < -0.135 {
+        return 0.0;
+    }
+
+    let has_round_or_overhang = pair_geometry.left_right_side.is_round_like()
+        || pair_geometry.right_left_side.is_round_like()
+        || pair_geometry.right_top_left_overhang > 0.10;
+    if !has_round_or_overhang {
+        return 0.0;
+    }
+
+    let spread = (config.gap_mad_em * 1.35).clamp(0.035, 0.14);
+    let upper = config.target_gap_em + spread;
+    let gap_bonus = ((stats.robust_mean_gap - upper).max(0.0) * 0.16).clamp(0.0, 0.014);
+    let target =
+        (adjusted_delta.min(metric_delta) - 0.018 - gap_bonus).clamp(-0.140, adjusted_delta);
+    normalized_delta(target - adjusted_delta)
+}
+
+fn sans_lowercase_compaction_delta(
+    metric_delta: f32,
+    adjusted_delta: f32,
+    nearest_delta: f32,
+    stats: GapStats,
+    config: EvaluationConfig,
+    pair_class: PairClass,
+) -> f32 {
+    if !sans_like_spacing_profile(config) {
+        return 0.0;
+    }
+
+    if !(pair_class.is_lower_lower() || pair_class.is_upper_lower()) {
+        return 0.0;
+    }
+
+    let nearest_guard = (config.target_gap_em * 0.08).clamp(0.012, 0.020);
+    let safe_min = (config.target_gap_em * 0.36).clamp(0.070, 0.100);
+    if nearest_delta > nearest_guard || stats.min_gap <= safe_min || aperture_risk(stats, config) {
+        return 0.0;
+    }
+
+    if pair_class.is_lower_lower() && metric_delta.abs() >= 0.025 {
+        return 0.0;
+    }
+
+    let amount = if pair_class.is_upper_lower() && metric_delta < -dead_zone() {
+        0.030
+    } else if pair_class.is_upper_lower() {
+        0.020
+    } else {
+        0.018
+    };
+    let target = (adjusted_delta - amount).clamp(-0.105, adjusted_delta);
+    normalized_delta(target - adjusted_delta)
+}
+
+fn sans_like_spacing_profile(config: EvaluationConfig) -> bool {
+    config.target_gap_em <= 0.235 && config.profile.x_height / config.profile.cap_height >= 0.72
 }
 
 fn side_shape_delta(
@@ -651,6 +832,10 @@ impl PairGeometry {
             right_left_side: SideFeatures::from_outline(right, Side::Left),
         }
     }
+
+    fn has_diagonal_pair(self) -> bool {
+        self.left_right_side.is_diagonal_like() || self.right_left_side.is_diagonal_like()
+    }
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -712,6 +897,10 @@ impl SideFeatures {
 
     fn is_round_like(self) -> bool {
         self.roundness > 0.035 || self.stemness < 0.45
+    }
+
+    fn is_diagonal_like(self) -> bool {
+        self.stemness < 0.55 && self.roundness <= 0.035
     }
 }
 
@@ -1181,6 +1370,142 @@ mod tests {
 
         let delta = guarded_profile_hybrid(0.0, -0.047, 0.0, stats, config, class, geometry);
         assert!(delta < -0.110);
+    }
+
+    #[test]
+    fn suppresses_false_diagonal_opening_when_collision_is_only_local() {
+        let stats = GapStats {
+            min_gap: -0.013,
+            weighted_mean_gap: 0.470,
+            robust_mean_gap: 0.463,
+            mad: 0.13,
+            samples: 55,
+        };
+        let mut config = test_config(0.285, 0.052);
+        config.profile.x_height = 0.69;
+        config.profile.cap_height = 1.0;
+        let class = PairClass {
+            left: ClusterClass::Upper,
+            right: ClusterClass::Upper,
+        };
+        let geometry = PairGeometry {
+            left_right_side: SideFeatures {
+                roundness: 0.0,
+                stemness: 0.35,
+            },
+            right_left_side: SideFeatures {
+                roundness: 0.0,
+                stemness: 0.35,
+            },
+            ..PairGeometry::default()
+        };
+
+        let delta = suppress_false_diagonal_opening(0.044, 0.0, stats, config, class, geometry);
+        assert_eq!(delta, 0.0);
+    }
+
+    #[test]
+    fn wide_serif_display_tightens_weak_diagonal_metric_pairs() {
+        let stats = GapStats {
+            min_gap: 0.330,
+            weighted_mean_gap: 0.420,
+            robust_mean_gap: 0.410,
+            mad: 0.004,
+            samples: 55,
+        };
+        let mut config = test_config(0.285, 0.052);
+        config.profile.x_height = 0.69;
+        config.profile.cap_height = 1.0;
+        let class = PairClass {
+            left: ClusterClass::Upper,
+            right: ClusterClass::Upper,
+        };
+        let geometry = PairGeometry {
+            left_right_side: SideFeatures {
+                roundness: 0.0,
+                stemness: 0.35,
+            },
+            right_left_side: SideFeatures {
+                roundness: 0.0,
+                stemness: 0.35,
+            },
+            ..PairGeometry::default()
+        };
+
+        let delta = wide_serif_display_delta(-0.076, -0.076, 0.0, stats, config, class, geometry);
+        assert!(delta < -0.020);
+    }
+
+    #[test]
+    fn wide_serif_display_leaves_strong_metric_pairs_alone() {
+        let stats = GapStats {
+            min_gap: 0.298,
+            weighted_mean_gap: 0.386,
+            robust_mean_gap: 0.381,
+            mad: 0.006,
+            samples: 53,
+        };
+        let config = test_config(0.230, 0.056);
+        let class = PairClass {
+            left: ClusterClass::Upper,
+            right: ClusterClass::Upper,
+        };
+        let geometry = PairGeometry {
+            left_right_side: SideFeatures {
+                roundness: 0.0,
+                stemness: 0.35,
+            },
+            right_left_side: SideFeatures {
+                roundness: 0.0,
+                stemness: 0.35,
+            },
+            ..PairGeometry::default()
+        };
+
+        let delta = wide_serif_display_delta(-0.140, -0.117, 0.0, stats, config, class, geometry);
+        assert_eq!(delta, 0.0);
+    }
+
+    #[test]
+    fn sans_lowercase_compaction_tightens_weak_lowercase_pairs() {
+        let stats = GapStats {
+            min_gap: 0.102,
+            weighted_mean_gap: 0.150,
+            robust_mean_gap: 0.150,
+            mad: 0.046,
+            samples: 41,
+        };
+        let mut config = test_config(0.217, 0.050);
+        config.profile.x_height = 0.75;
+        config.profile.cap_height = 1.0;
+        let class = PairClass {
+            left: ClusterClass::Lower,
+            right: ClusterClass::Lower,
+        };
+
+        let delta = sans_lowercase_compaction_delta(0.0, -0.012, 0.0, stats, config, class);
+        assert!(delta < -0.010);
+    }
+
+    #[test]
+    fn sans_lowercase_compaction_does_not_apply_to_serif_profile() {
+        let stats = GapStats {
+            min_gap: 0.102,
+            weighted_mean_gap: 0.150,
+            robust_mean_gap: 0.150,
+            mad: 0.046,
+            samples: 41,
+        };
+        let mut config = test_config(0.230, 0.050);
+        config.profile.x_height = 0.61;
+        config.profile.cap_height = 1.0;
+        let class = PairClass {
+            left: ClusterClass::Lower,
+            right: ClusterClass::Lower,
+        };
+
+        let delta = sans_lowercase_compaction_delta(0.0, -0.012, 0.0, stats, config, class);
+        assert_eq!(delta, 0.0);
     }
 
     fn glyph_from_rects(rects: &[(f32, f32, f32, f32)]) -> GlyphOutline {

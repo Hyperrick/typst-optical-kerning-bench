@@ -22,8 +22,14 @@ scripts/run-metric-parity-suite.py \
   --font-specs renders/font-sandbox/goldfish-no-ligature-fonts.json \
   --baseline-output baselines/metric-parity-suite-v1.json
 scripts/run-optical-comparison-suite.py \
+  --suite full \
   --metric-baseline baselines/metric-parity-suite-v1.json \
-  --baseline-output baselines/optical-comparison-suite-v1.json
+  --baseline-output baselines/optical-comparison-suite-v7.json
+scripts/run-optical-comparison-suite.py \
+  --suite fast \
+  --metric-baseline baselines/metric-parity-suite-v1.json \
+  --output renders/optical-comparison-suite/no-ligatures-100pt-v7-fast \
+  --baseline-output baselines/optical-comparison-suite-v7-fast.json
 cargo test
 ```
 
@@ -48,6 +54,8 @@ cargo test
 - `renders/optical-comparison-suite/no-ligatures-100pt/summary.json`:
   InDesign Optical vs Typst Guarded Optical for samples that passed metric
   parity.
+- `renders/optical-comparison-suite/no-ligatures-100pt-v7-fast/summary.json`:
+  12-case fast optical suite for algorithm iteration.
 - `renders/glyph-shape-parity/goldfish-glyphs-100pt-no-ligatures/summary.json`:
   individual glyph shape parity before word or kerning comparison.
 
@@ -124,15 +132,16 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   are Inter `WAYFINDER` and `LANDMARK` at `+0.0192em`, still inside the
   `0.02em` width gate. The worst ink-position delta is Inter `LANDMARK` at
   `0.0143em`, inside the `0.02em` ink gate.
-- The optical comparison suite measured all 30 metric-valid cases. The largest
-  current failures are Inter `OpenType` (`-0.1416em` width), Libre
-  `ToTaL` (`-0.1152em`), Libre `WAVY` (`-0.1104em`), and Libre
-  `AVATAR` (`-0.0816em`). Negative width means Typst Guarded is wider than
-  InDesign Optical.
-- The next algorithm pass should focus on stronger uppercase diagonal
-  tightening for Libre Baskerville, avoiding the false-positive `V|Y` opening in
-  `WAVY`, and improving lowercase/mixed-case sans behavior using Inter
-  `OpenType`, `valley`, and `ipsum`.
+- V7 improves the 30-case optical suite mean score from `0.0428em` to
+  `0.0249em` and worst-case score from `0.1416em` to `0.0936em`, with no
+  measured score regressions against V1. The remaining largest failures are
+  Inter `OpenType`, Libre `AVATAR`, Libre `Goldfish`, EB `AVATAR`, and EB
+  `ToTaL`.
+- The fast optical suite now selects 12 cases from JSON: seven known failure
+  targets and five controls. It completed 12/12 in the background InDesign path;
+  InDesign left zero documents open and did not steal focus from Chrome.
+- The next algorithm pass should focus on lowercase accumulation in sans words,
+  a numeric/punctuation-specific class, and careful serif display-cap tuning.
 - `safe-fallback-only` is the conservative candidate. It is less ambitious but
   easier to defend as a low-risk fallback for sparse kerning.
 
