@@ -180,9 +180,9 @@
         cases.
       </p>
       <p class="muted">
-        The current goal is to make the work readable enough for Typst
-        community discussion. It is not a pull request and not a finished Typst
-        API proposal.
+        The current result is both a benchmark suite and a concrete algorithm
+        candidate, developed through the evaluation: `guarded-profile-hybrid`.
+        It is not a pull request and not a finished Typst API proposal.
       </p>
 
       <h2>Where to read</h2>
@@ -198,10 +198,17 @@
       <h2>What is in the repository</h2>
       <div class="cards">
         <article class="card">
-          <h3>Rust benchmark code</h3>
+          <h3>Algorithm candidate</h3>
           <p>
-            Font loading, shaping, outline sampling, candidate algorithms,
-            pair deltas, and regression tests.
+            `guarded-profile-hybrid`: a metric-prior, outline-profile approach
+            with dynamic safety guards and run context.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Rust evaluation code</h3>
+          <p>
+            Font loading, shaping, outline sampling, pair deltas, regression
+            tests, and comparison metrics.
           </p>
         </article>
         <article class="card">
@@ -239,10 +246,10 @@
       <h2>Status for discussion</h2>
       <p>
         The first evaluation artifact is complete enough to show to the Typst
-        community. More tuning data can still be added, but the main idea is now
-        stable: shape text first, use font metric kerning as a prior, compute
-        optical corrections from glyph outlines, and keep the implementation
-        deterministic and cacheable.
+        community. More tuning data can still be added, but the core algorithm
+        direction is now stable: shape text first, use font metric kerning as a
+        prior, compute optical corrections from glyph outlines, and keep the
+        implementation deterministic and cacheable.
       </p>
       <p>
         This repo is intended as material for an informed Typst community
