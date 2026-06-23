@@ -6,7 +6,7 @@
     <title>Typst Optical Kerning Bench</title>
     <meta
       name="description"
-      content="Documentation index for a reproducible optical kerning benchmark for Typst."
+      content="Repository guide for a reproducible optical kerning benchmark for Typst."
     >
     <style>
       :root {
@@ -16,6 +16,7 @@
         --muted: #666666;
         --line: #dddddd;
         --code: #f6f6f6;
+        --panel: #fafafa;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -25,6 +26,7 @@
           --muted: #aaaaaa;
           --line: #333333;
           --code: #1c1c1c;
+          --panel: #171717;
         }
       }
 
@@ -36,33 +38,47 @@
         margin: 0;
         background: var(--bg);
         color: var(--ink);
-        font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font: 16px/1.56 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
 
       main {
-        width: min(860px, calc(100% - 32px));
+        width: min(980px, calc(100% - 32px));
         margin: 0 auto;
-        padding: 48px 0 72px;
+        padding: 44px 0 72px;
       }
 
       h1 {
+        max-width: 780px;
         margin: 0 0 14px;
-        font-size: 2rem;
-        line-height: 1.12;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1.05;
         letter-spacing: 0;
       }
 
       h2 {
-        margin: 36px 0 12px;
-        padding-top: 24px;
+        margin: 44px 0 14px;
+        padding-top: 26px;
         border-top: 1px solid var(--line);
-        font-size: 1.25rem;
-        line-height: 1.2;
+        font-size: 1.32rem;
+        line-height: 1.22;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin: 0 0 6px;
+        font-size: 1rem;
         letter-spacing: 0;
       }
 
       p {
+        max-width: 780px;
         margin: 0 0 14px;
+      }
+
+      a {
+        color: inherit;
+        text-decoration-thickness: 0.08em;
+        text-underline-offset: 0.18em;
       }
 
       ul {
@@ -74,17 +90,63 @@
         margin-top: 8px;
       }
 
-      a {
-        color: inherit;
-        text-decoration-thickness: 0.08em;
-        text-underline-offset: 0.18em;
-      }
-
       .muted {
         color: var(--muted);
       }
 
+      .links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 24px;
+        max-width: 780px;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: var(--panel);
+        padding: 14px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .figures {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      figure {
+        margin: 0;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      figcaption {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
       pre {
+        max-width: 780px;
         margin: 14px 0 0;
         padding: 14px;
         overflow-x: auto;
@@ -98,22 +160,12 @@
         font: 0.94rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       }
 
-      figure {
-        margin: 18px 0 0;
-        padding: 0;
-      }
-
-      img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-        border: 1px solid var(--line);
-      }
-
-      figcaption {
-        margin-top: 8px;
-        color: var(--muted);
-        font-size: 0.94rem;
+      @media (max-width: 760px) {
+        .links,
+        .cards,
+        .figures {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
@@ -121,30 +173,89 @@
     <main>
       <h1>Typst Optical Kerning Bench</h1>
       <p>
-        Documentation index for a reproducible benchmark around optical kerning
-        in Typst-like constraints. The repository compares deterministic
-        outline-based candidates against Typst metric rendering and scripted
-        InDesign Optical baselines.
+        This repository evaluates whether deterministic, outline-based optical
+        kerning could be a plausible direction for Typst. It compares Typst
+        metric rendering, a guarded optical candidate, and scripted InDesign
+        Optical baselines across fonts, words, pairs, numbers, and ligature
+        cases.
       </p>
       <p class="muted">
-        This page is intentionally only an entry point. The repository and the
-        Markdown documents are the source of truth.
+        The current goal is to make the work readable enough for Typst
+        community discussion. It is not a pull request and not a finished Typst
+        API proposal.
       </p>
 
-      <h2>Start here</h2>
-      <ul>
+      <h2>Where to read</h2>
+      <ul class="links">
         <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench">Repository</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">README</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">README and reproduction commands</a></li>
         <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">Overview note</a></li>
         <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">Technical evaluation</a></li>
         <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">Algorithm notes</a></li>
         <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/optical-comparison-suite.md">Optical comparison suite</a></li>
       </ul>
 
-      <h2>Typst API sketch</h2>
+      <h2>What is in the repository</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Rust benchmark code</h3>
+          <p>
+            Font loading, shaping, outline sampling, candidate algorithms,
+            pair deltas, and regression tests.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Rendering pipeline</h3>
+          <p>
+            Typst renders, scripted InDesign exports, cropped PNGs, overlays,
+            metric parity checks, and compact JSON baselines.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Review material</h3>
+          <p>
+            Contact sheets, failure notes, algorithm rationale, reproduction
+            commands, and current findings.
+          </p>
+        </article>
+      </div>
+
+      <h2>Why this exists</h2>
       <p>
-        The benchmark does not propose a final API. It uses this sketch only to
-        make the possible behavior concrete.
+        Typst already has metric kerning from font tables. That should remain
+        the default. The open question is whether Typst can also offer an
+        optical mode for situations where designers normally reach for layout
+        tools such as InDesign: large headlines, brand typography, packaging,
+        editorial display type, sparse font kerning tables, mixed-case words,
+        punctuation, numbers, and shaped ligatures.
+      </p>
+      <p>
+        A subjective screenshot is not enough for that discussion. This repo
+        tries to make the question reviewable by using multiple fonts, multiple
+        samples, multiple algorithms, metric parity gates, rendered overlays,
+        and compact baselines.
+      </p>
+
+      <h2>Status for discussion</h2>
+      <p>
+        The first evaluation artifact is complete enough to show to the Typst
+        community. More tuning data can still be added, but the main idea is now
+        stable: shape text first, use font metric kerning as a prior, compute
+        optical corrections from glyph outlines, and keep the implementation
+        deterministic and cacheable.
+      </p>
+      <p>
+        Typst's contributing guide asks contributors to discuss significant
+        feature work before implementation and points to the Discord
+        <code>#contributors</code> channel. It explicitly says: "Don't be shy!"
+        This repo is intended as material for that discussion.
+      </p>
+
+      <h2>Possible Typst API shape</h2>
+      <p>
+        Typst currently exposes kerning as a boolean. The benchmark does not
+        settle a public API, but it uses this sketch to make the possible
+        behavior concrete.
       </p>
       <pre><code>#set text(kerning: true)  // current metric kerning
 #set text(kerning: false) // current disabled kerning
@@ -154,21 +265,42 @@
 #set text(kerning: "optical")
 #set text(kerning: "none")</code></pre>
 
-      <h2>Current visual reference</h2>
+      <h2>Review figures</h2>
       <p>
-        Contact sheets group repeated words and pairs across fonts so that
-        reviewers can compare Typst metric output, the current guarded optical
-        candidate, and InDesign Optical.
+        The visual material is not limited to one screenshot. The committed
+        figures show no-ligature words and numbers, ligature-capable words, and
+        targeted before/after cases from the current benchmark iteration.
       </p>
-      <figure>
-        <img
-          src="https://raw.githubusercontent.com/Hyperrick/typst-optical-kerning-bench/main/docs/figures/v25-no-ligature-sheet-excerpt.png"
-          alt="Excerpt of the current no-ligature optical kerning contact sheet."
-        >
-        <figcaption>
-          Excerpt from the current no-ligature contact sheet.
-        </figcaption>
-      </figure>
+      <div class="figures">
+        <figure>
+          <img
+            src="https://raw.githubusercontent.com/Hyperrick/typst-optical-kerning-bench/main/docs/figures/v25-no-ligature-sheet-excerpt.png"
+            alt="No-ligature contact sheet excerpt."
+          >
+          <figcaption>No-ligature contact sheet excerpt.</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="https://raw.githubusercontent.com/Hyperrick/typst-optical-kerning-bench/main/docs/figures/v25-ligature-sheet-excerpt.png"
+            alt="Ligature-capable contact sheet excerpt."
+          >
+          <figcaption>Ligature-capable contact sheet excerpt.</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="https://raw.githubusercontent.com/Hyperrick/typst-optical-kerning-bench/main/docs/figures/v25-eb-total-no-ligature-target.png"
+            alt="EB Garamond ToTaL targeted comparison."
+          >
+          <figcaption>Targeted no-ligature mixed-case case.</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="https://raw.githubusercontent.com/Hyperrick/typst-optical-kerning-bench/main/docs/figures/v25-libre-final-ligature.png"
+            alt="Libre Baskerville final ligature comparison."
+          >
+          <figcaption>Targeted ligature-capable word case.</figcaption>
+        </figure>
+      </div>
     </main>
   </body>
 </html>
