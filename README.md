@@ -142,6 +142,17 @@ Implemented candidate algorithms:
 - `guarded-profile-hybrid`
 - `safe-fallback-only`
 
+The current candidate did not start as a fixed conclusion. The suite first kept
+several simpler approaches side by side: nearest contour distance, weighted
+profile whitespace, area balance, metric-prior blending, and conservative
+fallback behavior. Their failure cases shaped the current guarded hybrid. Pure
+geometry over-tightened some forms; profile averages misread apertures and
+counters; word-level samples exposed accumulated pair errors; ligature samples
+forced all decisions to happen after shaping. `guarded-profile-hybrid` is the
+resulting candidate because it preserves useful metric kerning, uses outline
+profiles for optical evidence, and adds dynamic guards for unsafe local
+geometry.
+
 See [`docs/algorithms.md`](docs/algorithms.md) for the current heuristics and
 the constraints that make them plausible for a future Typst implementation.
 See [`docs/research-alignment.md`](docs/research-alignment.md) for the external

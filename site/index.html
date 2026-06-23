@@ -391,6 +391,26 @@
         <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/current-findings.md">current findings</a>.
       </p>
 
+      <h2>How the candidate emerged</h2>
+      <p>
+        The benchmark did not start with `guarded-profile-hybrid`. Earlier
+        candidates tested nearest contour distance, weighted whitespace
+        profiles, area balance, metric-prior blending, and a conservative
+        fallback-only mode. Those simpler approaches were useful, but each
+        exposed different failure cases: over-tight round forms, apertures,
+        punctuation, script joins, ligatures, or word-level accumulation.
+      </p>
+      <p>
+        The current candidate keeps the useful parts: metric kerning remains the
+        prior, outline profiles provide the optical signal, and dynamic guards
+        block unsafe moves. That is why the result is a guarded hybrid rather
+        than one single geometric rule.
+      </p>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">implemented algorithms and candidate selection</a>.
+      </p>
+
       <h2>Possible Typst API shape</h2>
       <p>
         Typst currently exposes kerning as a boolean. The benchmark does not

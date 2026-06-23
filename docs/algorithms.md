@@ -82,6 +82,32 @@ cacheable.
 - `safe-fallback-only`: preserves metric kerning if it exists; otherwise uses
   the robust optical outlier correction. Monospaced fonts are preserved.
 
+## Candidate Selection
+
+The guarded candidate emerged from comparing these approaches rather than from
+choosing one formula upfront.
+
+The simpler outline algorithms were useful as probes:
+
+- `nearest-contour-distance` made real collisions visible and fixed some close
+  contour cases, but nearest distance alone cannot model stem rhythm or word
+  color.
+- `profile-whitespace` captured broad optical whitespace better, but profile
+  means can be inflated by apertures, counters, and diagonal shapes.
+- `area-balance` reduced some outliers but still behaved like a single global
+  spacing criterion.
+- `metric-prior-hybrid` showed that font kerning should be a prior rather than
+  something to replace wholesale.
+- `safe-fallback-only` established the conservative lower-risk baseline for
+  sparse or missing metric kerning.
+
+`guarded-profile-hybrid` is the current candidate because it keeps the useful
+parts of those tests and adds the missing safety model: metric kerning remains
+the base signal, outline profiles provide optical evidence, nearest-contour
+checks catch local danger, and run context prevents individually plausible pair
+decisions from accumulating into a poor word. This is why the result is a
+guarded hybrid rather than a pure nearest-distance or pure whitespace rule.
+
 ## V6 Calibration Notes
 
 The core now computes class-local gap distributions per font for broad classes

@@ -109,6 +109,13 @@ The values are computed from the font and shaped text:
 
 There are no per-font or per-word exceptions in the current candidate.
 
+The candidate came out of comparing several earlier approaches, not from
+assuming one rule would be enough. Nearest contour distance, profile whitespace,
+area balance, metric-prior blending, and fallback-only behavior each explained
+part of the problem and failed on other parts. The guarded hybrid keeps the
+useful signals while adding safety checks for apertures, collisions, ligatures,
+script joins, punctuation, and full-word accumulation.
+
 ## Possible Typst API Shape
 
 Typst currently exposes kerning as a boolean:
