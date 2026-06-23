@@ -1,7 +1,7 @@
 # Algorithm Notes
 
-All V1 algorithms operate on font outlines, not raster images. Raster analysis is
-used only after rendering PDFs to evaluate output.
+All implemented candidate algorithms operate on font outlines, not raster
+images. Raster analysis is used only after rendering PDFs to evaluate output.
 
 ## Shared Preprocessing
 
