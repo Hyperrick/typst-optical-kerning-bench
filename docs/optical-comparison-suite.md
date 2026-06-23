@@ -89,7 +89,9 @@ The `fast`, `cross-font`, and `full` case lists are explicit JSON files under
 
 - `summary.json`: full per-case render comparison.
 - `index.html`: ranked table by optical score.
-- `contact-sheet.png`: compact visual sheet.
+- `contact-sheet.png`: compact visual sheet. For review runs, the sheet should
+  group the same sample across fonts so visual differences are caused by font
+  behavior and kerning, not by changing text every row.
 - `baselines/optical-comparison-suite-v7.json`: compact committed baseline
   with worst cases and pair deltas.
 - `baselines/optical-comparison-suite-v8-fast.json`: compact fast-suite
@@ -115,16 +117,17 @@ magenta = Typst Guarded Optical
 black   = overlap
 ```
 
-## Current Result: V25
+## Current Result After 25 Iterations
 
 The current no-ligature five-font matrix compares InDesign Optical against
-Typst Guarded Optical for 30 rows. The current V25 pass builds on V15 compact
-sans / long-cap handling and the later ligature work. Compared with the early
-V14/V15 baseline, the mean score improved from `0.0240em` to `0.0170em`; worst
-case improved from `0.0648em` to `0.0304em`. Compared with V24, exactly one
-no-ligature case changed: EB Garamond `ToTaL`.
+Typst Guarded Optical for 30 rows. The current candidate has gone through 25
+evaluation iterations, building on compact sans / long-cap handling and later
+ligature work. Compared with the early V14/V15 baseline, the mean score
+improved from `0.0240em` to `0.0170em`; worst case improved from `0.0648em` to
+`0.0304em`. Compared with the previous committed no-ligature baseline, exactly
+one case changed: EB Garamond `ToTaL`.
 
-V25 five-font worst cases by combined optical score:
+Current five-font worst cases by combined optical score:
 
 ```text
 Libre AVATAR:         +0.0168em width, 0.0304em ink
@@ -144,16 +147,16 @@ and `10.000` across all five no-ligature fonts. It catches compact-sans,
 serif, script, and numeric regressions that smaller focus sheets missed.
 
 For quick mixed-case regression checks, `corpus/samples/optical-total-target-suite.json`
-runs only `ToTaL` across the five no-ligature fonts. V25 uses this slice to
-prove that the EB Garamond improvement does not move Libre Baskerville, Inter,
-Pacifico, or Comic Neue.
+runs only `ToTaL` across the five no-ligature fonts. The latest iteration uses
+this slice to prove that the EB Garamond improvement does not move Libre
+Baskerville, Inter, Pacifico, or Comic Neue.
 
 ## Interpretation
 
 The current guarded algorithm is much closer to InDesign Optical than V1, but
 still has targeted failures.
 
-Four patterns stand out after V25:
+Four patterns stand out in the current five-font comparison:
 
 - **Sans context improved**: Inter `OpenType`, `ToTaL`, and `WAVY` are now
   close to InDesign Optical. The run-level V8 pass uses computed sans-like font

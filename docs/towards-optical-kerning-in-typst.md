@@ -2,7 +2,7 @@
 
 This is an independent research note, not an official Typst project. It
 summarizes a reproducible benchmark for optical kerning experiments that could
-eventually inform a Typst implementation.
+support the existing Typst discussion around automatic optical kerning.
 
 The short version: [Typst](https://typst.app/) already supports metric kerning
 from font tables. That is the right default and should remain protected. But
@@ -12,24 +12,40 @@ incomplete or visually weak. The technical question is which kind of optical
 kerning can fit Typst's values: deterministic output, fast rendering, low
 dependency cost, and code that maintainers can understand.
 
+The work is also informed by practical print and media technology experience,
+with a focus on prepress, graphic design, and typesetting workflows. That
+background matters here because optical kerning is most visible in print,
+display typography, editorial design, brand work, and production settings where
+spacing decisions are reviewed visually.
+
 ![Ligature-capable suite excerpt](figures/v25-ligature-sheet-excerpt.png)
 
 ## Why This Benchmark Exists
 
 Optical kerning is easy to discuss subjectively and hard to review in a compiler
-project. "This looks better" is not enough for a serious proposal. A useful
-evaluation needs:
+project. "This looks better" is not enough. A useful evaluation needs:
 
 - real fonts, not one cherry-picked demo;
 - real words, not only `AV` and `To`;
 - metric kerning as a baseline, not an enemy;
 - ligatures and shaping handled before spacing decisions;
+- multiple algorithm candidates and multiple metrics, because one number or one
+  screenshot can hide regressions;
 - rendered comparisons that reviewers can inspect visually;
 - numeric measurements that catch regressions when a rule improves one case and
   worsens another.
 
-This repository therefore acts as a lab. It does not propose a final Typst API
-or a ready-to-merge patch. It tries to answer a narrower engineering question:
+The benchmark takes existing Typst issues into account. The closest one is
+[#8514 Automatic optical kerning](https://github.com/typst/typst/issues/8514),
+which asks about deriving kerning from adjacent glyph outlines when font
+kerning is sparse or absent. Related discussions such as
+[#2692 Custom kerning pair definitions](https://github.com/typst/typst/issues/2692)
+and [#5826](https://github.com/typst/typst/issues/5826) cover neighboring
+kerning problems. This repository does not try to replace that discussion; it
+tries to make one possible direction easier to evaluate.
+
+It does not propose a final Typst API or a ready-to-merge patch. It tries to
+answer a narrower engineering question:
 
 > Can a deterministic, outline-based, metric-prior algorithm get close to
 > InDesign Optical while remaining plausible for Typst's compiler architecture?
@@ -62,7 +78,7 @@ Overlay colors in the review figures are:
 
 ## The Current Direction
 
-The current leading candidate is called `guarded-profile-hybrid`. The name is
+The current main candidate is called `guarded-profile-hybrid`. The name is
 less important than the shape of the approach:
 
 ```text
@@ -93,6 +109,29 @@ The values are computed from the font and shaped text:
 
 There are no per-font or per-word exceptions in the current candidate.
 
+## Possible Typst API Shape
+
+Typst currently exposes kerning as a boolean:
+
+```typst
+#set text(kerning: true)  // font metric kerning
+#set text(kerning: false) // kerning disabled
+```
+
+This benchmark is not an API proposal, but a small extension of the current
+shape could look like this:
+
+```typst
+#set text(kerning: "metric")
+#set text(kerning: "optical")
+#set text(kerning: "none")
+```
+
+In that sketch, the current `true` behavior would remain metric kerning. The
+point of the benchmark is to evaluate whether an `"optical"` behavior can be
+made deterministic and maintainable before discussing final naming, defaults,
+or compatibility details.
+
 ## Ligatures Are Part Of The Problem
 
 Kerning must happen after shaping. If a font turns `f` + `i` into a single
@@ -114,19 +153,20 @@ If ligatures are disabled, `f|i` becomes a real adjacent pair again. The
 benchmark keeps both modes because Typst would have to respect the active text
 feature settings.
 
-## Current V25 Result
+## Current Evidence After 25 Iterations
 
-The current V25 candidate is evaluated in two suites:
+The current candidate has gone through 25 evaluation iterations. The committed
+artifact names still contain version labels for traceability, but the public
+result is best read as current evidence against two suites:
 
 | Suite | Cases | Mean score | Worst score | Note |
 | --- | ---: | ---: | ---: | --- |
-| Ligatures V23 | 31 | `0.0127em` | `0.0288em` | previous baseline |
-| Ligatures V24 | 31 | `0.0123em` | `0.0240em` | improved Libre `final` |
-| Ligatures V25 | 31 | `0.0123em` | `0.0240em` | unchanged controls |
-| No ligatures V24 | 30 | `0.0177em` | `0.0384em` | previous baseline |
-| No ligatures V25 | 30 | `0.0170em` | `0.0304em` | improved EB `ToTaL` |
+| Ligatures, earlier baseline | 31 | `0.0127em` | `0.0288em` | before recent ligature guard |
+| Ligatures, current | 31 | `0.0123em` | `0.0240em` | unchanged in latest iteration |
+| No ligatures, previous | 30 | `0.0177em` | `0.0384em` | before current serif mixed-case guard |
+| No ligatures, current | 30 | `0.0170em` | `0.0304em` | improved EB `ToTaL` |
 
-V24 fixed a short wide-serif ligature word:
+One recent iteration fixed a short wide-serif ligature word:
 
 ```text
 Libre Baskerville / final
@@ -135,9 +175,9 @@ width: +0.0288em -> +0.0168em
 ink:   0.0081em -> 0.0067em
 ```
 
-![V25 Libre Baskerville final](figures/v25-libre-final-ligature.png)
+![Libre Baskerville final](figures/v25-libre-final-ligature.png)
 
-V25 then improves the largest no-ligature outlier:
+The latest iteration improves the largest no-ligature outlier:
 
 ```text
 EB Garamond / ToTaL
@@ -146,16 +186,16 @@ width: -0.0384em -> -0.0168em
 ink:   0.0294em -> 0.0159em
 ```
 
-![V25 EB Garamond ToTaL](figures/v25-eb-total-no-ligature-target.png)
+![EB Garamond ToTaL](figures/v25-eb-total-no-ligature-target.png)
 
 The controlled scope is important. Optical kerning rules are easy to overfit.
-V25 changes exactly one no-ligature case and zero ligature cases in the current
-benchmark. A new rule should improve a named shape class without silently
-drifting unrelated words.
+The latest iteration changes exactly one no-ligature case and zero ligature
+cases in the current benchmark. A new rule should improve a named shape class
+without silently drifting unrelated words.
 
 ## What This Suggests For Typst
 
-The most promising implementation direction is not a raster or ML feature in
+The implementation direction worth evaluating is not a raster or ML feature in
 the layout path. It is a shaped-glyph, outline-profile, metric-prior algorithm
 with small caches:
 
@@ -167,8 +207,9 @@ with small caches:
   an outlier;
 - evaluate changes with rendered, reproducible visual diffs.
 
-That direction fits Typst better than a black-box model. It is deterministic,
-reviewable, and can be tested with normal regression artifacts.
+That direction is compatible with Typst's engineering constraints in ways a
+black-box model would not be: deterministic output, reviewable rules, and
+normal regression artifacts.
 
 ## What This Does Not Claim
 
@@ -184,13 +225,21 @@ The current claim is narrower: a guarded, outline-based, metric-prior approach
 looks plausible enough to keep developing, and the benchmark gives maintainers
 a concrete way to judge tradeoffs.
 
+Typst's
+[contributing guide](https://github.com/typst/typst/blob/main/CONTRIBUTING.md)
+warns against AI-implemented pull requests and AI-written PR descriptions. This
+repository should therefore not be read as a generated Typst PR. It is an
+external MVP and evaluation corpus, reviewed and iterated outside the Typst
+repository, meant to support a future human discussion before any upstream patch
+exists.
+
 ## Reproducing The Evidence
 
 The technical review document is
 [`typst-optical-kerning-evaluation.md`](typst-optical-kerning-evaluation.md).
 The algorithm notes are in [`algorithms.md`](algorithms.md).
 
-The core reproduction commands for the V25 evidence are:
+The core reproduction commands for the current committed evidence are:
 
 ```sh
 cargo test
@@ -221,7 +270,7 @@ Large render outputs under `renders/` are generated artifacts.
 
 ## Next Work
 
-The next useful work is not to add more cleverness randomly. It is to broaden
+The next useful work is not to add more rules randomly. It is to broaden
 the corpus while keeping the same discipline:
 
 - add more display-size words designers actually care about;
@@ -230,5 +279,6 @@ the corpus while keeping the same discipline:
 - document every new rule as a dynamic shape-class fix;
 - reject changes that improve one screenshot but worsen unrelated controls.
 
-That is the main value of the project: it turns optical kerning from a taste
-argument into a reproducible engineering discussion.
+That is the intended value of the project: it turns optical kerning from a taste
+argument into a reproducible engineering discussion that Typst maintainers can
+accept, reject, or refine with concrete evidence.

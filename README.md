@@ -1,10 +1,17 @@
 # Typst Optical Kerning Bench
 
-Rust-first lab for developing a deterministic optical kerning algorithm that
-could plausibly fit Typst.
+Rust-first evaluation harness for deterministic optical kerning experiments
+under Typst-like constraints.
 
-The repo focuses on one question: can an outline-based, cacheable algorithm get
-close to InDesign Optical while preserving good font metric kerning and Typst's
+The repo is an independent support artifact for the Typst optical kerning
+discussion. It is not an official Typst project, not a ready-to-merge Typst
+patch, and not a final API proposal. Its purpose is narrower: make optical
+kerning behavior reproducible enough that maintainers and typography reviewers
+can inspect examples, measurements, and tradeoffs instead of relying on isolated
+screenshots.
+
+The main question is: can an outline-based, cacheable algorithm get close to
+InDesign Optical while preserving good font metric kerning and Typst's
 performance expectations?
 
 The current development loop is:
@@ -15,7 +22,50 @@ The current development loop is:
 4. render Typst Metric, Typst Guarded Optical, and InDesign Optical,
 5. compare cropped PNGs and overlays.
 
+## Typst Context
+
+Typst currently exposes text kerning as a boolean:
+
+```typst
+#set text(kerning: true)  // use font metric kerning
+#set text(kerning: false) // disable kerning
+```
+
+A future public API is intentionally out of scope for this benchmark, but one
+simple extension shape could be:
+
+```typst
+#set text(kerning: "metric")
+#set text(kerning: "optical")
+#set text(kerning: "none")
+```
+
+In that shape, the current `true` behavior would remain metric kerning. The
+benchmark is meant to evaluate whether an `"optical"` behavior could be
+deterministic, explainable, and cheap enough for Typst before debating naming or
+defaults.
+
+The work takes existing Typst discussions into account, especially
+[#8514 Automatic optical kerning](https://github.com/typst/typst/issues/8514),
+which asks about deriving kerning from adjacent glyph outlines when font
+kerning is sparse or absent. Related issues such as
+[#2692 Custom kerning pair definitions](https://github.com/typst/typst/issues/2692)
+and [#5826](https://github.com/typst/typst/issues/5826) cover neighboring
+problems, but this repo focuses on evaluating automatic optical behavior.
+
+Typst's
+[contributing guide](https://github.com/typst/typst/blob/main/CONTRIBUTING.md)
+is explicit that AI-implemented pull requests are not accepted. This repository
+should be read differently: it is a manually reviewed MVP and evaluation corpus,
+with several weeks of typography, prepress, rendering, and measurement work
+behind it, intended to support discussion before any upstream implementation is
+proposed.
+
 ## Quick Start
+
+Run commands from the repository root. All paths below are relative to that
+root; adapt `--output`, `--baseline-output`, and `--font-specs` paths if you
+want generated files somewhere else.
 
 ```sh
 cargo run -p optikern-cli -- fetch-fonts
@@ -24,7 +74,9 @@ cargo run -p optikern-cli -- sample-deltas --font-id eb-garamond --text ToTaL --
 scripts/run-guarded-review-batch.py --output renders/guarded-v5-review/eb-garamond-100pt-no-ligatures
 ```
 
-Outputs are written to `metrics/`, `renders/`, and `reports/`.
+Outputs are written to `metrics/`, `renders/`, and `reports/`. These are
+generated artifacts unless a command explicitly writes a compact baseline under
+`baselines/`.
 
 Useful focused commands:
 
@@ -41,6 +93,11 @@ scripts/run-optical-comparison-suite.py
 scripts/run-optical-comparison-suite.py --suite-file corpus/samples/optical-total-target-suite.json
 scripts/build-paper-figures.py
 ```
+
+The InDesign-backed commands require a local InDesign installation that can be
+controlled through AppleScript. Commands that reuse existing InDesign renders
+can still be run without reopening InDesign if the referenced `renders/...`
+directory exists.
 
 The suite performs a small InDesign automation preflight before writing metric
 or optical baselines. If InDesign is stuck behind a modal dialog or is not
@@ -90,9 +147,10 @@ the constraints that make them plausible for a future Typst implementation.
 See [`docs/research-alignment.md`](docs/research-alignment.md) for the external
 sources that shaped the current benchmark rules.
 
-The current leading candidate is `guarded-profile-hybrid`. It combines
+The current main candidate is `guarded-profile-hybrid`. It combines
 metric-prior kerning, contact-zone awareness, shaped ligature handling, and
-V25 run-context tuning for sans-like, serif, and connected-script words. See
+run-context refinements from 25 benchmark iterations across sans-like, serif,
+script, and comic-style/display fonts. See
 [`docs/algorithms.md`](docs/algorithms.md) and
 [`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).
 For a short public narrative, see
@@ -110,7 +168,12 @@ cargo run -p optikern-cli -- contact-sheet
 
 This writes `reports/contact-sheet.typ` and, when Typst is installed,
 `reports/contact-sheet.pdf`. The sheet is a compact Typst-rendered smoke review
-for simple pair and word spacing. Ligature-capable words must be evaluated after
+for simple pair and word spacing.
+
+For final visual review, use the contact sheets generated by the metric and
+optical comparison suites. They include real words, classic pairs, numbers,
+ligature-capable cases, and diverse fonts across serif, sans, script, and
+comic-style/display categories. Ligature-capable words must be evaluated after
 shaping: a substituted ligature glyph is spaced against its neighbors while its
 internal letters are not kerned separately.
 

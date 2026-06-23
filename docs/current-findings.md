@@ -12,7 +12,7 @@ V24 relaxes over-compaction in short wide-serif `fi` ligature words. V25
 improves the largest remaining no-ligature outlier, EB Garamond
 `ToTaL`, while leaving the V24 ligature suite unchanged.
 
-Current V25 summary:
+Current summary after 25 iterations:
 
 - No-ligature suite: 30/30 measured, mean score `0.0177em -> 0.0170em`,
   worst score `0.0384em -> 0.0304em`.

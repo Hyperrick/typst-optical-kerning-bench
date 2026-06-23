@@ -18,9 +18,32 @@ patch. It is evidence for an implementation direction:
   run is an outlier,
 - compare rendered output against an industry publishing reference.
 
-The current V25 candidate improves the largest no-ligature outlier while
-leaving the V24 ligature suite unchanged. The code path remains deterministic,
-Rust-first, outline-based, and cacheable.
+After 25 evaluation iterations, the current candidate improves the largest
+no-ligature outlier while leaving the previous ligature suite unchanged. The
+code path remains deterministic, Rust-first, outline-based, and cacheable.
+
+## Context For Typst Maintainers
+
+This work is meant to support, not bypass, Typst's existing contribution
+process. It takes the current optical-kerning discussion into account, especially
+[#8514 Automatic optical kerning](https://github.com/typst/typst/issues/8514),
+which asks about deriving kerning from adjacent glyph outlines when font
+kerning is sparse or absent. Related issues such as
+[#2692 Custom kerning pair definitions](https://github.com/typst/typst/issues/2692)
+and [#5826](https://github.com/typst/typst/issues/5826) describe neighboring
+kerning problems, but this repository focuses on automatic optical behavior.
+
+Typst's
+[contributing guide](https://github.com/typst/typst/blob/main/CONTRIBUTING.md)
+warns against AI-implemented pull requests and AI-written PR descriptions. This
+document should therefore not be read as a generated upstream PR. It is an
+external MVP and evaluation corpus, with manually reviewed iterations,
+reproducible artifacts, and practical typography/prepress reasoning behind it.
+
+The evaluation deliberately uses multiple algorithms and multiple metrics. That
+choice is important: optical kerning is visually judged, but a compiler-facing
+proposal needs enough objective structure to catch regressions when one pair or
+word improves and another gets worse.
 
 ## Abstract
 
@@ -54,6 +77,11 @@ constraints:
 - It must be understandable enough to review and maintain.
 - It must not put raster analysis, machine learning, or expensive per-layout
   image operations into Typst's layout path.
+
+The work is also informed by the author's studies in print and media
+technology, with practical focus on prepress, graphic design, and typesetting
+workflows. That background is relevant because optical kerning is primarily a
+publishing and production typography problem, not only a rendering curiosity.
 
 ## Why InDesign Is Used As A Baseline
 
@@ -188,7 +216,7 @@ This is closer to what would be maintainable in Typst than an opaque score
 function. Each guard is small and testable, and each new rule must prove that it
 fixes a class of shapes without destabilizing the regression suite.
 
-## Current V25 Results
+## Current Evidence After 25 Iterations
 
 Current reproducible artifacts:
 
@@ -203,13 +231,12 @@ Summary:
 
 | Suite | Cases | Mean score | Worst score | Regression note |
 | --- | ---: | ---: | ---: | --- |
-| Ligatures V23 | 31 | `0.0127em` | `0.0288em` | previous baseline |
-| Ligatures V24 | 31 | `0.0123em` | `0.0240em` | fixed Libre `final` |
-| Ligatures V25 | 31 | `0.0123em` | `0.0240em` | zero changed cases |
-| No ligatures V24 | 30 | `0.0177em` | `0.0384em` | previous baseline |
-| No ligatures V25 | 30 | `0.0170em` | `0.0304em` | only EB `ToTaL` changed |
+| Ligatures, earlier baseline | 31 | `0.0127em` | `0.0288em` | before recent ligature guard |
+| Ligatures, current | 31 | `0.0123em` | `0.0240em` | zero changed cases in latest iteration |
+| No ligatures, previous | 30 | `0.0177em` | `0.0384em` | before current serif mixed-case guard |
+| No ligatures, current | 30 | `0.0170em` | `0.0304em` | only EB `ToTaL` changed |
 
-V24 specifically fixed a short wide-serif `fi` ligature word:
+One recent iteration specifically fixed a short wide-serif `fi` ligature word:
 
 ```text
 Libre Baskerville / final
@@ -218,9 +245,9 @@ width: +0.0288em -> +0.0168em
 ink:   0.0081em -> 0.0067em
 ```
 
-![V25 Libre Baskerville final](figures/v25-libre-final-ligature.png)
+![Libre Baskerville final](figures/v25-libre-final-ligature.png)
 
-V25 then improves the largest remaining no-ligature outlier:
+The latest iteration improves the largest remaining no-ligature outlier:
 
 ```text
 EB Garamond / ToTaL
@@ -229,12 +256,13 @@ width: -0.0384em -> -0.0168em
 ink:   0.0294em -> 0.0159em
 ```
 
-![V25 EB Garamond ToTaL](figures/v25-eb-total-no-ligature-target.png)
+![EB Garamond ToTaL](figures/v25-eb-total-no-ligature-target.png)
 
-The full V25 comparison is deliberately conservative. The no-ligature suite has
+The current comparison is deliberately conservative. The no-ligature suite has
 exactly one changed case, EB Garamond `ToTaL`; the ligature suite has zero
-changed cases. This is useful review evidence: the benchmark should improve a
-targeted shape class without making unrelated controls drift.
+changed cases in the latest iteration. This is useful review evidence: the
+benchmark should improve a targeted shape class without making unrelated
+controls drift.
 
 ## Reproduction Commands
 
@@ -264,9 +292,8 @@ scripts/build-paper-figures.py
 
 ## What This Suggests For Typst
 
-The strongest candidate direction is not a global `optical = true` raster-like
-operation. It is a shaped-glyph, outline-profile, metric-prior algorithm with
-small caches:
+The candidate direction is not a global `optical = true` raster-like operation.
+It is a shaped-glyph, outline-profile, metric-prior algorithm with small caches:
 
 - cache glyph outlines and profile samples per font instance,
 - cache pair geometry per glyph pair,
@@ -274,16 +301,24 @@ small caches:
 - preserve metric kerning when it is already strong,
 - apply optical corrections only where dynamic evidence shows an outlier.
 
-The public Typst API could later be discussed separately, for example:
+Typst currently exposes text kerning as a boolean:
+
+```typst
+#set text(kerning: true)  // font metric kerning
+#set text(kerning: false) // kerning disabled
+```
+
+A possible future extension could be:
 
 ```typst
 #set text(kerning: "metric")
 #set text(kerning: "optical")
-#set text(kerning: "hybrid")
+#set text(kerning: "none")
 ```
 
 The benchmark is deliberately not an API proposal yet. Its value is to make the
-behavioral tradeoffs visible before an implementation proposal is made.
+behavioral tradeoffs visible before an implementation proposal is made. In this
+sketch, the current `true` behavior would remain metric kerning.
 
 ## Claims And Non-Claims
 
@@ -308,13 +343,14 @@ controls.
 The following files are the best starting points for review:
 
 - `docs/algorithms.md`: current heuristic and guard notes.
-- `docs/current-findings.md`: chronological benchmark findings through V25.
+- `docs/current-findings.md`: chronological benchmark findings through the
+  current iteration.
 - `docs/metric-parity-suite.md`: why metric parity is a hard gate.
 - `docs/indesign-baseline.md`: how InDesign documents are constructed.
 - `docs/glyph-shape-parity.md`: how font/rendering mismatches are separated
   from kerning mismatches.
-- `baselines/optical-ligature-suite-v25.json`: compact V25 ligature evidence.
-- `baselines/optical-comparison-suite-five-font-v25.json`: compact V25
+- `baselines/optical-ligature-suite-v25.json`: compact current ligature evidence.
+- `baselines/optical-comparison-suite-five-font-v25.json`: compact current
   no-ligature evidence.
 
 The large rendered artifacts under `renders/` are intentionally generated
