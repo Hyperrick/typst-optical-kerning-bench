@@ -98,6 +98,13 @@
         color: var(--muted);
       }
 
+      .more {
+        max-width: 780px;
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
       .summary {
         max-width: 780px;
         margin: 22px 0 0;
@@ -213,6 +220,12 @@
           Typst's engineering values.
         </p>
       </div>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">overview note</a>
+        and
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">technical evaluation</a>.
+      </p>
 
       <h2>What to take away</h2>
       <ul>
@@ -234,93 +247,10 @@
           final API proposal.
         </li>
       </ul>
-
-      <h2>Where to read</h2>
-      <ul class="links">
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench">Repository</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">README and reproduction commands</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">Overview note</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">Technical evaluation</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">Algorithm notes</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/optical-comparison-suite.md">Optical comparison suite</a></li>
-      </ul>
-
-      <h2>What is in the repository</h2>
-      <div class="cards">
-        <article class="card">
-          <h3>Algorithm candidate</h3>
-          <p>
-            `guarded-profile-hybrid`: a metric-prior, outline-profile approach
-            with dynamic safety guards and run context.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Rust evaluation code</h3>
-          <p>
-            Font loading, shaping, outline sampling, pair deltas, regression
-            tests, and comparison metrics.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Rendering pipeline</h3>
-          <p>
-            Typst renders, scripted InDesign exports, cropped PNGs, overlays,
-            metric parity checks, and compact JSON baselines.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Review material</h3>
-          <p>
-            Contact sheets, failure notes, algorithm rationale, reproduction
-            commands, and current findings.
-          </p>
-        </article>
-      </div>
-
-      <h2>Why this exists</h2>
-      <p>
-        Typst already has metric kerning from font tables. That should remain
-        the default. The open question is whether Typst can also offer an
-        optical mode for situations where designers normally reach for layout
-        tools such as InDesign: large headlines, brand typography, packaging,
-        editorial display type, sparse font kerning tables, mixed-case words,
-        punctuation, numbers, and shaped ligatures.
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">maintainer summary and evaluation pipeline</a>.
       </p>
-      <p>
-        A subjective screenshot is not enough for that discussion. This repo
-        tries to make the question reviewable by using multiple fonts, multiple
-        samples, multiple algorithms, metric parity gates, rendered overlays,
-        and compact baselines.
-      </p>
-
-      <h2>Status for discussion</h2>
-      <p>
-        The current status is: discussion-ready algorithm candidate. More
-        tuning data can still be added, but the core algorithm direction is now
-        stable: shape text first, use font metric kerning as a prior, compute
-        optical corrections from glyph outlines, and keep the implementation
-        deterministic and cacheable.
-      </p>
-      <p>
-        This repo is intended as material for an informed Typst community
-        discussion before any implementation proposal exists. It is not a
-        merge-ready patch. The technical details remain in the linked repository
-        documents.
-      </p>
-
-      <h2>Possible Typst API shape</h2>
-      <p>
-        Typst currently exposes kerning as a boolean. The benchmark does not
-        settle a public API, but it uses this sketch to make the possible
-        behavior concrete.
-      </p>
-      <pre><code>#set text(kerning: true)  // current metric kerning
-#set text(kerning: false) // current disabled kerning
-
-// Possible future shape:
-#set text(kerning: "metric")
-#set text(kerning: "optical")
-#set text(kerning: "none")</code></pre>
 
       <h2>Review figures</h2>
       <p>
@@ -358,6 +288,126 @@
           <figcaption>Targeted ligature-capable word case.</figcaption>
         </figure>
       </div>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/optical-comparison-suite.md">optical comparison suite</a>
+        and
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/current-findings.md">current findings</a>.
+      </p>
+
+      <h2>Where to read</h2>
+      <ul class="links">
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench">Repository</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">README and reproduction commands</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">Overview note</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">Technical evaluation</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">Algorithm notes</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/optical-comparison-suite.md">Optical comparison suite</a></li>
+      </ul>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">reproduction commands and repo structure</a>.
+      </p>
+
+      <h2>What is in the repository</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Algorithm candidate</h3>
+          <p>
+            `guarded-profile-hybrid`: a metric-prior, outline-profile approach
+            with dynamic safety guards and run context.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Rust evaluation code</h3>
+          <p>
+            Font loading, shaping, outline sampling, pair deltas, regression
+            tests, and comparison metrics.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Rendering pipeline</h3>
+          <p>
+            Typst renders, scripted InDesign exports, cropped PNGs, overlays,
+            metric parity checks, and compact JSON baselines.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Review material</h3>
+          <p>
+            Contact sheets, failure notes, algorithm rationale, reproduction
+            commands, and current findings.
+          </p>
+        </article>
+      </div>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">algorithm notes</a>,
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/metric-parity-suite.md">metric parity suite</a>,
+        and
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/indesign-baseline.md">InDesign baseline construction</a>.
+      </p>
+
+      <h2>Why this exists</h2>
+      <p>
+        Typst already has metric kerning from font tables. That should remain
+        the default. The open question is whether Typst can also offer an
+        optical mode for situations where designers normally reach for layout
+        tools such as InDesign: large headlines, brand typography, packaging,
+        editorial display type, sparse font kerning tables, mixed-case words,
+        punctuation, numbers, and shaped ligatures.
+      </p>
+      <p>
+        A subjective screenshot is not enough for that discussion. This repo
+        tries to make the question reviewable by using multiple fonts, multiple
+        samples, multiple algorithms, metric parity gates, rendered overlays,
+        and compact baselines.
+      </p>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">motivation and overview</a>
+        and
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/research-alignment.md">research alignment</a>.
+      </p>
+
+      <h2>Status for discussion</h2>
+      <p>
+        The current status is: discussion-ready algorithm candidate. More
+        tuning data can still be added, but the core algorithm direction is now
+        stable: shape text first, use font metric kerning as a prior, compute
+        optical corrections from glyph outlines, and keep the implementation
+        deterministic and cacheable.
+      </p>
+      <p>
+        This repo is intended as material for an informed Typst community
+        discussion before any implementation proposal exists. It is not a
+        merge-ready patch. The technical details remain in the linked repository
+        documents.
+      </p>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">technical evaluation</a>
+        and
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/current-findings.md">current findings</a>.
+      </p>
+
+      <h2>Possible Typst API shape</h2>
+      <p>
+        Typst currently exposes kerning as a boolean. The benchmark does not
+        settle a public API, but it uses this sketch to make the possible
+        behavior concrete.
+      </p>
+      <pre><code>#set text(kerning: true)  // current metric kerning
+#set text(kerning: false) // current disabled kerning
+
+// Possible future shape:
+#set text(kerning: "metric")
+#set text(kerning: "optical")
+#set text(kerning: "none")</code></pre>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md#what-this-suggests-for-typst">Typst-facing API discussion notes</a>.
+      </p>
     </main>
   </body>
 </html>
