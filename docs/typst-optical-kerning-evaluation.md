@@ -357,12 +357,14 @@ The large rendered artifacts under `renders/` are intentionally generated
 outputs. They can be reproduced from the commands above; selected small figures
 are committed under `docs/figures/` for easier review.
 
-## Limitations And Next Work
+## Limitations And Optional Follow-Up
 
-- Broaden the font corpus while keeping the parity gates strict.
-- Add more display-size words and number cases that designers actually care
-  about.
-- Keep optimizing only when a failure has a dynamic shape cause, not a
+- The current candidate is discussion-ready, not merge-ready.
+- If the work is taken further, broaden the font corpus while keeping the parity
+  gates strict.
+- Add more display-size words and number cases only when they improve review
+  coverage.
+- Keep optimizing only when a residual difference has a dynamic shape cause, not a
   font-name-specific exception.
 - Keep the public article and this technical review in sync as the benchmark
   evolves.

@@ -153,8 +153,9 @@ Baskerville, Inter, Pacifico, or Comic Neue.
 
 ## Interpretation
 
-The current guarded algorithm is much closer to InDesign Optical than V1, but
-still has targeted failures.
+The current guarded algorithm is much closer to InDesign Optical than V1. It
+still has known residual visual differences, which are useful review boundaries
+rather than a sign that the public artifact is still mid-tuning.
 
 Four patterns stand out in the current five-font comparison:
 
@@ -186,15 +187,17 @@ Good or near-good controls:
 - Inter `LANDMARK` and `10.000` are close after static font parity.
 - Libre `WAVY` and `ToTaL` are now much improved compared with V1.
 
-## Next Algorithm Focus
+## Residual Review Notes
 
-The next algorithm pass should stay narrow. The current evidence points to
-three focused changes:
+The notes below document where the current candidate still differs most visibly
+from InDesign Optical. They are not a required next tuning queue for publishing
+the benchmark. If the algorithm is taken further, any follow-up should stay
+narrow and preserve the current regression controls.
 
-1. Preserve and broaden the local aperture/collision guard for metricless
-   upper-lower pairs without making good `Goldfish` rows wider.
-2. Treat Libre `AVATAR`, Pacifico `AVATAR`, and Pacifico `OpenType` as visual tuning targets,
-   not as hard failures.
-3. Treat EB `OpenType`, EB `10.000`, and Pacifico `WAVY` as secondary
-   visual tuning targets, while keeping V14 digit-run and V15 compact-sans
-   improvements locked by tests.
+1. Preserve the local aperture/collision guard for metricless upper-lower pairs
+   without making good `Goldfish` rows wider.
+2. Read Libre `AVATAR`, Pacifico `AVATAR`, and Pacifico `OpenType` as the main
+   remaining visual review cases, not as metric-parity failures.
+3. Read EB `OpenType`, EB `10.000`, and Pacifico `WAVY` as secondary visual
+   review cases, while keeping the digit-run and compact-sans improvements
+   locked by tests.

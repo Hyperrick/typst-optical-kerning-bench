@@ -268,10 +268,11 @@ scripts/build-paper-figures.py
 The selected figures in this article are committed under `docs/figures/`.
 Large render outputs under `renders/` are generated artifacts.
 
-## Next Work
+## Optional Follow-Up
 
-The next useful work is not to add more rules randomly. It is to broaden
-the corpus while keeping the same discipline:
+The current artifact is stable enough to be shown and discussed. If the work is
+taken further, the useful direction is not to add more rules randomly. It is to
+broaden the evidence while keeping the same discipline:
 
 - add more display-size words designers actually care about;
 - add more font families only after metric parity is proven;

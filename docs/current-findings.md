@@ -326,9 +326,9 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   `10.000` (`0.0456em`), EB `AVATAR` (`0.0384em`), EB `ToTaL` (`0.0384em`),
   and Inter `AVATAR` (`0.0360em`) highest numerically, but the visible hard
   collision in the current matrix was Libre `G|o`.
-- The next algorithm pass should treat the remaining numeric and display-cap
-  differences as careful visual tuning, not as broad failures. The main guard
-  to preserve is the new local aperture/collision behavior for metricless
+- At that stage, the remaining numeric and display-cap differences were best
+  treated as careful visual tuning notes, not as broad failures. The main guard
+  to preserve was the new local aperture/collision behavior for metricless
   upper-lower pairs.
 - The V13 script-uppercase pass opens only near-touching, metricless uppercase
   gaps in long connected script runs. This fixed the Pacifico `AVATAR` split
@@ -405,9 +405,10 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
   optical suite runners also clean up InDesign and recovery state in a
   `finally` block so a later run is not blocked by stale crash recovery.
 
-## Next Question
+## Current Status
 
-The next benchmark layer can either focus on the remaining ligature outliers
-(`Comic Neue word spacing`, Inter/Pacifico small ink-position differences) or
-continue turning the current evidence into the Typst-facing article/paper while keeping both V25
-suites as the current reproducible baseline.
+The current public artifact is the Typst-facing article/paper plus the current
+ligature and no-ligature suites as reproducible baselines. Remaining outliers
+such as Comic Neue word spacing and small Inter/Pacifico ink-position
+differences are documented review boundaries, not blockers for presenting the
+candidate direction to the Typst community.
