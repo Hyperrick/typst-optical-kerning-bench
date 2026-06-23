@@ -75,6 +75,10 @@
         margin: 0 0 14px;
       }
 
+      .lead {
+        font-size: 1.1rem;
+      }
+
       a {
         color: inherit;
         text-decoration-thickness: 0.08em;
@@ -92,6 +96,19 @@
 
       .muted {
         color: var(--muted);
+      }
+
+      .summary {
+        max-width: 780px;
+        margin: 22px 0 0;
+        padding: 16px 18px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: var(--panel);
+      }
+
+      .summary p:last-child {
+        margin-bottom: 0;
       }
 
       .links {
@@ -171,19 +188,52 @@
   </head>
   <body>
     <main>
-      <h1>Typst Optical Kerning Bench</h1>
-      <p>
-        This repository evaluates whether deterministic, outline-based optical
-        kerning could be a plausible direction for Typst. It compares Typst
-        metric rendering, a guarded optical candidate, and scripted InDesign
-        Optical baselines across fonts, words, pairs, numbers, and ligature
-        cases.
+      <h1>Optical kerning evaluation for Typst</h1>
+      <p class="lead">
+        This is an external evaluation artifact for the Typst community. It has
+        two concrete outputs: a reproducible benchmark suite for optical kerning
+        and an algorithm candidate developed from that suite.
       </p>
       <p class="muted">
-        The current result is both a benchmark suite and a concrete algorithm
-        candidate, developed through the evaluation: `guarded-profile-hybrid`.
-        It is not a pull request and not a finished Typst API proposal.
+        The algorithm candidate is `guarded-profile-hybrid`. It is discussion
+        ready, not merge ready: useful for deciding whether this direction fits
+        Typst before anyone proposes compiler changes.
       </p>
+
+      <div class="summary">
+        <p>
+          Motivation: Typst already supports metric kerning from font tables.
+          In print, branding, editorial design, packaging, and display
+          typography, an optical option is still often expected when metric
+          kerning is sparse, broken, or visually weak.
+        </p>
+        <p>
+          The question here is not "should Typst copy InDesign?" It is whether a
+          deterministic, outline-based, cacheable optical kerning method can fit
+          Typst's engineering values.
+        </p>
+      </div>
+
+      <h2>What to take away</h2>
+      <ul>
+        <li>
+          The repo is both an evaluation suite and a concrete algorithm
+          candidate, not just a collection of screenshots.
+        </li>
+        <li>
+          The candidate shapes text first, keeps metric kerning as a prior, then
+          applies guarded optical corrections from glyph outlines.
+        </li>
+        <li>
+          The evidence includes Typst metric renders, scripted InDesign Optical
+          baselines, overlays, contact sheets, JSON baselines, and known
+          residual differences.
+        </li>
+        <li>
+          It is not an official Typst project, not a pull request, and not a
+          final API proposal.
+        </li>
+      </ul>
 
       <h2>Where to read</h2>
       <ul class="links">
