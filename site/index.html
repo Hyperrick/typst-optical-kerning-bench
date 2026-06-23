@@ -6,7 +6,12 @@
     <title>Typst Optical Kerning Bench</title>
     <meta
       name="description"
-      content="Repository guide for a reproducible optical kerning benchmark for Typst."
+      content="External evaluation artifact and algorithm candidate for optical kerning in Typst."
+    >
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23171717'/%3E%3Cpath d='M14 47 29 13h6l15 34h-7l-3-8H24l-3 8zM27 32h10l-5-13z' fill='white'/%3E%3C/svg%3E"
     >
     <style>
       :root {
@@ -206,6 +211,11 @@
         ready, not merge ready: useful for deciding whether this direction fits
         Typst before anyone proposes compiler changes.
       </p>
+      <p>
+        The current result is a specific candidate plus the evidence needed to
+        inspect it: renders, overlays, metrics, implementation notes, and
+        reproduction commands.
+      </p>
 
       <div class="summary">
         <p>
@@ -252,6 +262,26 @@
         <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">maintainer summary and evaluation pipeline</a>.
       </p>
 
+      <h2>How the candidate emerged</h2>
+      <p>
+        The benchmark did not start with `guarded-profile-hybrid`. Earlier
+        candidates tested nearest contour distance, weighted whitespace
+        profiles, area balance, metric-prior blending, and a conservative
+        fallback-only mode. Those simpler approaches were useful, but each
+        exposed different failure cases: over-tight round forms, apertures,
+        punctuation, script joins, ligatures, or word-level accumulation.
+      </p>
+      <p>
+        The current candidate keeps the useful parts: metric kerning remains the
+        prior, outline profiles provide the optical signal, and dynamic guards
+        block unsafe moves. That is why the result is a guarded hybrid rather
+        than one single geometric rule.
+      </p>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">implemented algorithms and candidate selection</a>.
+      </p>
+
       <h2>Review figures</h2>
       <p>
         The visual material is not limited to one screenshot. The committed
@@ -293,59 +323,6 @@
         <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/optical-comparison-suite.md">optical comparison suite</a>
         and
         <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/current-findings.md">current findings</a>.
-      </p>
-
-      <h2>Where to read</h2>
-      <ul class="links">
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench">Repository</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">README and reproduction commands</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">Overview note</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">Technical evaluation</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">Algorithm notes</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/optical-comparison-suite.md">Optical comparison suite</a></li>
-      </ul>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">reproduction commands and repo structure</a>.
-      </p>
-
-      <h2>What is in the repository</h2>
-      <div class="cards">
-        <article class="card">
-          <h3>Algorithm candidate</h3>
-          <p>
-            `guarded-profile-hybrid`: a metric-prior, outline-profile approach
-            with dynamic safety guards and run context.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Rust evaluation code</h3>
-          <p>
-            Font loading, shaping, outline sampling, pair deltas, regression
-            tests, and comparison metrics.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Rendering pipeline</h3>
-          <p>
-            Typst renders, scripted InDesign exports, cropped PNGs, overlays,
-            metric parity checks, and compact JSON baselines.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Review material</h3>
-          <p>
-            Contact sheets, failure notes, algorithm rationale, reproduction
-            commands, and current findings.
-          </p>
-        </article>
-      </div>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">algorithm notes</a>,
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/metric-parity-suite.md">metric parity suite</a>,
-        and
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/indesign-baseline.md">InDesign baseline construction</a>.
       </p>
 
       <h2>Why this exists</h2>
@@ -391,24 +368,43 @@
         <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/current-findings.md">current findings</a>.
       </p>
 
-      <h2>How the candidate emerged</h2>
-      <p>
-        The benchmark did not start with `guarded-profile-hybrid`. Earlier
-        candidates tested nearest contour distance, weighted whitespace
-        profiles, area balance, metric-prior blending, and a conservative
-        fallback-only mode. Those simpler approaches were useful, but each
-        exposed different failure cases: over-tight round forms, apertures,
-        punctuation, script joins, ligatures, or word-level accumulation.
-      </p>
-      <p>
-        The current candidate keeps the useful parts: metric kerning remains the
-        prior, outline profiles provide the optical signal, and dynamic guards
-        block unsafe moves. That is why the result is a guarded hybrid rather
-        than one single geometric rule.
-      </p>
+      <h2>What is in the repository</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Algorithm candidate</h3>
+          <p>
+            `guarded-profile-hybrid`: a metric-prior, outline-profile approach
+            with dynamic safety guards and run context.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Rust evaluation code</h3>
+          <p>
+            Font loading, shaping, outline sampling, pair deltas, regression
+            tests, and comparison metrics.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Rendering pipeline</h3>
+          <p>
+            Typst renders, scripted InDesign exports, cropped PNGs, overlays,
+            metric parity checks, and compact JSON baselines.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Review material</h3>
+          <p>
+            Contact sheets, failure notes, algorithm rationale, reproduction
+            commands, and current findings.
+          </p>
+        </article>
+      </div>
       <p class="more">
         More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">implemented algorithms and candidate selection</a>.
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">algorithm notes</a>,
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/metric-parity-suite.md">metric parity suite</a>,
+        and
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/indesign-baseline.md">InDesign baseline construction</a>.
       </p>
 
       <h2>Possible Typst API shape</h2>
@@ -427,6 +423,20 @@
       <p class="more">
         More:
         <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md#what-this-suggests-for-typst">Typst-facing API discussion notes</a>.
+      </p>
+
+      <h2>Where to read</h2>
+      <ul class="links">
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench">Repository</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">README and reproduction commands</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">Overview note</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">Technical evaluation</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">Algorithm notes</a></li>
+        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/optical-comparison-suite.md">Optical comparison suite</a></li>
+      </ul>
+      <p class="more">
+        More:
+        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">reproduction commands and repo structure</a>.
       </p>
     </main>
   </body>
