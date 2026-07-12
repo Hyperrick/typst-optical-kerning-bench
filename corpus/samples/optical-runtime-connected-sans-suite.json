@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "name": "runtime-connected-sans-regression",
+  "description": "Focused gate for a compact sans lowercase run with multiple connected outline openings.",
+  "cases": [
+    {
+      "fontId": "comic-neue",
+      "sample": "affinity",
+      "group": "connected-sans-lowercase-run"
+    }
+  ]
+}

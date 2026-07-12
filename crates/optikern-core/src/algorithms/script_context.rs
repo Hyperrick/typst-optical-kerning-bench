@@ -119,12 +119,13 @@ pub(super) fn script_residual_balance_delta(
         return 0.0;
     }
 
-    if pair_class.is_upper_lower() || pair_class.is_lower_upper() {
-        if adjusted_delta < -dead_zone() && adjusted_delta > SCRIPT_RESIDUAL_SEVERE_DELTA_EM {
-            let target = (adjusted_delta - script_residual_soft_mixed_amount(config))
-                .max(-script_residual_soft_mixed_bound(config));
-            return normalized_delta(target - adjusted_delta);
-        }
+    if (pair_class.is_upper_lower() || pair_class.is_lower_upper())
+        && adjusted_delta < -dead_zone()
+        && adjusted_delta > SCRIPT_RESIDUAL_SEVERE_DELTA_EM
+    {
+        let target = (adjusted_delta - script_residual_soft_mixed_amount(config))
+            .max(-script_residual_soft_mixed_bound(config));
+        return normalized_delta(target - adjusted_delta);
     }
 
     if pair_class.is_lower_lower()

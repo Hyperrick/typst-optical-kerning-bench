@@ -46,7 +46,7 @@ impl DigitRunContext {
     fn sans_metricless_digit_run(self, sans_like: bool) -> bool {
         sans_like
             && self.digit_run_pairs >= DIGIT_RUN_MIN_PAIRS
-            && self.metricful_digit_run_pairs() <= SANS_DIGIT_RUN_MAX_METRIC_PAIRS
+            && self.metricful_digit_run_pairs() == SANS_DIGIT_RUN_MAX_METRIC_PAIRS
     }
 
     fn wide_serif_metricless_digit_run(self, sans_like: bool, config: EvaluationConfig) -> bool {

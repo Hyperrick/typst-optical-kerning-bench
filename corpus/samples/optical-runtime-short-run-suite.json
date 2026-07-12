@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "name": "runtime-short-run-regressions",
+  "description": "Focused gate for connected short script runs and near-touch serif metric openings.",
+  "cases": [
+    {
+      "fontId": "libre-baskerville",
+      "sample": "fjord",
+      "group": "wide-serif-near-touch"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "fjord",
+      "group": "short-connected-script"
+    }
+  ]
+}

@@ -732,12 +732,17 @@ name = "optikern-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "optikern-runtime",
  "rustybuzz",
  "serde",
  "tempfile",
  "thiserror",
  "ttf-parser",
 ]
+
+[[package]]
+name = "optikern-runtime"
+version = "0.1.0"
 
 [[package]]
 name = "percent-encoding"

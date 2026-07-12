@@ -59,7 +59,7 @@ enum Command {
         #[arg(long)]
         no_compile: bool,
     },
-    /// Print guarded optical deltas for one shaped sample.
+    /// Print deltas from one optical candidate for a shaped sample.
     SampleDeltas {
         #[arg(long)]
         font_id: String,
@@ -69,8 +69,10 @@ enum Command {
         text: String,
         #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
         ligatures: bool,
+        #[arg(long, default_value = "guarded-profile-hybrid")]
+        algorithm: optikern_core::Algorithm,
     },
-    /// Render a guarded optical sample from shaped glyph outlines.
+    /// Render one optical candidate from shaped glyph outlines.
     RenderShapedSvg {
         #[arg(long)]
         font_id: String,
@@ -84,6 +86,8 @@ enum Command {
         point_size: f32,
         #[arg(long, default_value_t = 300.0)]
         dpi: f32,
+        #[arg(long, default_value = "guarded-profile-hybrid")]
+        algorithm: optikern_core::Algorithm,
         #[arg(long)]
         output_svg: PathBuf,
         #[arg(long)]
@@ -112,12 +116,14 @@ fn main() -> Result<()> {
             font_path,
             text,
             ligatures,
+            algorithm,
         } => commands::sample_deltas::run(
             &cli.root,
             &font_id,
             font_path.as_deref(),
             &text,
             ligatures,
+            algorithm,
         ),
         Command::RenderShapedSvg {
             font_id,
@@ -126,18 +132,20 @@ fn main() -> Result<()> {
             ligatures,
             point_size,
             dpi,
+            algorithm,
             output_svg,
             output_json,
-        } => commands::render_shaped_svg::run(
-            &cli.root,
-            &font_id,
-            font_path.as_deref(),
-            &text,
+        } => commands::render_shaped_svg::run(commands::render_shaped_svg::Options {
+            root: &cli.root,
+            font_id: &font_id,
+            font_path: font_path.as_deref(),
+            text: &text,
             ligatures,
             point_size,
             dpi,
-            &output_svg,
-            output_json.as_deref(),
-        ),
+            algorithm,
+            output_svg: &output_svg,
+            output_json: output_json.as_deref(),
+        }),
     }
 }

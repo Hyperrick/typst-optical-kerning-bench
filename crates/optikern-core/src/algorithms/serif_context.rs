@@ -4,6 +4,7 @@ use super::math::{dead_zone, normalized_delta};
 use super::run_context::RunContext;
 use super::types::EvaluationConfig;
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn serif_ligature_lower_run_delta(
     adjusted_delta: f32,
     metric_delta: f32,

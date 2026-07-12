@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "name": "runtime-ligature-adapter-regressions",
+  "description": "Focused gate for long connected-script ligature runs with multiple metric-tightened boundaries.",
+  "cases": [
+    {
+      "fontId": "pacifico",
+      "sample": "affinity",
+      "group": "connected-script-ligature-adapter"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "efficient",
+      "group": "connected-script-ligature-adapter"
+    }
+  ]
+}

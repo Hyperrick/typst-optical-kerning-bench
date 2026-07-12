@@ -15,6 +15,7 @@ pub fn run(
     font_path: Option<&Path>,
     text: &str,
     ligatures: bool,
+    algorithm: Algorithm,
 ) -> Result<()> {
     let manifest = corpus::load_fonts(root)?;
     let entry = manifest
@@ -42,11 +43,17 @@ pub fn run(
 
     let mut pairs = Vec::new();
     for result in evaluate_shaped_run_with_config(&font, &run, config, ligatures)? {
-        let guarded = result
+        let selected = result
             .outputs
             .iter()
-            .find(|output| output.algorithm == Algorithm::GuardedProfileHybrid)
-            .ok_or_else(|| anyhow!("missing guarded output for {}", result.display))?;
+            .find(|output| output.algorithm == algorithm)
+            .ok_or_else(|| {
+                anyhow!(
+                    "missing {} output for {}",
+                    algorithm.as_str(),
+                    result.display
+                )
+            })?;
         pairs.push(SamplePairDelta {
             display: result.display,
             shaping_text: result.shaping_text,
@@ -54,9 +61,9 @@ pub fn run(
             right_cluster: result.right_cluster,
             left_glyph_id: result.left_glyph_id,
             right_glyph_id: result.right_glyph_id,
-            delta_em: guarded.delta_em,
-            metric_delta_em: guarded.metric_delta_em,
-            optical_delta_em: guarded.optical_delta_em,
+            delta_em: selected.delta_em,
+            metric_delta_em: selected.metric_delta_em,
+            optical_delta_em: selected.optical_delta_em,
             outputs: result.outputs,
         });
     }
@@ -69,6 +76,7 @@ pub fn run(
         text: text.to_owned(),
         ligatures,
         contextual_alternates: run.options.contextual_alternates,
+        algorithm,
         fragmented_render_safe,
         pairs,
     };
@@ -117,6 +125,7 @@ struct SampleDeltaReport {
     text: String,
     ligatures: bool,
     contextual_alternates: bool,
+    algorithm: Algorithm,
     fragmented_render_safe: bool,
     pairs: Vec<SamplePairDelta>,
 }

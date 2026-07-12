@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "name": "runtime-ligature-run-regressions",
+  "description": "Focused gate for sans lowercase accumulation and wide-serif ligature-run spacing.",
+  "cases": [
+    {
+      "fontId": "inter",
+      "sample": "office",
+      "group": "sans-lowercase-run"
+    },
+    {
+      "fontId": "inter",
+      "sample": "affinity",
+      "group": "sans-lowercase-run"
+    },
+    {
+      "fontId": "comic-neue",
+      "sample": "office",
+      "group": "sans-lowercase-run"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "efficient",
+      "group": "wide-serif-ligature-run"
+    }
+  ]
+}

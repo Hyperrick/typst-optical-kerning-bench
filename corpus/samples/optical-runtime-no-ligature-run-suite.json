@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "name": "runtime-no-ligature-run-regressions",
+  "description": "Focused no-ligature gate for short connected-run changes in serif text.",
+  "cases": [
+    {
+      "fontId": "eb-garamond",
+      "sample": "Goldfish",
+      "group": "connected-run-control"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "OpenType",
+      "group": "connected-run-control"
+    }
+  ]
+}

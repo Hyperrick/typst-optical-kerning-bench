@@ -6,6 +6,7 @@ license.workspace = true
 
 [dependencies]
 anyhow.workspace = true
+optikern-runtime = { path = "../optikern-runtime" }
 rustybuzz.workspace = true
 serde.workspace = true
 thiserror.workspace = true
@@ -13,4 +14,3 @@ ttf-parser.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
-

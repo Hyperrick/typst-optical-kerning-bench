@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 use crate::calibration::{ClassGapCalibration, GapDistribution, calibrated_gap_distribution};
 use crate::class::PairClass;
@@ -12,6 +13,7 @@ pub enum Algorithm {
     ProfileWhitespace,
     AreaBalance,
     MetricPriorHybrid,
+    CompactGuarded,
     GuardedProfileHybrid,
     SafeFallbackOnly,
 }
@@ -23,6 +25,7 @@ impl Algorithm {
             Algorithm::ProfileWhitespace,
             Algorithm::AreaBalance,
             Algorithm::MetricPriorHybrid,
+            Algorithm::CompactGuarded,
             Algorithm::GuardedProfileHybrid,
             Algorithm::SafeFallbackOnly,
         ]
@@ -34,9 +37,22 @@ impl Algorithm {
             Algorithm::ProfileWhitespace => "profile-whitespace",
             Algorithm::AreaBalance => "area-balance",
             Algorithm::MetricPriorHybrid => "metric-prior-hybrid",
+            Algorithm::CompactGuarded => "compact-guarded",
             Algorithm::GuardedProfileHybrid => "guarded-profile-hybrid",
             Algorithm::SafeFallbackOnly => "safe-fallback-only",
         }
+    }
+}
+
+impl FromStr for Algorithm {
+    type Err = String;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        Self::all()
+            .iter()
+            .copied()
+            .find(|algorithm| algorithm.as_str() == value)
+            .ok_or_else(|| format!("unknown algorithm {value:?}"))
     }
 }
 

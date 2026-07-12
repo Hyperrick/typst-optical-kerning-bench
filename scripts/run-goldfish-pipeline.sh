@@ -17,6 +17,7 @@ Options:
   --point-size PT       Text size. Default: 100.
   --ligatures BOOL      true or false. Default: false.
   --dpi DPI             Raster DPI. Default: 300.
+  --algorithm NAME      Candidate to render. Default: guarded-profile-hybrid.
   --output DIR          Output directory. Default derived from text/settings.
   --reuse-indesign-from DIR
                       Reuse existing InDesign PNG/JSON outputs from this case directory.
@@ -32,6 +33,7 @@ text="Goldfish"
 point_size="100"
 ligatures="false"
 dpi="300"
+algorithm="guarded-profile-hybrid"
 output_dir=""
 reuse_indesign_from=""
 metric_only="false"
@@ -45,6 +47,7 @@ while [[ $# -gt 0 ]]; do
     --point-size) point_size="$2"; shift 2 ;;
     --ligatures) ligatures="$2"; shift 2 ;;
     --dpi) dpi="$2"; shift 2 ;;
+    --algorithm) algorithm="$2"; shift 2 ;;
     --output) output_dir="$2"; shift 2 ;;
     --reuse-indesign-from) reuse_indesign_from="$2"; shift 2 ;;
     --metric-only) metric_only="true"; shift ;;
@@ -56,6 +59,10 @@ done
 case "$ligatures" in
   true|false) ;;
   *) echo "--ligatures must be true or false" >&2; exit 2 ;;
+esac
+case "$algorithm" in
+  nearest-contour-distance|safe-fallback-only|compact-guarded|guarded-profile-hybrid) ;;
+  *) echo "Unsupported --algorithm: $algorithm" >&2; exit 2 ;;
 esac
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -97,6 +104,7 @@ if [[ "$metric_only" == "false" ]]; then
     --font-path "$font_path" \
     --text "$text" \
     --ligatures="$ligatures" \
+    --algorithm "$algorithm" \
     > "$output_dir/metrics/guarded-deltas.json"
 fi
 
@@ -253,6 +261,7 @@ PY
       --ligatures="$ligatures" \
       --point-size "$point_size" \
       --dpi "$dpi" \
+      --algorithm "$algorithm" \
       --output-svg "$output_dir/typst/guarded.svg" \
       --output-json "$output_dir/metrics/shaped-svg-guarded.json"
     magick "$output_dir/typst/guarded.svg" "$output_dir/typst/guarded.png"
@@ -263,7 +272,7 @@ PY
 fi
 
 echo "== Crops and overlays =="
-python3 - "$output_dir" "$dpi" "$font_family" "$text" "$point_size" "$ligatures" "$metric_only" "$guarded_renderer" <<'PY'
+python3 - "$output_dir" "$dpi" "$font_family" "$text" "$point_size" "$ligatures" "$metric_only" "$guarded_renderer" "$algorithm" <<'PY'
 from pathlib import Path
 from PIL import Image
 import json
@@ -277,6 +286,7 @@ point_size = float(sys.argv[5])
 ligatures = sys.argv[6] == "true"
 metric_only = sys.argv[7] == "true"
 guarded_renderer = sys.argv[8]
+algorithm = sys.argv[9]
 
 sources = {
     "indesign_none": root / "indesign/none-1.png",
@@ -486,6 +496,7 @@ report = {
     "ligatures": ligatures,
     "dpi": dpi,
     "guardedRenderer": guarded_renderer,
+    "candidateAlgorithm": algorithm,
     "crops": boxes,
     "comparisons": comparisons,
 }

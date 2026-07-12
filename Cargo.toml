@@ -1,5 +1,6 @@
 [workspace]
 members = [
+  "crates/optikern-runtime",
   "crates/optikern-core",
   "crates/optikern-cli",
 ]

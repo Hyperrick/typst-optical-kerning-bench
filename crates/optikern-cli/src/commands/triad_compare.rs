@@ -869,9 +869,7 @@ fn paint_dark_pixels(
             continue;
         }
         let existing = canvas.get_pixel(target_x, target_y);
-        let next = if existing.0 == [255, 255, 255, 255] {
-            color
-        } else if existing.0 == color.0 {
+        let next = if existing.0 == [255, 255, 255, 255] || existing.0 == color.0 {
             color
         } else {
             Rgba([10, 10, 10, 255])

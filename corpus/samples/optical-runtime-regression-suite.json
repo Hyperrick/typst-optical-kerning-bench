@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "name": "runtime-regressions",
+  "description": "Focused sample-first gate for connected-script, wide-serif mixed-case, and wide-serif lowercase runtime rules.",
+  "cases": [
+    {
+      "fontId": "pacifico",
+      "sample": "Goldfish",
+      "group": "connected-script"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "AVATAR",
+      "group": "connected-script"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "ToTaL",
+      "group": "wide-serif-mixed"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "ToTaL",
+      "group": "connected-script"
+    },
+    {
+      "fontId": "eb-garamond",
+      "sample": "OpenType",
+      "group": "wide-serif-lowercase"
+    },
+    {
+      "fontId": "libre-baskerville",
+      "sample": "OpenType",
+      "group": "wide-serif-lowercase"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "OpenType",
+      "group": "connected-script"
+    }
+  ]
+}

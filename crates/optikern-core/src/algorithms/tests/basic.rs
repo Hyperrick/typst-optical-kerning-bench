@@ -13,6 +13,7 @@ fn algorithm_names_are_stable() {
             "profile-whitespace",
             "area-balance",
             "metric-prior-hybrid",
+            "compact-guarded",
             "guarded-profile-hybrid",
             "safe-fallback-only",
         ]

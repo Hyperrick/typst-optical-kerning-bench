@@ -54,6 +54,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--point-size", default="")
     parser.add_argument("--ligatures", choices=["true", "false", ""], default="")
     parser.add_argument(
+        "--algorithm",
+        choices=[
+            "nearest-contour-distance",
+            "safe-fallback-only",
+            "compact-guarded",
+            "guarded-profile-hybrid",
+        ],
+        default="guarded-profile-hybrid",
+        help="Typst-side candidate to render. Defaults to guarded-profile-hybrid.",
+    )
+    parser.add_argument(
         "--reuse-indesign-from",
         default="",
         help="Reuse case-level InDesign PNG/JSON outputs from this suite output directory.",
@@ -177,6 +188,8 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
         ligatures,
         "--dpi",
         dpi,
+        "--algorithm",
+        args.algorithm,
         "--output",
         str(case_dir.relative_to(root)),
     ]
@@ -227,6 +240,7 @@ def run_case(root: Path, args: argparse.Namespace, baseline: dict, case: dict, o
         "returnCode": result.returncode,
         "log": str(log_path.relative_to(root)),
         "metricGate": case["metricGate"],
+        "candidateAlgorithm": args.algorithm,
     }
 
     comparison_path = case_dir / "metrics/comparison.json"
@@ -295,6 +309,7 @@ def compact(entry: dict) -> dict:
         "metricGate": entry["metricGate"],
         "fragmentedRenderSafe": entry.get("fragmentedRenderSafe"),
         "guardedRenderer": entry.get("guardedRenderer"),
+        "candidateAlgorithm": entry.get("candidateAlgorithm"),
         "opticalScore": entry["opticalScore"],
         "deltas": compact_deltas(entry.get("guardedDeltas", {})),
     }
@@ -324,7 +339,8 @@ def write_reports(root: Path, args: argparse.Namespace, baseline: dict, entries:
     )
     report = {
         "schemaVersion": 1,
-        "purpose": "InDesign Optical vs Typst Guarded Optical comparison for metric-valid samples.",
+        "purpose": "InDesign Optical vs a Typst optical candidate for metric-valid samples.",
+        "candidateAlgorithm": args.algorithm,
         "suite": args.suite_file or args.suite,
         "metricBaseline": args.metric_baseline,
         "pointSize": float(case_value(args.point_size, baseline["pointSize"])),
@@ -397,7 +413,7 @@ def write_html(out: Path, report: dict) -> None:
 </head>
 <body>
   <h1>Optical Comparison Suite</h1>
-  <p>{report['measuredCaseCount']} / {report['caseCount']} metric-valid cases measured. Cyan = InDesign Optical, magenta = Typst Guarded, black = overlap.</p>
+  <p>{report['measuredCaseCount']} / {report['caseCount']} metric-valid cases measured for <code>{html.escape(report['candidateAlgorithm'])}</code>. Cyan = InDesign Optical, magenta = Typst candidate, black = overlap.</p>
   <table>
     <thead><tr><th>Font</th><th>Sample</th><th>Width</th><th>Ink position</th><th>Segment center</th><th>Overlay</th></tr></thead>
     <tbody>{''.join(rows)}</tbody>
@@ -416,7 +432,7 @@ def write_contact_sheet(out: Path, report: dict) -> None:
     col_w = 360
     row_h = 130
     header_h = 70
-    cols = ["InDesign Optical", "Typst Guarded", "Optical overlay"]
+    cols = ["InDesign Optical", report["candidateAlgorithm"], "Optical overlay"]
     width = label_w + col_w * len(cols)
     height = header_h + row_h * len(rows)
     canvas = Image.new("RGB", (width, height), "white")

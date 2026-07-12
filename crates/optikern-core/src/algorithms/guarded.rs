@@ -334,7 +334,7 @@ pub(super) fn side_shape_delta(
     if let Some(target) = side_shape_target(facts, adjusted_delta) {
         normalized_delta(target - adjusted_delta)
     } else {
-        return 0.0;
+        0.0
     }
 }
 

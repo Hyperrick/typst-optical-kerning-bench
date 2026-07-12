@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "name": "runtime-ligature-regressions",
+  "description": "Focused connected-script ligature gate for the compact runtime kernel.",
+  "cases": [
+    {
+      "fontId": "pacifico",
+      "sample": "Goldfish",
+      "group": "connected-script-ligature"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "Goldfish",
+      "group": "connected-script-ligature"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "office",
+      "group": "connected-script-ligature"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "office",
+      "group": "connected-script-ligature"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "affinity",
+      "group": "connected-script-ligature"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "affinity",
+      "group": "connected-script-ligature"
+    },
+    {
+      "fontId": "pacifico",
+      "sample": "efficient",
+      "group": "connected-script-ligature"
+    },
+    {
+      "fontId": "lobster",
+      "sample": "efficient",
+      "group": "connected-script-ligature"
+    }
+  ]
+}

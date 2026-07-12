@@ -1,7 +1,10 @@
 use anyhow::{Result, anyhow};
+use optikern_runtime::{
+    GlyphClass, PairEvidence, RunPair, SideShape, compact_guarded, compact_guarded_run,
+};
 use ttf_parser::GlyphId;
 
-use crate::class::PairClass;
+use crate::class::{ClusterClass, PairClass};
 use crate::font::FontKit;
 use crate::outline::FlattenOptions;
 use crate::profile::gap_stats;
@@ -90,6 +93,15 @@ fn evaluate_shaped_pair_with_metric_delta(
                         )
                     }
                 }
+                Algorithm::CompactGuarded => compact_guarded(runtime_evidence(
+                    metric_delta,
+                    optical_robust_delta,
+                    nearest_delta,
+                    stats,
+                    pair_config,
+                    pair_class,
+                    pair_geometry,
+                )),
                 Algorithm::GuardedProfileHybrid => guarded_profile_hybrid(
                     metric_delta,
                     optical_robust_delta,
@@ -140,6 +152,50 @@ fn evaluate_shaped_pair_with_metric_delta(
     })
 }
 
+fn runtime_evidence(
+    metric_delta: f32,
+    optical_delta: f32,
+    nearest_delta: f32,
+    stats: crate::profile::GapStats,
+    config: EvaluationConfig,
+    pair_class: PairClass,
+    geometry: PairGeometry,
+) -> PairEvidence {
+    PairEvidence {
+        left: runtime_class(pair_class.left),
+        right: runtime_class(pair_class.right),
+        metric_delta,
+        optical_delta,
+        nearest_delta,
+        target_gap: config.target_gap_em,
+        gap_mad: config.gap_mad_em,
+        min_gap: stats.min_gap,
+        robust_gap: stats.robust_mean_gap,
+        x_height: config.profile.x_height,
+        cap_height: config.profile.cap_height,
+        left_side: SideShape {
+            roundness: geometry.left_right_side.roundness,
+            stemness: geometry.left_right_side.stemness,
+        },
+        right_side: SideShape {
+            roundness: geometry.right_left_side.roundness,
+            stemness: geometry.right_left_side.stemness,
+        },
+        right_top_left_overhang: geometry.right_top_left_overhang,
+        monospaced: config.preserve_monospace,
+    }
+}
+
+fn runtime_class(class: ClusterClass) -> GlyphClass {
+    match class {
+        ClusterClass::Upper => GlyphClass::Upper,
+        ClusterClass::Lower => GlyphClass::Lower,
+        ClusterClass::Digit => GlyphClass::Digit,
+        ClusterClass::Punctuation => GlyphClass::Punctuation,
+        ClusterClass::Other => GlyphClass::Other,
+    }
+}
+
 pub fn evaluate_shaped_run_with_config(
     font: &FontKit,
     run: &crate::shape::ShapedRun,
@@ -162,5 +218,47 @@ pub fn evaluate_shaped_run_with_config(
         })
         .collect::<Result<Vec<_>>>()?;
     apply_run_context_adjustments(&mut results, config);
+    apply_compact_run_adjustments(&mut results, config);
     Ok(results)
+}
+
+fn apply_compact_run_adjustments(results: &mut [AlgorithmSet], config: EvaluationConfig) {
+    let mut run = results
+        .iter()
+        .map(|result| {
+            let output = result
+                .outputs
+                .iter()
+                .find(|output| output.algorithm == Algorithm::CompactGuarded)
+                .expect("algorithm evaluation always emits compact-guarded");
+            let class = result.pair_class();
+            RunPair {
+                left: runtime_class(class.left),
+                right: runtime_class(class.right),
+                left_cluster_chars: result.left_cluster.chars().count().min(u8::MAX as usize) as u8,
+                right_cluster_chars: result.right_cluster.chars().count().min(u8::MAX as usize)
+                    as u8,
+                metric_delta: output.metric_delta_em,
+                optical_delta: output.optical_delta_em,
+                min_gap: output.gap_min_em,
+                delta: output.delta_em,
+            }
+        })
+        .collect::<Vec<_>>();
+    let x_to_cap = if config.profile.cap_height > 0.0 {
+        config.profile.x_height / config.profile.cap_height
+    } else {
+        1.0
+    };
+    compact_guarded_run(&mut run, config.target_gap_em, config.gap_mad_em, x_to_cap);
+
+    for (result, pair) in results.iter_mut().zip(run) {
+        if let Some(output) = result
+            .outputs
+            .iter_mut()
+            .find(|output| output.algorithm == Algorithm::CompactGuarded)
+        {
+            output.delta_em = pair.delta;
+        }
+    }
 }

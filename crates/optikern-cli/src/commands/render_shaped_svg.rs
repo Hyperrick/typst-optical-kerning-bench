@@ -12,17 +12,32 @@ use ttf_parser::GlyphId;
 
 use crate::corpus;
 
-pub fn run(
-    root: &Path,
-    font_id: &str,
-    font_path: Option<&Path>,
-    text: &str,
-    ligatures: bool,
-    point_size: f32,
-    dpi: f32,
-    output_svg: &Path,
-    output_json: Option<&Path>,
-) -> Result<()> {
+pub struct Options<'a> {
+    pub root: &'a Path,
+    pub font_id: &'a str,
+    pub font_path: Option<&'a Path>,
+    pub text: &'a str,
+    pub ligatures: bool,
+    pub point_size: f32,
+    pub dpi: f32,
+    pub algorithm: Algorithm,
+    pub output_svg: &'a Path,
+    pub output_json: Option<&'a Path>,
+}
+
+pub fn run(options: Options<'_>) -> Result<()> {
+    let Options {
+        root,
+        font_id,
+        font_path,
+        text,
+        ligatures,
+        point_size,
+        dpi,
+        algorithm,
+        output_svg,
+        output_json,
+    } = options;
     let manifest = corpus::load_fonts(root)?;
     let entry = manifest
         .fonts
@@ -43,7 +58,7 @@ pub fn run(
     let run = shape_text(&font, text, options)?;
     let results =
         evaluate_shaped_run_with_config(&font, &run, EvaluationConfig::for_font(&font), ligatures)?;
-    let deltas = guarded_deltas_by_left_index(&results)?;
+    let deltas = deltas_by_left_index(&results, algorithm)?;
     let rendered = render_svg(&font, &run.glyphs, &deltas, point_size, dpi)?;
     write_text(root, output_svg, &rendered.svg)?;
 
@@ -56,6 +71,7 @@ pub fn run(
             text: text.to_owned(),
             ligatures,
             contextual_alternates: options.contextual_alternates,
+            algorithm,
             point_size,
             dpi,
             width_px: rendered.width_px,
@@ -69,16 +85,23 @@ pub fn run(
     Ok(())
 }
 
-fn guarded_deltas_by_left_index(
+fn deltas_by_left_index(
     results: &[optikern_core::AlgorithmSet],
+    algorithm: Algorithm,
 ) -> Result<BTreeMap<usize, f32>> {
     let mut deltas = BTreeMap::new();
     for result in results {
         let output = result
             .outputs
             .iter()
-            .find(|output| output.algorithm == Algorithm::GuardedProfileHybrid)
-            .ok_or_else(|| anyhow!("missing guarded output for {}", result.display))?;
+            .find(|output| output.algorithm == algorithm)
+            .ok_or_else(|| {
+                anyhow!(
+                    "missing {} output for {}",
+                    algorithm.as_str(),
+                    result.display
+                )
+            })?;
         deltas.insert(result.left_index, output.delta_em);
     }
     Ok(deltas)
@@ -194,6 +217,7 @@ struct ShapedSvgSidecar {
     text: String,
     ligatures: bool,
     contextual_alternates: bool,
+    algorithm: Algorithm,
     point_size: f32,
     dpi: f32,
     width_px: u32,

@@ -83,10 +83,10 @@ impl Collector {
     }
 
     fn line_to_point(&mut self, point: Point) {
-        if let Some(start) = self.current {
-            if start != point {
-                self.segments.push(LineSegment { start, end: point });
-            }
+        if let Some(start) = self.current
+            && start != point
+        {
+            self.segments.push(LineSegment { start, end: point });
         }
         self.current = Some(point);
         self.include(point);

@@ -53,13 +53,12 @@ pub(super) fn metric_prior_hybrid_for_class(
 }
 
 fn metric_optical_pull(metric_delta: f32, pair_class: PairClass) -> f32 {
-    if metric_delta < -dead_zone() {
-        if pair_class.is_upper_lower()
+    if metric_delta < -dead_zone()
+        && (pair_class.is_upper_lower()
             || pair_class.is_upper_punctuation()
-            || pair_class.is_upper_upper()
-        {
-            return 0.25;
-        }
+            || pair_class.is_upper_upper())
+    {
+        return 0.25;
     }
     0.80
 }
@@ -78,7 +77,7 @@ fn zero_metric_delta(optical_delta: f32, pair_class: PairClass) -> f32 {
     }
 
     if pair_class.is_digit_digit() {
-        return normalized_delta(optical_delta.min(0.0).max(-0.055));
+        return normalized_delta(optical_delta.clamp(-0.055, 0.0));
     }
 
     if pair_class.is_lower_upper() {
