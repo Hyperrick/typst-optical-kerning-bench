@@ -9,7 +9,8 @@ The main question is: can an outline-based, cacheable algorithm produce a useful
 optical alternative while preserving good font kerning and remaining plausible
 for Typst?
 
-**For the current Latin display-text corpus, yes.** The research
+**For the current targeted Latin display-text corpus, the direction is
+promising.** The research
 `guarded-profile-hybrid` candidate reached a combined mean rendered difference
 of `0.0146em` from InDesign Optical across 61/61 measured cases. A smaller
 `compact-guarded` kernel now preserves the main behavior on the 30-case
@@ -22,6 +23,14 @@ metric output is byte-identical to an unmodified compiler built from the same
 Typst commit, while the opt-in mode applies the expected optical corrections
 after shaping in all 61 current comparison cases. This moves the project from
 algorithm-only evaluation to a measurable integration candidate.
+
+A broader preservation audit now adds an important qualification. Across
+`15,271` pairs with effective kerning in 15 Google Fonts, the compact candidate
+has `659` sign changes and a `0.0800em` 95th-percentile difference from the font
+positioning. Most of the 100 largest differences are Pacifico punctuation
+pairs. The prototype is therefore concrete and measurable, but not yet a
+general-purpose upstream candidate without a stronger metric-prior guard or a
+fallback-only first scope.
 
 ![Typst Metric, InDesign Optical, and the Typst candidate compared on the same word](site/assets/main-comparison.png)
 
@@ -77,7 +86,10 @@ slice may be. No upstream PR has been opened.
 See [`docs/path-to-typst.md`](docs/path-to-typst.md) for the proposed milestones,
 open decisions, and useful community contributions. See
 [`docs/runtime-prototype-results.md`](docs/runtime-prototype-results.md) for the
-prototype architecture, measurements, and limitations. The visual overview is at
+prototype architecture, measurements, and limitations. The new
+[`academic-display-evidence.md`](docs/academic-display-evidence.md) and
+[`metric-agreement-audit.md`](docs/metric-agreement-audit.md) reports record the
+large-title evidence and the broad font-metric preservation check. The visual overview is at
 <https://hyperrick.github.io/typst-optical-kerning-bench/>.
 
 ## Workbench Loop
@@ -137,6 +149,7 @@ want generated files somewhere else.
 ```sh
 cargo run -p optikern-cli -- fetch-fonts
 cargo run -p optikern-cli -- bench
+cargo run --release -p optikern-cli -- metric-audit
 cargo run -p optikern-cli -- sample-deltas --font-id eb-garamond --text ToTaL --ligatures=false
 scripts/run-guarded-review-batch.py --output renders/guarded-v5-review/eb-garamond-100pt-no-ligatures
 ```

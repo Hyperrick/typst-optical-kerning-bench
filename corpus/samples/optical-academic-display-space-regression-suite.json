@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "name": "academic-display-space-regression",
+  "description": "Regression cases ensuring pairwise optical adjustments preserve word spaces.",
+  "cases": [
+    { "fontId": "libertinus-serif", "sample": "A0 POSTER" },
+    { "fontId": "stix-two-text", "sample": "A0 POSTER" },
+    { "fontId": "latin-modern-roman", "sample": "A0 POSTER" }
+  ]
+}

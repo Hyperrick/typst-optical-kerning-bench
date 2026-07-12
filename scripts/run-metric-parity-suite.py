@@ -96,6 +96,11 @@ def parse_args() -> argparse.Namespace:
         default="baselines/metric-parity-suite-v1.json",
     )
     parser.add_argument(
+        "--reuse-indesign-from",
+        default="",
+        help="Reuse case-level InDesign PNG/JSON outputs from this suite output directory.",
+    )
+    parser.add_argument(
         "--skip-indesign-preflight",
         action="store_true",
         help="Skip the one-shot InDesign automation health check before rendering cases.",
@@ -152,6 +157,16 @@ def relative_to_out(path: Path, out: Path) -> str:
     return str(path.relative_to(out)).replace("\\", "/")
 
 
+def reusable_indesign_case(case_dir: Path) -> bool:
+    required = (
+        case_dir / "indesign/none-1.png",
+        case_dir / "indesign/metric-1.png",
+        case_dir / "metrics/indesign-none.json",
+        case_dir / "metrics/indesign-metric.json",
+    )
+    return all(path.exists() for path in required)
+
+
 def run_case(
     root: Path,
     args: argparse.Namespace,
@@ -182,15 +197,22 @@ def run_case(
     ]
     if font.font_path:
         command[3:3] = ["--font-path", font.font_path]
+    reused_indesign = False
+    if args.reuse_indesign_from:
+        reuse_case_dir = root / args.reuse_indesign_from / font.font_id / slug(sample)
+        if reusable_indesign_case(reuse_case_dir):
+            command.extend(["--reuse-indesign-from", str(reuse_case_dir)])
+            reused_indesign = True
 
     log_dir = out / "logs" / font.font_id
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"{slug(sample)}.log"
     attempts = max(1, args.retries + 1)
     logs = []
-    removed = clear_indesign_recovery_state()
-    if removed:
-        logs.append(reset_log("pre-attempt cleanup", removed))
+    if not reused_indesign:
+        removed = clear_indesign_recovery_state()
+        if removed:
+            logs.append(reset_log("pre-attempt cleanup", removed))
     result = None
     for attempt in range(1, attempts + 1):
         if case_dir.exists():
@@ -201,8 +223,9 @@ def run_case(
         )
         if result.returncode == 0:
             break
-        removed = reset_indesign_after_failure()
-        logs.append(reset_log(f"reset after attempt {attempt}", removed))
+        if not reused_indesign:
+            removed = reset_indesign_after_failure()
+            logs.append(reset_log(f"reset after attempt {attempt}", removed))
     assert result is not None
     log_path.write_text("\n".join(logs), encoding="utf-8")
 
@@ -218,6 +241,7 @@ def run_case(
         "status": "ok" if result.returncode == 0 else "error",
         "returnCode": result.returncode,
         "log": str(log_path.relative_to(root)),
+        "reusedInDesign": reused_indesign,
     }
 
     comparison_path = case_dir / "metrics/comparison.json"

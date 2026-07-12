@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Multi-sample metric parity gate before optical tuning.",
+  "pointSize": 100.0,
+  "ligatures": false,
+  "dpi": 300,
+  "metricThresholdEm": 0.02,
+  "inkThresholdEm": 0.02,
+  "caseCount": 15,
+  "validCaseCount": 15,
+  "cases": [
+    {
+      "fontId": "libertinus-serif",
+      "fontFamily": "Optikern Libertinus Serif NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-libertinus-serif-regular-noliga.ttf",
+      "sample": "RESEARCH",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.003325326272962836,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.003325326272962836,
+        "segmentCenterMeanAbsEm": 0.0016923240204220306
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.003325326272962836,
+        "segmentCenterMeanAbsEm": 0.0016923240204220306
+      }
+    },
+    {
+      "fontId": "libertinus-serif",
+      "fontFamily": "Optikern Libertinus Serif NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-libertinus-serif-regular-noliga.ttf",
+      "sample": "OpenType",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.003083067798943754,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0057467118180950915,
+        "segmentCenterMeanAbsEm": 0.0015606070692273533
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.003083067798943754,
+        "segmentCenterMeanAbsEm": 0.0015189087591110624
+      }
+    },
+    {
+      "fontId": "libertinus-serif",
+      "fontFamily": "Optikern Libertinus Serif NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-libertinus-serif-regular-noliga.ttf",
+      "sample": "QUANTUM",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0032840352176760523,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0035561403688778555,
+        "segmentCenterMeanAbsEm": 0.0020045769167434204
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0032840352176760523,
+        "segmentCenterMeanAbsEm": 0.0016440996543505774
+      }
+    },
+    {
+      "fontId": "libertinus-serif",
+      "fontFamily": "Optikern Libertinus Serif NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-libertinus-serif-regular-noliga.ttf",
+      "sample": "HCI2026",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0016786098235016915,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0016786098235016915,
+        "segmentCenterMeanAbsEm": 0.0012892022913805119
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0016786098235016915,
+        "segmentCenterMeanAbsEm": 0.0012892022913805119
+      }
+    },
+    {
+      "fontId": "libertinus-serif",
+      "fontFamily": "Optikern Libertinus Serif NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-libertinus-serif-regular-noliga.ttf",
+      "sample": "A0 POSTER",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0034005861007694563,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0034005861007694563,
+        "segmentCenterMeanAbsEm": 0.0015266880006106645
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0034005861007694563,
+        "segmentCenterMeanAbsEm": 0.0015266880006106645
+      }
+    },
+    {
+      "fontId": "stix-two-text",
+      "fontFamily": "Optikern STIX Two Text NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-stix-two-text-regular-static-noliga.ttf",
+      "sample": "RESEARCH",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0144,
+        "absoluteWidthDeltaEm": 0.0144,
+        "inkPositionMeanAbsEm": 0.007096344919896321,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0192,
+        "inkPositionMeanAbsEm": 0.010036957301777822,
+        "segmentCenterMeanAbsEm": 0.008393046658110324
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0144,
+        "inkPositionMeanAbsEm": 0.007096344919896321,
+        "segmentCenterMeanAbsEm": 0.007245755964775857
+      }
+    },
+    {
+      "fontId": "stix-two-text",
+      "fontFamily": "Optikern STIX Two Text NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-stix-two-text-regular-static-noliga.ttf",
+      "sample": "OpenType",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0016739754345698916,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00219026386787105,
+        "segmentCenterMeanAbsEm": 0.0004369193766679075
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.0016739754345698916,
+        "segmentCenterMeanAbsEm": 0.0005311006967698436
+      }
+    },
+    {
+      "fontId": "stix-two-text",
+      "fontFamily": "Optikern STIX Two Text NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-stix-two-text-regular-static-noliga.ttf",
+      "sample": "QUANTUM",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0144,
+        "absoluteWidthDeltaEm": 0.0144,
+        "inkPositionMeanAbsEm": 0.006523227693812842,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0144,
+        "inkPositionMeanAbsEm": 0.006373914088211285,
+        "segmentCenterMeanAbsEm": 0.0060438077163416145
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0144,
+        "inkPositionMeanAbsEm": 0.006523227693812842,
+        "segmentCenterMeanAbsEm": 0.007288158844017778
+      }
+    },
+    {
+      "fontId": "stix-two-text",
+      "fontFamily": "Optikern STIX Two Text NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-stix-two-text-regular-static-noliga.ttf",
+      "sample": "HCI2026",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": -0.0024,
+        "absoluteWidthDeltaEm": 0.0024,
+        "inkPositionMeanAbsEm": 0.0011020024669231682,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0011020024669231682,
+        "segmentCenterMeanAbsEm": 0.0007699888856278026
+      },
+      "metricParity": {
+        "widthDeltaEm": -0.0024,
+        "inkPositionMeanAbsEm": 0.0011020024669231682,
+        "segmentCenterMeanAbsEm": 0.0007699888856278026
+      }
+    },
+    {
+      "fontId": "stix-two-text",
+      "fontFamily": "Optikern STIX Two Text NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-stix-two-text-regular-static-noliga.ttf",
+      "sample": "A0 POSTER",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0144,
+        "absoluteWidthDeltaEm": 0.0144,
+        "inkPositionMeanAbsEm": 0.006046927777903392,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0168,
+        "inkPositionMeanAbsEm": 0.00864879843016951,
+        "segmentCenterMeanAbsEm": 0.00864934301486072
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0144,
+        "inkPositionMeanAbsEm": 0.006046927777903392,
+        "segmentCenterMeanAbsEm": 0.007149658528806444
+      }
+    },
+    {
+      "fontId": "latin-modern-roman",
+      "fontFamily": "Optikern Latin Modern Roman NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-latin-modern-roman-regular-noliga.otf",
+      "sample": "RESEARCH",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00511230733200636,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.004486896665223309,
+        "segmentCenterMeanAbsEm": 0.0009231396289296071
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.00511230733200636,
+        "segmentCenterMeanAbsEm": 0.0007571197678508496
+      }
+    },
+    {
+      "fontId": "latin-modern-roman",
+      "fontFamily": "Optikern Latin Modern Roman NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-latin-modern-roman-regular-noliga.otf",
+      "sample": "OpenType",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0096,
+        "absoluteWidthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.0049762834324800125,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.005806507808889437,
+        "segmentCenterMeanAbsEm": 0.005021027166909255
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0096,
+        "inkPositionMeanAbsEm": 0.0049762834324800125,
+        "segmentCenterMeanAbsEm": 0.005161221427447722
+      }
+    },
+    {
+      "fontId": "latin-modern-roman",
+      "fontFamily": "Optikern Latin Modern Roman NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-latin-modern-roman-regular-noliga.otf",
+      "sample": "QUANTUM",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.012,
+        "absoluteWidthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.007260594914758022,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.007260594914758022,
+        "segmentCenterMeanAbsEm": 0.006827701681049269
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.012,
+        "inkPositionMeanAbsEm": 0.007260594914758022,
+        "segmentCenterMeanAbsEm": 0.006827701681049269
+      }
+    },
+    {
+      "fontId": "latin-modern-roman",
+      "fontFamily": "Optikern Latin Modern Roman NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-latin-modern-roman-regular-noliga.otf",
+      "sample": "HCI2026",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.002363688923983978,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.002363688923983978,
+        "segmentCenterMeanAbsEm": 0.00013280042676456106
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.002363688923983978,
+        "segmentCenterMeanAbsEm": 0.00013280042676456106
+      }
+    },
+    {
+      "fontId": "latin-modern-roman",
+      "fontFamily": "Optikern Latin Modern Roman NoLiga",
+      "fontPath": "renders/font-sandbox/optikern-latin-modern-roman-regular-noliga.otf",
+      "sample": "A0 POSTER",
+      "metricGate": {
+        "thresholdEm": 0.02,
+        "inkThresholdEm": 0.02,
+        "widthDeltaEm": 0.0,
+        "absoluteWidthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.005463604189534701,
+        "status": "valid-for-optical-tuning",
+        "validForOpticalTuning": true
+      },
+      "noneParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.005463604189534701,
+        "segmentCenterMeanAbsEm": 0.0018301909312706725
+      },
+      "metricParity": {
+        "widthDeltaEm": 0.0,
+        "inkPositionMeanAbsEm": 0.005463604189534701,
+        "segmentCenterMeanAbsEm": 0.0018301909312706725
+      }
+    }
+  ]
+}

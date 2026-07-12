@@ -20,10 +20,23 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
-    /// Download pinned Google Fonts into corpus/fonts.
+    /// Download pinned corpus fonts into corpus/fonts.
     FetchFonts {
         #[arg(long)]
         force: bool,
+    },
+    /// Compare calculated pair deltas with effective font kerning.
+    MetricAudit {
+        #[arg(long, default_value = "")]
+        font_ids: String,
+        #[arg(long, default_value = "")]
+        characters: String,
+        #[arg(long, default_value = "compact-guarded")]
+        algorithm: optikern_core::Algorithm,
+        #[arg(long, default_value = "baselines/metric-agreement-audit-v1")]
+        output: PathBuf,
+        #[arg(long, default_value_t = 100)]
+        top: usize,
     },
     /// Evaluate all configured fonts and critical pairs.
     Bench,
@@ -99,6 +112,15 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
         Command::FetchFonts { force } => commands::fetch_fonts::run(&cli.root, force),
+        Command::MetricAudit {
+            font_ids,
+            characters,
+            algorithm,
+            output,
+            top,
+        } => {
+            commands::metric_audit::run(&cli.root, &font_ids, &characters, algorithm, &output, top)
+        }
         Command::Bench => commands::bench::run(&cli.root),
         Command::RenderTypst { no_compile } => commands::render_typst::run(&cli.root, !no_compile),
         Command::RenderIndesign { run } => commands::render_indesign::run(&cli.root, run),

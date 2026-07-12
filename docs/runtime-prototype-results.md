@@ -69,6 +69,16 @@ sheet is shown below, grouped by sample rather than by font:
 
 ![InDesign Optical and compact guarded output for the ligature suite](figures/compact-ligature-contact-sheet.webp)
 
+The later academic-display suite is intentionally reported separately. Across
+Libertinus Serif, STIX Two Text, and Latin Modern at 80 pt and 100 pt, its mean
+rendered difference is about `0.052em`; Latin Modern `OpenType` is the largest
+current row. See [`academic-display-evidence.md`](academic-display-evidence.md).
+
+The broader 15-font metric agreement audit also found `659` sign changes among
+`15,271` pairs with effective font kerning. This weakens the earlier assumption
+that the compact extraction already protects metric positioning broadly enough.
+See [`metric-agreement-audit.md`](metric-agreement-audit.md).
+
 ## Typst Integration
 
 The prototype is based on Typst commit
@@ -165,9 +175,11 @@ release microbenchmark.
 - no automatic activation and no change to the metric default;
 - no claim yet for combining marks, non-Latin scripts, vertical text, or
   cross-font boundaries;
-- the current font corpus should be extended with academic display fonts such
-  as Libertinus and STIX, variable axes, and professionally kerned preservation
-  controls.
+- academic display evidence now covers Libertinus, STIX Two Text, and Latin
+  Modern, but the broad metric audit shows that a stronger preservation rule or
+  fallback-only scope remains unresolved;
+- variable axes and more professionally kerned preservation controls remain to
+  be tested.
 
 These are deliberate prototype limits. Unsupported boundaries keep their shaped
 metric positions.

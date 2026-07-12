@@ -217,15 +217,25 @@ none = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
 (out / "typst/none.typ").write_text(none, encoding="utf-8")
 
 if not metric_only:
-    pairs = deltas["pairs"]
-    if not pairs:
-        guarded_body = typ_content(text)
-    else:
-        parts = [typ_content(pairs[0]["leftCluster"])]
-        for pair in pairs:
-            parts.append(f'#h({pair["deltaEm"]:.5f}em)')
-            parts.append(typ_content(pair["rightCluster"]))
+    fragments = deltas.get("fragments")
+    if fragments is not None:
+        parts = []
+        for fragment in fragments:
+            parts.append(typ_content(fragment["text"]))
+            delta = fragment.get("deltaAfterEm", 0.0)
+            if abs(delta) > 0.0000005:
+                parts.append(f'#h({delta:.5f}em)')
         guarded_body = "".join(parts)
+    else:
+        pairs = deltas["pairs"]
+        if not pairs:
+            guarded_body = typ_content(text)
+        else:
+            parts = [typ_content(pairs[0]["leftCluster"])]
+            for pair in pairs:
+                parts.append(f'#h({pair["deltaEm"]:.5f}em)')
+                parts.append(typ_content(pair["rightCluster"]))
+            guarded_body = "".join(parts)
 
     guarded = f"""#set page(width: auto, height: auto, margin: {margin:.4f}pt)
 #set text(

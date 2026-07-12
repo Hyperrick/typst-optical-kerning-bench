@@ -63,6 +63,30 @@ PARITY_FONTS = (
     ),
 )
 
+ACADEMIC_FONTS = (
+    ParityFont(
+        font_id="libertinus-serif",
+        source="corpus/fonts/libertinus-serif.ttf",
+        family="Optikern Libertinus Serif NoLiga",
+        output_name="optikern-libertinus-serif-regular-noliga.ttf",
+        axes=(),
+    ),
+    ParityFont(
+        font_id="stix-two-text",
+        source="corpus/fonts/stix-two-text.ttf",
+        family="Optikern STIX Two Text NoLiga",
+        output_name="optikern-stix-two-text-regular-static-noliga.ttf",
+        axes=(("wght", 400.0),),
+    ),
+    ParityFont(
+        font_id="latin-modern-roman",
+        source="corpus/fonts/latin-modern-roman.otf",
+        family="Optikern Latin Modern Roman NoLiga",
+        output_name="optikern-latin-modern-roman-regular-noliga.otf",
+        axes=(),
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -73,6 +97,12 @@ def parse_args() -> argparse.Namespace:
         choices=["no-ligatures", "ligatures"],
         default="no-ligatures",
         help="Build fonts with ligature features removed or retained. Default: no-ligatures.",
+    )
+    parser.add_argument(
+        "--font-set",
+        choices=["core", "academic", "all"],
+        default="core",
+        help="Font group to build. Defaults to core.",
     )
     parser.add_argument(
         "--output-dir",
@@ -202,7 +232,12 @@ def main() -> None:
     args = parse_args()
     require_fonttools(args)
     root = repo_root()
-    specs = [build_font(root, args, font) for font in PARITY_FONTS]
+    fonts = {
+        "core": PARITY_FONTS,
+        "academic": ACADEMIC_FONTS,
+        "all": PARITY_FONTS + ACADEMIC_FONTS,
+    }[args.font_set]
+    specs = [build_font(root, args, font) for font in fonts]
     spec_output = spec_output_path(root, args)
     spec_output.parent.mkdir(parents=True, exist_ok=True)
     spec_output.write_text(json.dumps(specs, indent=2) + "\n", encoding="utf-8")

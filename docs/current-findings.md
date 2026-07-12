@@ -4,6 +4,10 @@
 > candidate and remains the detailed history for `guarded-profile-hybrid`.
 > The smaller compiler-facing extraction and separate Typst prototype are
 > documented in [`runtime-prototype-results.md`](runtime-prototype-results.md).
+> Later academic-display and broad font-metric preservation evidence is recorded
+> in [`academic-display-evidence.md`](academic-display-evidence.md) and
+> [`metric-agreement-audit.md`](metric-agreement-audit.md); those results expose
+> limits that were not visible in the 25-iteration tuning corpus.
 
 Generated on 2026-06-22 from the pinned corpus after dynamic font calibration,
 Rustybuzz glyph-run shaping, the guarded V5 contact-zone pass, V6 measurement

@@ -28,6 +28,14 @@ expected word-width corrections within `0.000049em` on all 30 cases. On the
 31-case ligature suite, the compact kernel reaches `0.0132em` mean and
 `0.0240em` worst rendered difference and passes the same compiler-width gate.
 
+Later evidence expands the picture rather than simply increasing the headline
+case count. The academic display suite adds Libertinus Serif, STIX Two Text,
+and Latin Modern at 80 pt and 100 pt. Its mean rendered difference is about
+`0.052em`, with Latin Modern `OpenType` as the main outlier. A separate
+15-Google-Font audit retains `15,271` pairs with effective font kerning and
+finds `659` cases where the compact candidate changes the sign. Metric
+preservation is therefore a concrete open issue, not a resolved property.
+
 This is enough to make the direction and implementation boundary concrete. It
 is not an upstream decision, a final API, or a merge-ready patch.
 
@@ -107,6 +115,21 @@ candidate's important behavior:
 Nearest-contour distance and fallback-only behavior remain simple controls in
 the benchmark rather than user-facing modes.
 
+### Metric Preservation Budget
+
+The current compact candidate can move weak nonzero metric pairs too far toward
+its optical estimate. The 100 largest differences are dominated by deliberate
+positive positioning before punctuation, especially in Pacifico. Upstream
+discussion should therefore decide whether a first implementation:
+
+- preserves every nonzero shaped pair position and only fills missing pairs;
+- allows bounded optical movement around the shaped metric value; or
+- keeps the broader candidate but adds a generic confidence rule that can be
+  justified without font or glyph exceptions.
+
+See [`metric-agreement-audit.md`](metric-agreement-audit.md). No focused PR
+should be opened until this boundary is chosen.
+
 ## Proposed Milestones
 
 ### 1. External Evaluation
@@ -164,6 +187,9 @@ These numbers are evidence for discussion, not a stable performance guarantee.
 
 ### 5. Broader Correctness Evidence
 
+**Status: in progress.** Academic display fonts and the first broad
+font-metric agreement audit are complete; the preservation outliers are not.
+
 Before a merge proposal, expand the corpus beyond the current Latin display
 focus. Important additions include:
 
@@ -174,16 +200,15 @@ focus. Important additions include:
 - professional fonts with strong native spacing as preservation controls;
 - intentionally sparse or broken kerning data as fallback controls.
 
-Academic display fonts such as Libertinus and STIX are particularly useful next
-cases because posters, presentation titles, and project acronyms expose sparse
-pair coverage at large sizes.
+The next correctness pass should focus on the top metric-preservation outliers,
+then add variable axes, combining marks, and non-Latin eligibility controls.
 
 ### 6. Focused Upstream PR
 
-Only after the behavior, API boundary, runtime kernel, and performance budget
-are accepted should the work become a normal Typst PR. The benchmark should then
-serve as external evidence and regression material rather than be copied into
-the compiler repository.
+Only after the behavior, metric-preservation rule, API boundary, runtime kernel,
+and performance budget are accepted should the work become a normal Typst PR.
+The benchmark should then serve as external evidence and regression material
+rather than be copied into the compiler repository.
 
 ## How The Community Can Help
 

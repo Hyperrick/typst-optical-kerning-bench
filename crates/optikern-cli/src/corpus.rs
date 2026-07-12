@@ -17,6 +17,10 @@ pub struct FontEntry {
     pub family: String,
     pub category: String,
     pub path: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sha256: Option<String>,
 }
 
 impl FontEntry {

@@ -79,3 +79,25 @@ id = "comic-neue"
 family = "Comic Neue"
 category = "comic"
 path = "ofl/comicneue/ComicNeue-Regular.ttf"
+
+[[fonts]]
+id = "libertinus-serif"
+family = "Libertinus Serif"
+category = "academic-serif"
+path = "ofl/libertinusserif/LibertinusSerif-Regular.ttf"
+sha256 = "81ea17858245163742c9f5ddf19e9c54667ee5e026708556fb1bf5dce7f92fae"
+
+[[fonts]]
+id = "stix-two-text"
+family = "STIX Two Text"
+category = "academic-serif"
+path = "ofl/stixtwotext/STIXTwoText[wght].ttf"
+sha256 = "7962b8b7811e6a896c9a91a0bccbb5241047770eb24d4997c5cb5fe21d5c0df2"
+
+[[fonts]]
+id = "latin-modern-roman"
+family = "Latin Modern Roman"
+category = "academic-serif"
+path = "lmroman10-regular.otf"
+url = "https://mirrors.ctan.org/fonts/lm/fonts/opentype/public/lm/lmroman10-regular.otf"
+sha256 = "1aa18cfefa58132c52ce5de70db1fd1154201c19cd2b2cdaffba4906a33e6852"

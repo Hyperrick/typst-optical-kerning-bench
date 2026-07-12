@@ -49,10 +49,9 @@
         <div class="answer" id="answer">
           <p class="answer-label">Current answer</p>
           <p class="answer-text">
-            Yes, for the current Latin display-text corpus. The strongest
-            research candidate follows InDesign Optical closely, and a smaller
-            extracted kernel now runs inside a separate Typst compiler
-            prototype.
+            The direction works well on the targeted Latin display-text corpus,
+            and a smaller extracted kernel now runs inside a separate Typst
+            compiler prototype. Broader font preservation is not solved yet.
           </p>
           <p>
             The research candidate's combined mean difference across 61 cases
@@ -61,6 +60,12 @@
             no-ligature suite and <code>0.0132em</code> across the 31-case
             ligature suite. This is evidence for a technical direction, not
             proof of universal typographic quality.
+          </p>
+          <p>
+            A later 15-font audit found <code>659</code> cases where the compact
+            candidate changes the sign of effective font kerning. That result
+            narrows the next step to a stronger metric prior or a
+            missing-kerning-only first scope.
           </p>
         </div>
         <figure class="hero-figure">
@@ -149,6 +154,18 @@
             benchmark, not recreated as browser text.
           </figcaption>
         </figure>
+        <figure class="wide-figure">
+          <img
+            src="assets/academic-display-100pt.webp"
+            alt="Sample-first comparison of InDesign Optical and the compact Typst candidate in Libertinus Serif, STIX Two Text, and Latin Modern at 100 points."
+          >
+          <figcaption>
+            An excerpt from the academic display evidence at 100 pt. The same
+            samples are stacked across Libertinus, STIX Two Text, and Latin
+            Modern. Latin Modern
+            <code>OpenType</code> remains a visible outlier.
+          </figcaption>
+        </figure>
         <p class="detail-link">
           Inspect the full method in the
           <a
@@ -162,6 +179,13 @@
             target="_blank"
             rel="noreferrer"
           >metric-parity gate</a>.
+          The separate
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/academic-display-evidence.md"
+            target="_blank"
+            rel="noreferrer"
+          >academic display report</a>
+          contains both 80 pt and 100 pt results.
         </p>
       </section>
 
@@ -177,7 +201,7 @@
         </p>
         <ol class="pipeline">
           <li><strong>Shape first.</strong> Work with the real glyph run and active OpenType features.</li>
-          <li><strong>Keep a metric prior.</strong> Preserve reliable font kerning.</li>
+          <li><strong>Keep a metric prior.</strong> Start from shaped font positioning and measure how far an optical correction moves away from it.</li>
           <li><strong>Read outlines.</strong> Build font-local whitespace profiles from glyph contours.</li>
           <li><strong>Guard corrections.</strong> Reject moves that risk collisions, broken apertures, punctuation errors, or poor word rhythm.</li>
           <li><strong>Emit small deltas.</strong> Return deterministic, cacheable adjustments in <code>em</code>.</li>
@@ -263,13 +287,29 @@
           compiler prototype matches the workbench's expected width correction
           in all 61 current cases within <code>0.000049em</code>.
         </p>
+        <h3>Metric preservation is still unresolved</h3>
+        <p>
+          A second audit compared the candidate with effective kerning already
+          present in 15 Google Fonts. It retained <code>15,271</code> pairs and
+          found <code>659</code> sign changes. Of the 100 largest differences,
+          82 are Pacifico pairs and 86 place punctuation on the right. This
+          means the compact candidate is not yet ready as a broad replacement
+          for existing font positioning; it needs either a stronger metric
+          prior or a missing-kerning-only first scope.
+        </p>
         <p class="detail-link">
           See the
           <a
             href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/current-findings.md"
             target="_blank"
             rel="noreferrer"
-          >current findings and known residual differences</a>.
+          >current findings and known residual differences</a>
+          and the machine-readable
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/metric-agreement-audit.md"
+            target="_blank"
+            rel="noreferrer"
+          >font metric agreement audit</a>.
         </p>
       </section>
 
@@ -302,9 +342,9 @@
             <p>Decide whether the behavior and complexity are worth pursuing, then agree on API, scope, and font-positioning semantics.</p>
           </article>
           <article>
-            <p class="step">4 · Before PR</p>
+            <p class="step">4 · Current</p>
             <h3>Upstream-grade validation</h3>
-            <p>Measure compiler cost, expand scripts and font classes, lock compatibility tests, and only then propose a focused PR.</p>
+            <p>Resolve the metric-preservation outliers, expand scripts and font classes, lock compatibility tests, and only then propose a focused PR.</p>
           </article>
         </div>
         <figure class="wide-figure compact-figure">

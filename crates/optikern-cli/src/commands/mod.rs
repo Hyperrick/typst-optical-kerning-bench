@@ -2,6 +2,7 @@ pub mod bench;
 pub mod contact_sheet;
 pub mod eval_pdf;
 pub mod fetch_fonts;
+pub mod metric_audit;
 pub mod render_indesign;
 pub mod render_shaped_svg;
 pub mod render_typst;

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "name": "academic-display",
+  "description": "Sample-first display-text evidence for academic fonts, poster titles, mixed case, acronyms, and figures.",
+  "cases": [
+    { "fontId": "libertinus-serif", "sample": "RESEARCH" },
+    { "fontId": "stix-two-text", "sample": "RESEARCH" },
+    { "fontId": "latin-modern-roman", "sample": "RESEARCH" },
+    { "fontId": "libertinus-serif", "sample": "OpenType" },
+    { "fontId": "stix-two-text", "sample": "OpenType" },
+    { "fontId": "latin-modern-roman", "sample": "OpenType" },
+    { "fontId": "libertinus-serif", "sample": "QUANTUM" },
+    { "fontId": "stix-two-text", "sample": "QUANTUM" },
+    { "fontId": "latin-modern-roman", "sample": "QUANTUM" },
+    { "fontId": "libertinus-serif", "sample": "HCI2026" },
+    { "fontId": "stix-two-text", "sample": "HCI2026" },
+    { "fontId": "latin-modern-roman", "sample": "HCI2026" },
+    { "fontId": "libertinus-serif", "sample": "A0 POSTER" },
+    { "fontId": "stix-two-text", "sample": "A0 POSTER" },
+    { "fontId": "latin-modern-roman", "sample": "A0 POSTER" }
+  ]
+}

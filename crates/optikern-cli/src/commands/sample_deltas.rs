@@ -42,6 +42,7 @@ pub fn run(
     let fragmented_render_safe = fragmented_shape_matches(&font, &run)?;
 
     let mut pairs = Vec::new();
+    let mut selected_deltas = Vec::new();
     for result in evaluate_shaped_run_with_config(&font, &run, config, ligatures)? {
         let selected = result
             .outputs
@@ -54,9 +55,12 @@ pub fn run(
                     result.display
                 )
             })?;
+        selected_deltas.push((result.left_index, selected.delta_em));
         pairs.push(SamplePairDelta {
             display: result.display,
             shaping_text: result.shaping_text,
+            left_index: result.left_index,
+            right_index: result.right_index,
             left_cluster: result.left_cluster,
             right_cluster: result.right_cluster,
             left_glyph_id: result.left_glyph_id,
@@ -67,9 +71,10 @@ pub fn run(
             outputs: result.outputs,
         });
     }
+    let fragments = build_fragments(&run, &selected_deltas);
 
     let output = SampleDeltaReport {
-        schema_version: 1,
+        schema_version: 2,
         font_id: entry.id.clone(),
         family: entry.family.clone(),
         font_path: font_path.display().to_string(),
@@ -78,10 +83,28 @@ pub fn run(
         contextual_alternates: run.options.contextual_alternates,
         algorithm,
         fragmented_render_safe,
+        fragments,
         pairs,
     };
     println!("{}", serde_json::to_string_pretty(&output)?);
     Ok(())
+}
+
+fn build_fragments(run: &ShapedRun, selected_deltas: &[(usize, f32)]) -> Vec<SampleFragment> {
+    let mut delta_after = vec![0.0; run.glyphs.len()];
+    for &(left_index, delta) in selected_deltas {
+        if let Some(slot) = delta_after.get_mut(left_index) {
+            *slot = delta;
+        }
+    }
+    run.glyphs
+        .iter()
+        .zip(delta_after)
+        .map(|(glyph, delta_after_em)| SampleFragment {
+            text: glyph.cluster_text.clone(),
+            delta_after_em,
+        })
+        .collect()
 }
 
 fn resolved_font_path(root: &Path, path: &Path) -> PathBuf {
@@ -127,7 +150,15 @@ struct SampleDeltaReport {
     contextual_alternates: bool,
     algorithm: Algorithm,
     fragmented_render_safe: bool,
+    fragments: Vec<SampleFragment>,
     pairs: Vec<SamplePairDelta>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SampleFragment {
+    text: String,
+    delta_after_em: f32,
 }
 
 #[derive(Debug, Serialize)]
@@ -135,6 +166,8 @@ struct SampleDeltaReport {
 struct SamplePairDelta {
     display: String,
     shaping_text: String,
+    left_index: usize,
+    right_index: usize,
     left_cluster: String,
     right_cluster: String,
     left_glyph_id: u16,
@@ -143,4 +176,44 @@ struct SamplePairDelta {
     metric_delta_em: f32,
     optical_delta_em: f32,
     outputs: Vec<AlgorithmOutput>,
+}
+
+#[cfg(test)]
+mod tests {
+    use optikern_core::{ShapedGlyph, ShapedRun, ShapingOptions};
+
+    use super::build_fragments;
+
+    #[test]
+    fn fragments_preserve_spaces_between_independent_pair_runs() {
+        let run = ShapedRun {
+            text: "A0 POSTER".into(),
+            options: ShapingOptions::typst_pair(),
+            glyphs: "A0 POSTER"
+                .char_indices()
+                .map(|(index, ch)| ShapedGlyph {
+                    glyph_id: index as u16,
+                    cluster_start: index,
+                    cluster_end: index + ch.len_utf8(),
+                    cluster_text: ch.to_string(),
+                    x_advance_em: 0.5,
+                    y_advance_em: 0.0,
+                    x_offset_em: 0.0,
+                    y_offset_em: 0.0,
+                })
+                .collect(),
+        };
+
+        let fragments = build_fragments(&run, &[(0, -0.01), (3, -0.02)]);
+        assert_eq!(
+            fragments
+                .iter()
+                .map(|item| item.text.as_str())
+                .collect::<String>(),
+            "A0 POSTER"
+        );
+        assert_eq!(fragments[0].delta_after_em, -0.01);
+        assert_eq!(fragments[2].text, " ");
+        assert_eq!(fragments[3].delta_after_em, -0.02);
+    }
 }
