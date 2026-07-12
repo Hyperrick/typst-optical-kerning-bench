@@ -125,19 +125,22 @@ Typst currently exposes kerning as a boolean:
 #set text(kerning: false) // kerning disabled
 ```
 
-This benchmark is not an API proposal, but a small extension of the current
-shape could look like this:
+This benchmark is not an API proposal. A small direction that preserves the
+current boolean behavior could look like this:
 
 ```typst
-#set text(kerning: "metric")
+#set text(kerning: true)      // current behavior
+#set text(kerning: false)     // current disabled behavior
+
+// Possible future direction only:
 #set text(kerning: "optical")
-#set text(kerning: "none")
 ```
 
-In that sketch, the current `true` behavior would remain metric kerning. The
-point of the benchmark is to evaluate whether an `"optical"` behavior can be
-made deterministic and maintainable before discussing final naming, defaults,
-or compatibility details.
+The point of the benchmark is to evaluate whether an `"optical"` behavior can
+be made deterministic and maintainable before discussing final naming,
+defaults, or compatibility details. A real API discussion must also define how
+base advances, legacy `kern`, and GPOS positioning interact; the word `metric`
+does not settle those semantics by itself.
 
 ## Ligatures Are Part Of The Problem
 
@@ -245,6 +248,8 @@ exists.
 The technical review document is
 [`typst-optical-kerning-evaluation.md`](typst-optical-kerning-evaluation.md).
 The algorithm notes are in [`algorithms.md`](algorithms.md).
+The proposed path from the workbench to a small compiler prototype is in
+[`path-to-typst.md`](path-to-typst.md).
 
 The core reproduction commands for the current committed evidence are:
 
@@ -270,6 +275,7 @@ scripts/run-optical-comparison-suite.py \
   --preflight-timeout 45
 
 scripts/build-paper-figures.py
+scripts/build-site-figures.py
 ```
 
 The selected figures in this article are committed under `docs/figures/`.

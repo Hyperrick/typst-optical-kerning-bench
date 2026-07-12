@@ -308,17 +308,23 @@ Typst currently exposes text kerning as a boolean:
 #set text(kerning: false) // kerning disabled
 ```
 
-A possible future extension could be:
+A possible future direction that preserves the current boolean behavior could
+be:
 
 ```typst
-#set text(kerning: "metric")
+#set text(kerning: true)      // current behavior
+#set text(kerning: false)     // current disabled behavior
+
+// Possible future direction only:
 #set text(kerning: "optical")
-#set text(kerning: "none")
 ```
 
 The benchmark is deliberately not an API proposal yet. Its value is to make the
-behavioral tradeoffs visible before an implementation proposal is made. In this
-sketch, the current `true` behavior would remain metric kerning.
+behavioral tradeoffs visible before an implementation proposal is made. An
+upstream design must also define how base advances, legacy `kern`, and GPOS pair
+positioning interact; `metric` is otherwise an ambiguous public name. See
+[`path-to-typst.md`](path-to-typst.md) for the open decisions and proposed
+milestones.
 
 ## Claims And Non-Claims
 
@@ -349,6 +355,7 @@ The following files are the best starting points for review:
 - `docs/indesign-baseline.md`: how InDesign documents are constructed.
 - `docs/glyph-shape-parity.md`: how font/rendering mismatches are separated
   from kerning mismatches.
+- `docs/path-to-typst.md`: open upstream decisions and a staged compiler path.
 - `baselines/optical-ligature-suite-v25.json`: compact current ligature evidence.
 - `baselines/optical-comparison-suite-five-font-v25.json`: compact current
   no-ligature evidence.

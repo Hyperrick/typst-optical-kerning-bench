@@ -3,441 +3,354 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Typst Optical Kerning Bench</title>
+    <title>Optical kerning for Typst</title>
     <meta
       name="description"
-      content="External evaluation artifact and algorithm candidate for optical kerning in Typst."
+      content="A visual explanation, reproducible benchmark, and deterministic optical-kerning algorithm candidate for Typst."
     >
+    <link rel="stylesheet" href="styles.css">
     <link
       rel="icon"
       type="image/svg+xml"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23171717'/%3E%3Cpath d='M14 47 29 13h6l15 34h-7l-3-8H24l-3 8zM27 32h10l-5-13z' fill='white'/%3E%3C/svg%3E"
     >
-    <style>
-      :root {
-        color-scheme: light dark;
-        --bg: #ffffff;
-        --ink: #171717;
-        --muted: #666666;
-        --line: #dddddd;
-        --code: #f6f6f6;
-        --panel: #fafafa;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #111111;
-          --ink: #eeeeee;
-          --muted: #aaaaaa;
-          --line: #333333;
-          --code: #1c1c1c;
-          --panel: #171717;
-        }
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--ink);
-        font: 16px/1.56 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-
-      main {
-        width: min(980px, calc(100% - 32px));
-        margin: 0 auto;
-        padding: 44px 0 72px;
-      }
-
-      h1 {
-        max-width: 780px;
-        margin: 0 0 14px;
-        font-size: clamp(2rem, 4vw, 3.4rem);
-        line-height: 1.05;
-        letter-spacing: 0;
-      }
-
-      h2 {
-        margin: 44px 0 14px;
-        padding-top: 26px;
-        border-top: 1px solid var(--line);
-        font-size: 1.32rem;
-        line-height: 1.22;
-        letter-spacing: 0;
-      }
-
-      h3 {
-        margin: 0 0 6px;
-        font-size: 1rem;
-        letter-spacing: 0;
-      }
-
-      p {
-        max-width: 780px;
-        margin: 0 0 14px;
-      }
-
-      .lead {
-        font-size: 1.1rem;
-      }
-
-      a {
-        color: inherit;
-        text-decoration-thickness: 0.08em;
-        text-underline-offset: 0.18em;
-      }
-
-      ul {
-        margin: 0;
-        padding-left: 22px;
-      }
-
-      li + li {
-        margin-top: 8px;
-      }
-
-      .muted {
-        color: var(--muted);
-      }
-
-      .more {
-        max-width: 780px;
-        margin-top: 12px;
-        color: var(--muted);
-        font-size: 0.95rem;
-      }
-
-      .summary {
-        max-width: 780px;
-        margin: 22px 0 0;
-        padding: 16px 18px;
-        border: 1px solid var(--line);
-        border-radius: 4px;
-        background: var(--panel);
-      }
-
-      .summary p:last-child {
-        margin-bottom: 0;
-      }
-
-      .links {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px 24px;
-        max-width: 780px;
-      }
-
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 16px;
-      }
-
-      .card {
-        border: 1px solid var(--line);
-        border-radius: 4px;
-        background: var(--panel);
-        padding: 14px;
-      }
-
-      .card p {
-        margin: 0;
-        color: var(--muted);
-      }
-
-      .figures {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-        margin-top: 18px;
-      }
-
-      figure {
-        margin: 0;
-      }
-
-      img {
-        display: block;
-        width: 100%;
-        height: auto;
-        border: 1px solid var(--line);
-        background: var(--panel);
-      }
-
-      figcaption {
-        margin-top: 8px;
-        color: var(--muted);
-        font-size: 0.94rem;
-      }
-
-      pre {
-        max-width: 780px;
-        margin: 14px 0 0;
-        padding: 14px;
-        overflow-x: auto;
-        border: 1px solid var(--line);
-        border-radius: 4px;
-        background: var(--code);
-      }
-
-      code,
-      pre {
-        font: 0.94rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      }
-
-      @media (max-width: 760px) {
-        .links,
-        .cards,
-        .figures {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
   </head>
   <body>
-    <main>
-      <h1>Optical kerning evaluation for Typst</h1>
-      <p class="lead">
-        This is an external evaluation artifact for the Typst community. It has
-        two concrete outputs: a reproducible benchmark suite for optical kerning
-        and an algorithm candidate developed from that suite.
-      </p>
-      <p class="muted">
-        The algorithm candidate is `guarded-profile-hybrid`. It is discussion
-        ready, not merge ready: useful for deciding whether this direction fits
-        Typst before anyone proposes compiler changes.
-      </p>
-      <p>
-        The current result is a specific candidate plus the evidence needed to
-        inspect it: renders, overlays, metrics, implementation notes, and
-        reproduction commands.
-      </p>
+    <header class="site-header">
+      <a class="site-name" href="#top">Typst Optical Kerning Bench</a>
+      <nav aria-label="Page sections">
+        <a href="#answer">Answer</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#algorithm">Algorithm</a>
+        <a href="#roadmap">Roadmap</a>
+        <a
+          href="https://github.com/Hyperrick/typst-optical-kerning-bench"
+          target="_blank"
+          rel="noreferrer"
+        >Repository</a>
+      </nav>
+    </header>
 
-      <div class="summary">
+    <main id="top">
+      <section class="intro">
+        <p class="eyebrow">Independent research workbench</p>
+        <h1>Can optical kerning work in Typst?</h1>
+        <p class="lead">
+          This project tests whether a deterministic algorithm can improve
+          display-text spacing when a font's built-in kerning is missing,
+          sparse, or visually weak, without throwing away good font spacing.
+        </p>
+        <p class="context">
+          <a href="https://typst.app/" target="_blank" rel="noreferrer">Typst</a>
+          is an open-source, markup-based typesetting system for documents and
+          presentations. It currently exposes kerning as an on/off text option;
+          this workbench investigates a possible opt-in optical mode.
+        </p>
+        <div class="answer" id="answer">
+          <p class="answer-label">Current answer</p>
+          <p class="answer-text">
+            Yes, for the current Latin display-text corpus, the
+            <code>guarded-profile-hybrid</code> candidate follows InDesign
+            Optical closely enough to justify a focused Typst compiler
+            prototype.
+          </p>
+          <p>
+            Across 61 measured cases, its combined mean rendered difference
+            from InDesign Optical is <code>0.0146em</code>; the worst current
+            case is <code>0.0304em</code>. This is evidence for a technical
+            direction, not proof of universal typographic quality.
+          </p>
+        </div>
+        <figure class="hero-figure">
+          <img
+            src="assets/main-comparison.png"
+            alt="EB Garamond WAVY rendered with Typst Metric, InDesign Optical, and the Typst optical kerning candidate."
+          >
+          <figcaption>
+            The core comparison: current Typst metric spacing, InDesign's
+            optical result as an external reference, and the Typst-side
+            candidate.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="what-is-optical">
+        <h2>What optical kerning is</h2>
         <p>
-          Motivation: Typst already supports metric kerning from font tables.
-          In print, branding, editorial design, packaging, and display
-          typography, an optical option is still often expected when metric
-          kerning is sparse, broken, or visually weak.
+          Kerning changes the horizontal space between neighboring shaped
+          glyphs. In <strong>metric kerning</strong>, the layout engine follows
+          spacing and positioning data supplied by the font and shaping system.
+          In <strong>optical kerning</strong>, the actual glyph shapes are also
+          examined so visually uneven gaps can be corrected.
+        </p>
+        <div class="definition-grid">
+          <article>
+            <h3>Metric</h3>
+            <p>
+              The type designer's spacing remains authoritative. This should
+              stay the default and is usually the right choice for a well-made
+              font used as intended.
+            </p>
+          </article>
+          <article>
+            <h3>Optical</h3>
+            <p>
+              A computed alternative for visible spacing problems, especially
+              large titles, acronyms, display type, weak kern data, mixed
+              shapes, and fonts used outside their intended size.
+            </p>
+          </article>
+        </div>
+        <p>
+          Large poster and presentation titles expose these problems quickly:
+          a gap such as <code>W|A</code>, <code>A|V</code>, <code>o|T</code>,
+          or <code>1|0</code> can look too open or too tight even when the
+          numeric advances are valid. Manual tracking fixes one line, but it
+          does not provide a reusable document-level behavior.
+        </p>
+        <p class="detail-link">
+          Context:
+          <a
+            href="https://practicaltypography.com/metrics-vs-optical-spacing.html"
+            target="_blank"
+            rel="noreferrer"
+          >Practical Typography's critical comparison of metric and optical spacing</a>.
+          This benchmark follows its central caution: optical is an option for
+          a problem case, not a replacement for good font metrics.
+        </p>
+      </section>
+
+      <section id="evidence">
+        <h2>Why InDesign is foregrounded</h2>
+        <p>
+          InDesign Optical is the external publishing reference in this
+          workbench because designers already know it and use it in production.
+          The goal is not to reverse-engineer Adobe or declare its output to be
+          ground truth. It gives reviewers a real, inspectable answer to
+          “compared with what?”
         </p>
         <p>
-          The question here is not "should Typst copy InDesign?" It is whether a
-          deterministic, outline-based, cacheable optical kerning method can fit
-          Typst's engineering values.
+          Every optical comparison first passes a metric-parity gate: Typst and
+          InDesign must use the same static font instance, text, size, ligature
+          setting, and closely matching metric output. Only then is the
+          InDesign Optical result compared with the Typst candidate.
         </p>
-      </div>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">overview note</a>
-        and
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">technical evaluation</a>.
-      </p>
-
-      <h2>What to take away</h2>
-      <ul>
-        <li>
-          The repo is both an evaluation suite and a concrete algorithm
-          candidate, not just a collection of screenshots.
-        </li>
-        <li>
-          The candidate shapes text first, keeps metric kerning as a prior, then
-          applies guarded optical corrections from glyph outlines.
-        </li>
-        <li>
-          The evidence includes Typst metric renders, scripted InDesign Optical
-          baselines, overlays, contact sheets, JSON baselines, and known
-          residual differences.
-        </li>
-        <li>
-          It is not an official Typst project, not a pull request, and not a
-          final API proposal.
-        </li>
-      </ul>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">maintainer summary and evaluation pipeline</a>.
-      </p>
-
-      <h2>How the candidate emerged</h2>
-      <p>
-        The benchmark did not start with `guarded-profile-hybrid`. Earlier
-        candidates tested nearest contour distance, weighted whitespace
-        profiles, area balance, metric-prior blending, and a conservative
-        fallback-only mode. Those simpler approaches were useful, but each
-        exposed different failure cases: over-tight round forms, apertures,
-        punctuation, script joins, ligatures, or word-level accumulation.
-      </p>
-      <p>
-        The current candidate keeps the useful parts: metric kerning remains the
-        prior, outline profiles provide the optical signal, and dynamic guards
-        block unsafe moves. That is why the result is a guarded hybrid rather
-        than one single geometric rule.
-      </p>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">implemented algorithms and candidate selection</a>.
-      </p>
-
-      <h2>Review figures</h2>
-      <p>
-        The visual material is not limited to one screenshot. The committed
-        figures show no-ligature words and numbers, ligature-capable words, and
-        targeted before/after cases from the current benchmark iteration.
-      </p>
-      <div class="figures">
-        <figure>
+        <figure class="wide-figure">
           <img
-            src="https://raw.githubusercontent.com/Hyperrick/typst-optical-kerning-bench/main/docs/figures/v25-no-ligature-sheet-excerpt.png"
-            alt="No-ligature contact sheet excerpt."
+            src="assets/cross-font-evidence.png"
+            alt="Table of four words across several fonts comparing Typst Metric, InDesign Optical, the Typst candidate, and an optical overlay."
           >
-          <figcaption>No-ligature contact sheet excerpt.</figcaption>
+          <figcaption>
+            A sample-first cross-font excerpt: the same word is stacked across
+            fonts before the next sample begins. The full suites also cover
+            script and other display styles. Every row is rendered by the
+            benchmark, not recreated as browser text.
+          </figcaption>
         </figure>
-        <figure>
+        <p class="detail-link">
+          Inspect the full method in the
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/indesign-baseline.md"
+            target="_blank"
+            rel="noreferrer"
+          >InDesign baseline specification</a>
+          and
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/metric-parity-suite.md"
+            target="_blank"
+            rel="noreferrer"
+          >metric-parity gate</a>.
+        </p>
+      </section>
+
+      <section id="algorithm">
+        <h2>What the algorithm does</h2>
+        <p>
+          The result of this work is an actual algorithm candidate named
+          <code>guarded-profile-hybrid</code>. It was not chosen upfront. The
+          benchmark first tested nearest-contour distance, whitespace profiles,
+          area balance, metric-prior blending, and conservative fallback
+          behavior. Their failures led to the guarded hybrid.
+        </p>
+        <ol class="pipeline">
+          <li><strong>Shape first.</strong> Work with the real glyph run and active OpenType features.</li>
+          <li><strong>Keep a metric prior.</strong> Preserve reliable font kerning.</li>
+          <li><strong>Read outlines.</strong> Build font-local whitespace profiles from glyph contours.</li>
+          <li><strong>Guard corrections.</strong> Reject moves that risk collisions, broken apertures, punctuation errors, or poor word rhythm.</li>
+          <li><strong>Emit small deltas.</strong> Return deterministic, cacheable adjustments in <code>em</code>.</li>
+        </ol>
+        <figure class="wide-figure compact-figure">
           <img
-            src="https://raw.githubusercontent.com/Hyperrick/typst-optical-kerning-bench/main/docs/figures/v25-ligature-sheet-excerpt.png"
-            alt="Ligature-capable contact sheet excerpt."
+            src="assets/ligature-comparison.png"
+            alt="Libre Baskerville final with an fi ligature compared between InDesign Optical, the Typst candidate, and an overlay."
           >
-          <figcaption>Ligature-capable contact sheet excerpt.</figcaption>
+          <figcaption>
+            Ligatures are handled after shaping. If <code>fi</code> becomes one
+            glyph, the algorithm spaces that glyph against its neighbors; it
+            does not insert kerning inside the ligature.
+          </figcaption>
         </figure>
-        <figure>
-          <img
-            src="https://raw.githubusercontent.com/Hyperrick/typst-optical-kerning-bench/main/docs/figures/v25-eb-total-no-ligature-target.png"
-            alt="EB Garamond ToTaL targeted comparison."
-          >
-          <figcaption>Targeted no-ligature mixed-case case.</figcaption>
-        </figure>
-        <figure>
-          <img
-            src="https://raw.githubusercontent.com/Hyperrick/typst-optical-kerning-bench/main/docs/figures/v25-libre-final-ligature.png"
-            alt="Libre Baskerville final ligature comparison."
-          >
-          <figcaption>Targeted ligature-capable word case.</figcaption>
-        </figure>
-      </div>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/optical-comparison-suite.md">optical comparison suite</a>
-        and
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/current-findings.md">current findings</a>.
-      </p>
+        <p class="detail-link">
+          Read the
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md"
+            target="_blank"
+            rel="noreferrer"
+          >algorithm and candidate-selection notes</a>
+          or the
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md"
+            target="_blank"
+            rel="noreferrer"
+          >technical evaluation</a>.
+        </p>
+      </section>
 
-      <h2>Why this exists</h2>
-      <p>
-        Typst already has metric kerning from font tables. That should remain
-        the default. The open question is whether Typst can also offer an
-        optical mode for situations where designers normally reach for layout
-        tools such as InDesign: large headlines, brand typography, packaging,
-        editorial display type, sparse font kerning tables, mixed-case words,
-        punctuation, numbers, and shaped ligatures.
-      </p>
-      <p>
-        A subjective screenshot is not enough for that discussion. This repo
-        tries to make the question reviewable by using multiple fonts, multiple
-        samples, multiple algorithms, metric parity gates, rendered overlays,
-        and compact baselines.
-      </p>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">motivation and overview</a>
-        and
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/research-alignment.md">research alignment</a>.
-      </p>
+      <section id="result">
+        <h2>Measured result</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Current suite</th>
+                <th>Measured cases</th>
+                <th>Mean difference</th>
+                <th>Worst difference</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>No ligatures</td>
+                <td>30 / 30</td>
+                <td><code>0.0170em</code></td>
+                <td><code>0.0304em</code></td>
+              </tr>
+              <tr>
+                <td>Ligatures enabled</td>
+                <td>31 / 31</td>
+                <td><code>0.0123em</code></td>
+                <td><code>0.0240em</code></td>
+              </tr>
+              <tr>
+                <td><strong>Combined</strong></td>
+                <td><strong>61 / 61</strong></td>
+                <td><strong><code>0.0146em</code></strong></td>
+                <td><strong><code>0.0304em</code></strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          These scores measure rendered position and width differences against
+          InDesign Optical. They make regressions visible; they do not replace
+          visual review or prove that InDesign is always preferable.
+        </p>
+        <p class="detail-link">
+          See the
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/current-findings.md"
+            target="_blank"
+            rel="noreferrer"
+          >current findings and known residual differences</a>.
+        </p>
+      </section>
 
-      <h2>Status for discussion</h2>
-      <p>
-        The current status is: discussion-ready algorithm candidate. More
-        tuning data can still be added, but the core algorithm direction is now
-        stable: shape text first, use font metric kerning as a prior, compute
-        optical corrections from glyph outlines, and keep the implementation
-        deterministic and cacheable.
-      </p>
-      <p>
-        This repo is intended as material for an informed Typst community
-        discussion before any implementation proposal exists. It is not a
-        merge-ready patch. The technical details remain in the linked repository
-        documents.
-      </p>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">technical evaluation</a>
-        and
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/current-findings.md">current findings</a>.
-      </p>
+      <section id="roadmap">
+        <h2>From workbench to a possible Typst PR</h2>
+        <p>
+          There is an active upstream discussion in
+          <a
+            href="https://github.com/typst/typst/issues/8514"
+            target="_blank"
+            rel="noreferrer"
+          >Typst issue #8514</a>, but no assigned implementation or accepted API
+          shape. The current repository is not a merge-ready patch. Its job is
+          to make the algorithmic direction and its tradeoffs concrete.
+        </p>
+        <div class="roadmap-grid">
+          <article>
+            <p class="step">1 · Complete</p>
+            <h3>Evaluation workbench</h3>
+            <p>Reproducible fonts, shaping, algorithms, InDesign baselines, visual sheets, metrics, and regression cases.</p>
+          </article>
+          <article>
+            <p class="step">2 · Current</p>
+            <h3>Upstream design discussion</h3>
+            <p>Agree on scope, complexity budget, fallback semantics, and how advance widths, legacy <code>kern</code>, and GPOS interact.</p>
+          </article>
+          <article>
+            <p class="step">3 · Proposed</p>
+            <h3>Small compiler prototype</h3>
+            <p>Extract the smallest runtime kernel from the research code, place it after shaping, keep it opt-in, and add caches.</p>
+          </article>
+          <article>
+            <p class="step">4 · Before PR</p>
+            <h3>Upstream-grade validation</h3>
+            <p>Measure compiler cost, expand scripts and font classes, lock compatibility tests, and only then propose a focused PR.</p>
+          </article>
+        </div>
+        <p>
+          The exact API remains open. A deliberately small sketch is to preserve
+          the current boolean behavior and add an optical mode rather than
+          prematurely renaming every metric source:
+        </p>
+        <pre><code>#set text(kerning: true)      // current behavior
+#set text(kerning: false)     // current disabled behavior
 
-      <h2>What is in the repository</h2>
-      <div class="cards">
-        <article class="card">
-          <h3>Algorithm candidate</h3>
-          <p>
-            `guarded-profile-hybrid`: a metric-prior, outline-profile approach
-            with dynamic safety guards and run context.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Rust evaluation code</h3>
-          <p>
-            Font loading, shaping, outline sampling, pair deltas, regression
-            tests, and comparison metrics.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Rendering pipeline</h3>
-          <p>
-            Typst renders, scripted InDesign exports, cropped PNGs, overlays,
-            metric parity checks, and compact JSON baselines.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Review material</h3>
-          <p>
-            Contact sheets, failure notes, algorithm rationale, reproduction
-            commands, and current findings.
-          </p>
-        </article>
-      </div>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">algorithm notes</a>,
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/metric-parity-suite.md">metric parity suite</a>,
-        and
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/indesign-baseline.md">InDesign baseline construction</a>.
-      </p>
+// Possible future direction, subject to upstream design:
+#set text(kerning: "optical")</code></pre>
+        <p class="detail-link">
+          The technical milestones, open decisions, and useful community
+          contributions are listed in
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/path-to-typst.md"
+            target="_blank"
+            rel="noreferrer"
+          >Path to a Typst Prototype</a>.
+        </p>
+      </section>
 
-      <h2>Possible Typst API shape</h2>
-      <p>
-        Typst currently exposes kerning as a boolean. The benchmark does not
-        settle a public API, but it uses this sketch to make the possible
-        behavior concrete.
-      </p>
-      <pre><code>#set text(kerning: true)  // current metric kerning
-#set text(kerning: false) // current disabled kerning
-
-// Possible future shape:
-#set text(kerning: "metric")
-#set text(kerning: "optical")
-#set text(kerning: "none")</code></pre>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md#what-this-suggests-for-typst">Typst-facing API discussion notes</a>.
-      </p>
-
-      <h2>Where to read</h2>
-      <ul class="links">
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench">Repository</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">README and reproduction commands</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/towards-optical-kerning-in-typst.md">Overview note</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md">Technical evaluation</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md">Algorithm notes</a></li>
-        <li><a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/optical-comparison-suite.md">Optical comparison suite</a></li>
-      </ul>
-      <p class="more">
-        More:
-        <a href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md">reproduction commands and repo structure</a>.
-      </p>
+      <section id="repository">
+        <h2>Repository map</h2>
+        <div class="repo-map">
+          <article>
+            <h3><code>crates/optikern-core</code></h3>
+            <p>Font loading, shaping, outline profiles, algorithm candidates, guards, and tests.</p>
+          </article>
+          <article>
+            <h3><code>scripts/</code></h3>
+            <p>Typst and InDesign runs, parity gates, comparison suites, and reproducible figure generation.</p>
+          </article>
+          <article>
+            <h3><code>corpus/</code> and <code>baselines/</code></h3>
+            <p>Pinned font definitions, sample matrices, compact current evidence, and regression inputs.</p>
+          </article>
+          <article>
+            <h3><code>docs/</code></h3>
+            <p>Algorithm rationale, rendering contracts, current findings, research sources, and the upstream path.</p>
+          </article>
+        </div>
+        <p class="primary-links">
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench"
+            target="_blank"
+            rel="noreferrer"
+          >Open the repository</a>
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/README.md"
+            target="_blank"
+            rel="noreferrer"
+          >Reproduce the workbench</a>
+        </p>
+      </section>
     </main>
+
+    <footer>
+      <p>
+        Independent project by the repository author. Not affiliated with or
+        endorsed by Typst GmbH or Adobe. InDesign is used as an external
+        comparison reference.
+      </p>
+    </footer>
   </body>
 </html>

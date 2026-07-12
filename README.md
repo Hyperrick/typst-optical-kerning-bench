@@ -1,20 +1,73 @@
 # Typst Optical Kerning Bench
 
-Rust-first evaluation harness for deterministic optical kerning experiments
-under Typst-like constraints.
+A reproducible workbench and deterministic optical-kerning algorithm candidate
+for Typst.
 
-The repo is an independent support artifact for the Typst optical kerning
-discussion. It is not an official Typst project, not a ready-to-merge Typst
-patch, and not a final API proposal. Its purpose is narrower: make optical
-kerning behavior reproducible enough that maintainers and typography reviewers
-can inspect examples, measurements, and tradeoffs instead of relying on isolated
-screenshots.
+## The Answer Up Front
 
-The main question is: can an outline-based, cacheable algorithm get close to
-InDesign Optical while preserving good font metric kerning and Typst's
-performance expectations?
+The main question is: can an outline-based, cacheable algorithm produce a useful
+optical alternative while preserving good font kerning and remaining plausible
+for Typst?
 
-The current development loop is:
+**For the current Latin display-text corpus, yes.** The
+`guarded-profile-hybrid` candidate follows InDesign Optical closely enough to
+justify a focused compiler prototype: 61/61 current cases are measured, with a
+combined mean rendered difference of `0.0146em` and a worst current difference
+of `0.0304em`.
+
+![Typst Metric, InDesign Optical, and the Typst candidate compared on the same word](site/assets/main-comparison.png)
+
+This result does not mean that InDesign is ground truth, that optical spacing is
+always better, or that the current research code is merge-ready. It means that
+there is now a concrete algorithmic direction and reproducible evidence for an
+upstream discussion.
+
+## What Optical Kerning Changes
+
+Kerning changes the horizontal space between neighboring shaped glyphs. Metric
+kerning follows the font and shaping system's spacing data. Optical kerning also
+examines the actual glyph shapes to correct visually uneven gaps.
+
+Metric kerning should remain the default. Optical behavior is most relevant for
+large titles, acronyms, display type, fonts with sparse or weak kern data, and
+fonts used outside their intended size. Those are the cases where manual pair
+adjustments become visible, repetitive production work.
+
+[Butterick's Practical Typography](https://practicaltypography.com/metrics-vs-optical-spacing.html)
+argues strongly for metrics by default and optical spacing only for problem
+cases. This workbench follows that caution: the candidate keeps shaped metric
+positions as its prior instead of replacing them wholesale.
+
+## Why InDesign Is Part Of The Main Comparison
+
+InDesign Optical is foregrounded as an external publishing reference, not as a
+reverse-engineering target. Before any optical score is accepted, the workbench
+checks that Typst and InDesign use the same static font instance, text, size,
+ligature setting, and closely matching metric output.
+
+Only then does it compare Typst Metric, InDesign Optical, Typst Guarded Optical,
+and a rendered overlay:
+
+![Cross-font comparison table](site/assets/cross-font-evidence.png)
+
+## Current Status And Upstream Path
+
+This is an independent support artifact for the open
+[#8514 Automatic optical kerning](https://github.com/typst/typst/issues/8514)
+discussion. It is not an official Typst project, not a ready-to-merge patch, and
+not a final API proposal.
+
+The next step is not to copy the entire research crate into Typst. The next step
+is to agree on behavior and complexity, then extract the smallest post-shaping,
+cacheable runtime kernel for a deliberately opt-in compiler prototype. The
+upstream discussion also needs to define how base advances, legacy `kern`, and
+GPOS positioning interact before terms such as `metric` become a public API.
+
+See [`docs/path-to-typst.md`](docs/path-to-typst.md) for the proposed milestones,
+open decisions, and useful community contributions. The visual overview is at
+<https://hyperrick.github.io/typst-optical-kerning-bench/>.
+
+## Workbench Loop
 
 1. shape text with Rustybuzz,
 2. evaluate adjacent shaped glyph pairs from font outlines,
@@ -31,19 +84,20 @@ Typst currently exposes text kerning as a boolean:
 #set text(kerning: false) // disable kerning
 ```
 
-A future public API is intentionally out of scope for this benchmark, but one
-simple extension shape could be:
+A future public API is intentionally out of scope for this benchmark. One small
+direction that preserves the current boolean behavior could be:
 
 ```typst
-#set text(kerning: "metric")
+#set text(kerning: true)      // current behavior
+#set text(kerning: false)     // current disabled behavior
+
+// Possible future direction only:
 #set text(kerning: "optical")
-#set text(kerning: "none")
 ```
 
-In that shape, the current `true` behavior would remain metric kerning. The
-benchmark is meant to evaluate whether an `"optical"` behavior could be
-deterministic, explainable, and cheap enough for Typst before debating naming or
-defaults.
+The benchmark is meant to evaluate whether an `"optical"` behavior could be
+deterministic, explainable, and cheap enough for Typst before debating naming,
+font-table semantics, or defaults.
 
 The work takes existing Typst discussions into account, especially
 [#8514 Automatic optical kerning](https://github.com/typst/typst/issues/8514),
@@ -92,6 +146,7 @@ scripts/run-metric-parity-suite.py
 scripts/run-optical-comparison-suite.py
 scripts/run-optical-comparison-suite.py --suite-file corpus/samples/optical-total-target-suite.json
 scripts/build-paper-figures.py
+scripts/build-site-figures.py
 ```
 
 The InDesign-backed commands require a local InDesign installation that can be

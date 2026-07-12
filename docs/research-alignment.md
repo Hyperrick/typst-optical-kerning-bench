@@ -13,6 +13,12 @@ deterministic, outline-based directions that could plausibly fit Typst.
 - CreativePro describes InDesign Optical as determining spacing between all
   character pairs instead of using the font's built-in kern tables:
   <https://creativepro.com/typetalk-metrics-versus-optical-kerning/>
+- Butterick's Practical Typography argues for metric spacing as the normal
+  choice and optical spacing as an emergency option for fonts with bad spacing
+  or fonts used beyond their designed capacity, such as body fonts used for
+  headlines. It also shows why a geometric optical method can over-tighten
+  rounded and asymmetric forms:
+  <https://practicaltypography.com/metrics-vs-optical-spacing.html>
 - FontForge AutoKern tries to estimate optical separation between two glyphs and
   then applies a kern value to reach a desired optical spacing:
   <https://fontforge.org/archive/autowidth.html>
@@ -55,6 +61,9 @@ deterministic, outline-based directions that could plausibly fit Typst.
    spacing decision anymore.
 7. Raster and ML approaches can be reference baselines, but not the primary
    compiler-path proposal.
+8. Optical behavior should remain opt-in and must be evaluated against
+   well-spaced metric controls. A candidate that improves a weak display case
+   but damages reliable native spacing is not acceptable.
 
 ## Current interpretation
 
