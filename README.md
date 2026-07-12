@@ -13,10 +13,11 @@ for Typst?
 promising.** The research
 `guarded-profile-hybrid` candidate reached a combined mean rendered difference
 of `0.0146em` from InDesign Optical across 61/61 measured cases. A smaller
-`compact-guarded` kernel now preserves the main behavior on the 30-case
-no-ligature suite with a mean difference of `0.0200em` and a worst difference
-of `0.0432em`. On the 31-case ligature suite it reaches `0.0132em` mean and
-`0.0240em` worst, close to the research reference's `0.0123em`/`0.0240em`.
+`compact-guarded` kernel now adds a bounded metric-prior rule: existing shaped
+font kerning cannot change sign and an optical correction may move at most
+`0.030em` from it. On the 30-case no-ligature suite this version reaches
+`0.0222em` mean and `0.0624em` worst rendered difference. On the 31-case
+ligature suite it reaches `0.0156em` mean and `0.0360em` worst.
 
 That kernel also runs inside a separate Typst compiler prototype. Its current
 metric output is byte-identical to an unmodified compiler built from the same
@@ -24,13 +25,12 @@ Typst commit, while the opt-in mode applies the expected optical corrections
 after shaping in all 61 current comparison cases. This moves the project from
 algorithm-only evaluation to a measurable integration candidate.
 
-A broader preservation audit now adds an important qualification. Across
-`15,271` pairs with effective kerning in 15 Google Fonts, the compact candidate
-has `659` sign changes and a `0.0800em` 95th-percentile difference from the font
-positioning. Most of the 100 largest differences are Pacifico punctuation
-pairs. The prototype is therefore concrete and measurable, but not yet a
-general-purpose upstream candidate without a stronger metric-prior guard or a
-fallback-only first scope.
+A broader preservation audit motivated that change. Across `15,271` pairs with
+effective kerning in 15 Google Fonts, the initial compact candidate had `659`
+sign changes, a `0.0800em` 95th-percentile difference, and a `0.2720em` maximum.
+The bounded-prior version has no sign changes; its 95th percentile and maximum
+are both `0.0300em`. This is a stronger preservation result, not proof that all
+font kerning or all optical decisions are correct.
 
 ![Typst Metric, InDesign Optical, and the Typst candidate compared on the same word](site/assets/main-comparison.png)
 
@@ -89,8 +89,10 @@ open decisions, and useful community contributions. See
 prototype architecture, measurements, and limitations. The new
 [`academic-display-evidence.md`](docs/academic-display-evidence.md) and
 [`metric-agreement-audit.md`](docs/metric-agreement-audit.md) reports record the
-large-title evidence and the broad font-metric preservation check. The visual overview is at
-<https://hyperrick.github.io/typst-optical-kerning-bench/>.
+large-title evidence and the broad font-metric preservation check. The concrete
+before/after result is in
+[`metric-preservation-results.md`](docs/metric-preservation-results.md). The
+visual overview is at <https://hyperrick.github.io/typst-optical-kerning-bench/>.
 
 ## Workbench Loop
 

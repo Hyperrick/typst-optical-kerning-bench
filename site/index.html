@@ -51,21 +51,22 @@
           <p class="answer-text">
             The direction works well on the targeted Latin display-text corpus,
             and a smaller extracted kernel now runs inside a separate Typst
-            compiler prototype. Broader font preservation is not solved yet.
+            compiler prototype. A broad font audit exposed a preservation
+            failure, and the current prototype now includes a bounded response.
           </p>
           <p>
             The research candidate's combined mean difference across 61 cases
             is <code>0.0146em</code>. The smaller compiler-facing candidate
-            scores <code>0.0200em</code> mean across the current 30-case
-            no-ligature suite and <code>0.0132em</code> across the 31-case
-            ligature suite. This is evidence for a technical direction, not
-            proof of universal typographic quality.
+            scores <code>0.0222em</code> mean across the current 30-case
+            no-ligature suite and <code>0.0156em</code> across the 31-case
+            ligature suite after metric preservation. This is evidence for a
+            technical direction, not proof of universal typographic quality.
           </p>
           <p>
-            A later 15-font audit found <code>659</code> cases where the compact
-            candidate changes the sign of effective font kerning. That result
-            narrows the next step to a stronger metric prior or a
-            missing-kerning-only first scope.
+            A 15-font audit initially found <code>659</code> cases where the
+            compact candidate changed the sign of effective font kerning. The
+            bounded-prior version changes none and limits its maximum movement
+            from existing positioning to <code>0.0300em</code>.
           </p>
         </div>
         <figure class="hero-figure">
@@ -201,7 +202,7 @@
         </p>
         <ol class="pipeline">
           <li><strong>Shape first.</strong> Work with the real glyph run and active OpenType features.</li>
-          <li><strong>Keep a metric prior.</strong> Start from shaped font positioning and measure how far an optical correction moves away from it.</li>
+          <li><strong>Keep a metric prior.</strong> Start from shaped font positioning, prevent sign changes, and bound optical movement around nonzero values.</li>
           <li><strong>Read outlines.</strong> Build font-local whitespace profiles from glyph contours.</li>
           <li><strong>Guard corrections.</strong> Reject moves that risk collisions, broken apertures, punctuation errors, or poor word rhythm.</li>
           <li><strong>Emit small deltas.</strong> Return deterministic, cacheable adjustments in <code>em</code>.</li>
@@ -240,11 +241,16 @@
 
       <section id="result">
         <h2>Measured result</h2>
+        <p>
+          The first table records the full research reference. The smaller
+          compiler-facing candidate and its preservation trade-off follow
+          directly below it.
+        </p>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Current suite</th>
+                <th>Research reference suite</th>
                 <th>Measured cases</th>
                 <th>Mean difference</th>
                 <th>Worst difference</th>
@@ -281,22 +287,33 @@
           The extracted <code>compact-guarded</code> kernel was compared with
           two deliberately simpler controls on the same 30 no-ligature cases:
           nearest contour scored <code>0.2914em</code> mean, fallback only
-          <code>0.1061em</code>, and compact guarded <code>0.0200em</code>.
-          On the 31-case ligature suite, compact guarded scores
-          <code>0.0132em</code> mean and <code>0.0240em</code> worst. The separate
+          <code>0.1061em</code>, and the current bounded compact candidate
+          <code>0.0222em</code>.
+          On the 31-case ligature suite, bounded compact scores
+          <code>0.0156em</code> mean and <code>0.0360em</code> worst. The separate
           compiler prototype matches the workbench's expected width correction
           in all 61 current cases within <code>0.000049em</code>.
         </p>
-        <h3>Metric preservation is still unresolved</h3>
+        <h3>What changed after the font-metric audit</h3>
         <p>
           A second audit compared the candidate with effective kerning already
           present in 15 Google Fonts. It retained <code>15,271</code> pairs and
-          found <code>659</code> sign changes. Of the 100 largest differences,
-          82 are Pacifico pairs and 86 place punctuation on the right. This
-          means the compact candidate is not yet ready as a broad replacement
-          for existing font positioning; it needs either a stronger metric
-          prior or a missing-kerning-only first scope.
+          initially found <code>659</code> sign changes and a
+          <code>0.2720em</code> maximum difference. The generic bounded-prior
+          rule reduces the mean difference from <code>0.0206em</code> to
+          <code>0.0095em</code>, caps the maximum at <code>0.0300em</code>, and
+          removes all sign changes. No font or glyph exceptions were added.
         </p>
+        <figure class="wide-figure compact-figure">
+          <img
+            src="assets/metric-preservation-contact-sheet.webp"
+            alt="InDesign Optical and the bounded compact candidate compared across six samples and five fonts."
+          >
+          <figcaption>
+            The bounded candidate accepts a small loss of InDesign agreement in
+            exchange for a measurable guarantee around existing font kerning.
+          </figcaption>
+        </figure>
         <p class="detail-link">
           See the
           <a
@@ -309,7 +326,13 @@
             href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/metric-agreement-audit.md"
             target="_blank"
             rel="noreferrer"
-          >font metric agreement audit</a>.
+          >font metric agreement audit</a>
+          and the
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/metric-preservation-results.md"
+            target="_blank"
+            rel="noreferrer"
+          >before/after preservation report</a>.
         </p>
       </section>
 
@@ -344,7 +367,7 @@
           <article>
             <p class="step">4 · Current</p>
             <h3>Upstream-grade validation</h3>
-            <p>Resolve the metric-preservation outliers, expand scripts and font classes, lock compatibility tests, and only then propose a focused PR.</p>
+            <p>Review the bounded metric policy, expand scripts and font classes, lock compatibility tests, and only then propose a focused PR.</p>
           </article>
         </div>
         <figure class="wide-figure compact-figure">

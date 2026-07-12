@@ -80,6 +80,38 @@ fn metric_pair_stays_close_to_metric_prior() {
 }
 
 #[test]
+fn metric_pair_cannot_change_sign() {
+    let pair = PairEvidence {
+        left: GlyphClass::Upper,
+        right: GlyphClass::Punctuation,
+        metric_delta: 0.18,
+        optical_delta: -0.09,
+        ..evidence()
+    };
+    assert_eq!(compact_guarded(pair), 0.15);
+}
+
+#[test]
+fn metric_pair_correction_is_bounded_dynamically() {
+    let pair = PairEvidence {
+        metric_delta: -0.08,
+        optical_delta: 0.08,
+        ..evidence()
+    };
+    assert!((compact_guarded(pair) + 0.05).abs() < 0.0001);
+}
+
+#[test]
+fn sub_dead_zone_metric_is_preserved_exactly() {
+    let pair = PairEvidence {
+        metric_delta: 0.002,
+        optical_delta: -0.08,
+        ..evidence()
+    };
+    assert_eq!(compact_guarded(pair), 0.002);
+}
+
+#[test]
 fn sans_cap_run_tightens_repeated_strong_pairs() {
     let mut pairs = vec![
         run_pair(GlyphClass::Upper, GlyphClass::Upper, -0.07),
@@ -88,7 +120,20 @@ fn sans_cap_run_tightens_repeated_strong_pairs() {
         run_pair(GlyphClass::Upper, GlyphClass::Upper, -0.07),
     ];
     compact_guarded_run(&mut pairs, 0.22, 0.05, 0.74);
-    assert_eq!(pairs[0].delta, -0.106);
+    assert_eq!(pairs[0].delta, -0.10);
+}
+
+#[test]
+fn run_adjustments_cannot_escape_metric_preservation_bound() {
+    let mut pairs = vec![
+        RunPair {
+            delta: -0.14,
+            ..run_pair(GlyphClass::Upper, GlyphClass::Upper, -0.07)
+        };
+        4
+    ];
+    compact_guarded_run(&mut pairs, 0.22, 0.05, 0.74);
+    assert!(pairs.iter().all(|pair| pair.delta == -0.10));
 }
 
 #[test]
@@ -162,8 +207,9 @@ fn long_script_ligature_run_softens_multiple_metric_tightenings() {
     pairs[3].right_cluster_chars = 2;
     pairs[4].left_cluster_chars = 2;
     compact_guarded_run(&mut pairs, 0.17, 0.054, 0.68);
+    assert!(pairs[..2].iter().all(|pair| pair.delta == -0.006));
     assert!(
-        pairs
+        pairs[2..]
             .iter()
             .all(|pair| (pair.delta - 0.0153).abs() < 0.0001)
     );
@@ -249,7 +295,7 @@ fn wide_serif_run_neutralizes_metric_opening_at_near_touch() {
     pairs[0].delta = 0.025;
     pairs[0].min_gap = 0.01;
     compact_guarded_run(&mut pairs, 0.271, 0.052, 0.68);
-    assert_eq!(pairs[0].delta, 0.0);
+    assert_eq!(pairs[0].delta, 0.0125);
 }
 
 #[test]

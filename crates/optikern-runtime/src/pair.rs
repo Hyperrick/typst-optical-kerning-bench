@@ -1,4 +1,4 @@
-use crate::{DEAD_ZONE, GlyphClass, PairEvidence, normalize};
+use crate::{DEAD_ZONE, GlyphClass, PairEvidence, normalize, preservation::preserve_metric_prior};
 
 pub fn nearest_contour(evidence: PairEvidence) -> f32 {
     evidence.nearest_delta
@@ -20,7 +20,7 @@ pub fn compact_guarded(evidence: PairEvidence) -> f32 {
     let mut delta = metric_prior(evidence);
     delta = protect_local_geometry(evidence, delta);
     delta = apply_shape_targets(evidence, delta);
-    normalize(delta)
+    preserve_metric_prior(evidence.metric_delta, normalize(delta))
 }
 
 fn metric_prior(evidence: PairEvidence) -> f32 {

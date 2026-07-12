@@ -1,0 +1,101 @@
+fontFileId	fontFamily	fontPath	leftCharacter	rightCharacter	leftGlyphId	rightGlyphId	leftGlyphName	rightGlyphName	availableKernEm	calculatedKernEm	differenceEm	absDifferenceEm	signChanged
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	/	,	18	15	slash	comma	-0.150000	-0.120000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	/	-	18	16	slash	hyphen	-0.100000	-0.070000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	/	.	18	17	slash	period	-0.150000	-0.120000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	/	a	18	68	slash	a	-0.100000	-0.070000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	/	c	18	70	slash	c	-0.100000	-0.070000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	/	e	18	72	slash	e	-0.100000	-0.070000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	/	g	18	74	slash	g	-0.100000	-0.070000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	7	-	26	16	seven	hyphen	-0.080000	-0.050000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	7	4	26	23	seven	four	-0.080000	-0.050000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	7	–	26	265	seven	endash	-0.080000	-0.050000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	7	—	26	266	seven	emdash	-0.080000	-0.050000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	F	,	41	15	F	comma	-0.062000	-0.092000	-0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	F	;	41	30	F	semicolon	-0.062000	-0.092000	-0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	P	.	51	17	P	period	-0.065000	-0.095000	-0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	f	,	73	15	f	comma	-0.080000	-0.050000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	f	-	73	16	f	hyphen	-0.070000	-0.040000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	f	.	73	17	f	period	-0.080000	-0.050000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	r	,	85	15	r	comma	-0.100000	-0.070000	0.030000	0.030000	false
+comic-neue	Comic Neue	ofl/comicneue/ComicNeue-Regular.ttf	r	.	85	17	r	period	-0.100000	-0.070000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	a	T	415	98	a	T	-0.120000	-0.090000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	f	i	452	462	f	i	0.070000	0.040000	-0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	v	.	893	2456	v	period	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	v	,	893	2457	v	comma	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	w	.	894	2456	w	period	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	w	,	894	2457	w	comma	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	y	.	900	2456	y	period	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	y	,	900	2457	y	comma	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	.	T	2456	98	period	T	-0.075000	-0.045000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	.	V	2456	113	period	V	-0.100000	-0.070000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	.	W	2456	115	period	W	-0.100000	-0.070000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	.	Y	2456	121	period	Y	-0.100000	-0.070000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	,	T	2457	98	comma	T	-0.075000	-0.045000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	,	V	2457	113	comma	V	-0.100000	-0.070000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	,	W	2457	115	comma	W	-0.100000	-0.070000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	,	Y	2457	121	comma	Y	-0.100000	-0.070000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	:	V	2458	113	colon	V	-0.100000	-0.070000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	:	W	2458	115	colon	W	-0.100000	-0.070000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	:	Y	2458	121	colon	Y	-0.080000	-0.050000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	A	2472	1	slash	A	-0.110000	-0.080000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	c	2472	430	slash	c	-0.090000	-0.060000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	d	2472	436	slash	d	-0.090000	-0.060000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	e	2472	440	slash	e	-0.090000	-0.060000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	m	2472	483	slash	m	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	n	2472	484	slash	n	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	o	2472	490	slash	o	-0.090000	-0.060000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	p	2472	503	slash	p	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	q	2472	505	slash	q	-0.090000	-0.060000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	/	r	2472	506	slash	r	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	-	V	2547	113	hyphen	V	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	-	W	2547	115	hyphen	W	-0.070000	-0.040000	0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	&	T	2712	98	ampersand	T	-0.070000	-0.100000	-0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	&	V	2712	113	ampersand	V	-0.080000	-0.110000	-0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	&	W	2712	115	ampersand	W	-0.080000	-0.110000	-0.030000	0.030000	false
+eb-garamond	EB Garamond	ofl/ebgaramond/EBGaramond[wght].ttf	&	Y	2712	121	ampersand	Y	-0.080000	-0.110000	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	L	v	281	980	L	v	-0.067871	-0.097871	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	L	y	281	998	L	y	-0.067871	-0.097871	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	T	4	411	1346	T	four	-0.067871	-0.097871	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	T	7	411	1350	T	seven	-0.079102	-0.109102	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	c	Y	586	472	c	Y	-0.084961	-0.114961	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	f	J	647	266	f	J	-0.062500	-0.092500	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	r	.	852	1502	r	period	-0.062500	-0.032500	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	v	A	980	2	v	A	-0.067871	-0.037871	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	w	A	984	2	w	A	-0.067871	-0.037871	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	w	,	984	1501	w	comma	-0.073730	-0.043730	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	w	.	984	1502	w	period	-0.073730	-0.043730	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	y	A	998	2	y	A	-0.067871	-0.037871	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	y	J	998	266	y	J	-0.062500	-0.092500	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	7	A	1350	2	seven	A	-0.107910	-0.077910	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	7	J	1350	266	seven	J	-0.096191	-0.126191	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	&	V	1425	456	ampersand	V	-0.062500	-0.032500	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	?	A	1431	2	question	A	-0.062500	-0.032500	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	/	J	1455	266	slash	J	-0.062500	-0.092500	-0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	,	1	1501	1342	comma	one	-0.086426	-0.056426	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	,	?	1501	1431	comma	question	-0.087891	-0.057891	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	.	1	1502	1342	period	one	-0.086426	-0.056426	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	.	?	1502	1431	period	question	-0.087891	-0.057891	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	:	V	1505	456	colon	V	-0.062500	-0.032500	0.030000	0.030000	false
+inter	Inter	ofl/inter/Inter[opsz,wght].ttf	;	V	1508	456	semicolon	V	-0.062500	-0.032500	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	(	J	9	43	parenleft	J	0.073000	0.043000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	(	j	9	75	parenleft	j	0.073000	0.043000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	,	W	13	56	comma	W	-0.073000	-0.043000	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	,	Y	13	58	comma	Y	-0.073000	-0.043000	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	.	W	15	56	period	W	-0.073000	-0.043000	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	.	Y	15	58	period	Y	-0.073000	-0.043000	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	?	c	32	68	question	c	-0.071000	-0.041000	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	?	d	32	69	question	d	-0.071000	-0.041000	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	?	e	32	70	question	e	-0.071000	-0.041000	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	?	o	32	80	question	o	-0.071000	-0.041000	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	?	q	32	82	question	q	-0.071000	-0.041000	0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	[	j	60	75	bracketleft	j	0.073000	0.043000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	!	71	2	f	exclam	0.080000	0.050000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	"	71	3	f	quotedbl	0.073000	0.043000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	'	71	8	f	quotesingle	0.073000	0.043000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	)	71	10	f	parenright	0.076000	0.046000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	?	71	32	f	question	0.080000	0.050000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	T	71	53	f	T	0.098000	0.068000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	V	71	55	f	V	0.098000	0.068000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	W	71	56	f	W	0.098000	0.068000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	Y	71	58	f	Y	0.098000	0.068000	-0.030000	0.030000	false
+libertinus-serif	Libertinus Serif	ofl/libertinusserif/LibertinusSerif-Regular.ttf	f	j	71	75	f	j	0.080000	0.050000	-0.030000	0.030000	false

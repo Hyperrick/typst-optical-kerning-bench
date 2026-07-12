@@ -7,7 +7,9 @@
 > Later academic-display and broad font-metric preservation evidence is recorded
 > in [`academic-display-evidence.md`](academic-display-evidence.md) and
 > [`metric-agreement-audit.md`](metric-agreement-audit.md); those results expose
-> limits that were not visible in the 25-iteration tuning corpus.
+> limits that were not visible in the 25-iteration tuning corpus. The compact
+> candidate's implemented response is documented separately in
+> [`metric-preservation-results.md`](metric-preservation-results.md).
 
 Generated on 2026-06-22 from the pinned corpus after dynamic font calibration,
 Rustybuzz glyph-run shaping, the guarded V5 contact-zone pass, V6 measurement

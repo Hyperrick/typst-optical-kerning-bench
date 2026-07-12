@@ -4,6 +4,7 @@
 //! crate only maps normalized pair evidence to an `em` adjustment.
 
 mod pair;
+mod preservation;
 mod run;
 mod types;
 

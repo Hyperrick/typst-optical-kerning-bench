@@ -1,4 +1,4 @@
-use crate::{DEAD_ZONE, RunPair, normalize};
+use crate::{DEAD_ZONE, RunPair, normalize, preservation::preserve_metric_prior};
 
 pub fn compact_guarded_run(pairs: &mut [RunPair], target_gap: f32, gap_mad: f32, x_to_cap: f32) {
     let sans = target_gap <= 0.235 && x_to_cap >= 0.72;
@@ -96,7 +96,7 @@ pub fn compact_guarded_run(pairs: &mut [RunPair], target_gap: f32, gap_mad: f32,
         );
         adjust_serif_cap_run(pair, sans, target_gap, upper_pairs, strong_upper);
         adjust_wide_serif_lower_run(pair, &serif);
-        pair.delta = normalize(pair.delta);
+        pair.delta = preserve_metric_prior(pair.metric_delta, normalize(pair.delta));
     }
 }
 

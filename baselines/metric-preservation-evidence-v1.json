@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-12",
+  "candidate": "compact-guarded-with-bounded-metric-prior",
+  "typstPrototypeCommit": "071a3e87b8ccc8d85049d85f31ceb186c949b6a9",
+  "preservationRule": {
+    "metricEpsilonEm": 0.0001,
+    "subDeadZoneMetric": "preserve-exactly",
+    "allowance": "clamp(abs(metric) * 0.5, 0.012em, 0.030em)",
+    "signChangesAllowed": false,
+    "appliedAfterPairAndRunRules": true
+  },
+  "metricAgreementAudit": {
+    "fontCount": 15,
+    "characterCount": 82,
+    "candidatePairCount": 100860,
+    "effectiveMetricPairCount": 15271,
+    "before": {
+      "meanAbsoluteDifferenceEm": 0.020558838,
+      "medianAbsoluteDifferenceEm": 0.013005009,
+      "p95AbsoluteDifferenceEm": 0.07999992,
+      "maximumAbsoluteDifferenceEm": 0.27199996,
+      "signChanged": 659
+    },
+    "after": {
+      "meanAbsoluteDifferenceEm": 0.009525716,
+      "medianAbsoluteDifferenceEm": 0.010499996,
+      "p95AbsoluteDifferenceEm": 0.030000001,
+      "maximumAbsoluteDifferenceEm": 0.030000001,
+      "signChanged": 0
+    }
+  },
+  "renderedComparisons": {
+    "noLigatures": {
+      "caseCount": 30,
+      "before": {
+        "meanErrorEm": 0.020011803965120773,
+        "medianErrorEm": 0.02069074212063223,
+        "worstErrorEm": 0.043199999999999995
+      },
+      "after": {
+        "meanErrorEm": 0.022209206972386708,
+        "medianErrorEm": 0.021599999999999998,
+        "worstErrorEm": 0.0624,
+        "worstCase": "inter / ToTaL"
+      }
+    },
+    "ligatures": {
+      "caseCount": 31,
+      "before": {
+        "meanErrorEm": 0.013207894910267748,
+        "medianErrorEm": 0.014387048560236822,
+        "worstErrorEm": 0.024
+      },
+      "after": {
+        "meanErrorEm": 0.015596113761345428,
+        "medianErrorEm": 0.014680505137344762,
+        "worstErrorEm": 0.036,
+        "worstCase": "pacifico / office"
+      }
+    },
+    "academicDisplay100Pt": {
+      "caseCount": 15,
+      "before": {
+        "meanErrorEm": 0.052737338524152924,
+        "medianErrorEm": 0.048,
+        "worstErrorEm": 0.1416
+      },
+      "after": {
+        "meanErrorEm": 0.05561733852415292,
+        "medianErrorEm": 0.048,
+        "worstErrorEm": 0.18239999999999998,
+        "worstCase": "latin-modern-roman / OpenType"
+      }
+    }
+  },
+  "compilerAgreement": {
+    "toleranceEm": 0.00011,
+    "noLigatures": {
+      "passedCases": 30,
+      "caseCount": 30,
+      "maxAbsoluteErrorEm": 0.00004861299999997515
+    },
+    "ligatures": {
+      "passedCases": 31,
+      "caseCount": 31,
+      "maxAbsoluteErrorEm": 0.00004465599999999709
+    }
+  },
+  "metricParity": {
+    "fixture": "prototypes/typst/compiler-cold-benchmark.typ",
+    "sha256": "f30962136aa13c2037f48197c9dce41d4c83580000cd358a5eb81216aed416f2",
+    "byteIdenticalToSameCommitBaseline": true
+  },
+  "performanceMs": {
+    "warm120PagesSevenRuns": {
+      "baselineMetricMedian": 153.8776669985964,
+      "prototypeMetricMedian": 154.51404100167565,
+      "prototypeOpticalHeadingsMedian": 201.11425000141026,
+      "prototypeOpticalEverywhereMedian": 239.30695799936075
+    },
+    "decisionKernel": {
+      "iterations": 1000000,
+      "pairsPerIteration": 8,
+      "medianCompactNsPerPair": 11.651
+    }
+  },
+  "codeSize": {
+    "runtimePairRunPreservationNonblankLines": 683,
+    "runtimeSourceLines": 908,
+    "typstPrototypeProductionLinesApprox": 1690,
+    "largestModuleLines": 478,
+    "newRuntimeDependencies": 0
+  }
+}

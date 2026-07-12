@@ -19,6 +19,8 @@ cost reviewable.
 
 The compact machine-readable snapshot is
 [`baselines/runtime-prototype-evidence-v1.json`](../baselines/runtime-prototype-evidence-v1.json).
+The later bounded-preservation snapshot is
+[`metric-preservation-evidence-v1.json`](../baselines/metric-preservation-evidence-v1.json).
 
 ## Why A Smaller Candidate Exists
 
@@ -34,11 +36,11 @@ workbench implementation into Typst would make review unnecessarily difficult.
 4. use small run-level corrections where pair-local decisions accumulate;
 5. return one deterministic `em` delta per shaped glyph boundary.
 
-The pair/run decision is roughly 660 nonblank lines before tests. It contains no
+The pair/run/preservation decision is 683 nonblank lines before tests. It contains no
 font names, sample strings, glyph ids, raster analysis, runtime machine
 learning, or external dependencies.
 
-The complete Typst experiment is larger: roughly 1,660 production lines before
+The complete Typst experiment is larger: roughly 1,690 production lines before
 tests, including outline flattening, calibration, caches, eligibility checks,
 and the public prototype cast. The code is split into modules below 600 lines,
 but this is still a meaningful compiler feature rather than a tiny heuristic.
@@ -54,7 +56,7 @@ font instances, InDesign Optical renders, crop rules, and rendered error metric.
 | --- | ---: | ---: | ---: | --- |
 | Nearest contour | `0.2914em` | `0.2676em` | `0.8232em` | Simple geometric control; over-tightens substantially |
 | Safe fallback only | `0.1061em` | `0.1008em` | `0.2160em` | Conservative control; leaves many display gaps unchanged |
-| Compact guarded | `0.0200em` | `0.0207em` | `0.0432em` | Extracted compiler-facing candidate |
+| Compact guarded, bounded prior | `0.0222em` | `0.0216em` | `0.0624em` | Current compiler-facing candidate |
 
 The full research candidate scores `0.0170em` mean and `0.0304em` worst on the
 same no-ligature suite. The compact extraction therefore gives up about
@@ -62,22 +64,23 @@ same no-ligature suite. The compact extraction therefore gives up about
 clearer runtime boundary. InDesign remains a comparison reference, not ground
 truth.
 
-The 31-case ligature suite gives the compact extraction `0.0132em` mean and
-`0.0240em` worst rendered difference. The full research reference scores
-`0.0123em` mean and the same `0.0240em` worst value. The final compact ligature
-sheet is shown below, grouped by sample rather than by font:
+The 31-case ligature suite gives the bounded compact extraction `0.0156em` mean
+and `0.0360em` worst rendered difference. The full research reference scores
+`0.0123em` mean and `0.0240em` worst. The current compact ligature sheet is
+shown below, grouped by sample rather than by font:
 
-![InDesign Optical and compact guarded output for the ligature suite](figures/compact-ligature-contact-sheet.webp)
+![InDesign Optical and bounded compact output for the ligature suite](figures/compact-preserving-ligature-contact-sheet.webp)
 
 The later academic-display suite is intentionally reported separately. Across
 Libertinus Serif, STIX Two Text, and Latin Modern at 80 pt and 100 pt, its mean
 rendered difference is about `0.052em`; Latin Modern `OpenType` is the largest
 current row. See [`academic-display-evidence.md`](academic-display-evidence.md).
 
-The broader 15-font metric agreement audit also found `659` sign changes among
-`15,271` pairs with effective font kerning. This weakens the earlier assumption
-that the compact extraction already protects metric positioning broadly enough.
-See [`metric-agreement-audit.md`](metric-agreement-audit.md).
+The broader 15-font metric agreement audit found `659` sign changes among
+`15,271` pairs with effective font kerning in the initial extraction. The
+bounded-prior version has no sign changes and limits the maximum difference to
+`0.0300em`. See
+[`metric-preservation-results.md`](metric-preservation-results.md).
 
 ## Typst Integration
 
@@ -87,7 +90,7 @@ The prototype is based on Typst commit
 collected and before tracking and justification adjustments.
 
 The reviewed experiment is published at
-[`Hyperrick/typst-upstream@908e895`](https://github.com/Hyperrick/typst-upstream/tree/908e89562d72a6b27fc903a67584dbc0fffca3e4).
+[`Hyperrick/typst-upstream@071a3e8`](https://github.com/Hyperrick/typst-upstream/tree/071a3e87b8ccc8d85049d85f31ceb186c949b6a9).
 It is a comparison branch, not an upstream pull request.
 
 The adapter uses four memoized layers:
@@ -143,14 +146,15 @@ should be reproduced on maintainer hardware before drawing a merge conclusion.
 
 | Case | Median |
 | --- | ---: |
-| Unmodified metric | `155.92ms` |
-| Prototype metric | `155.36ms` |
-| Prototype optical headings | `203.76ms` |
-| Prototype optical everywhere | `244.01ms` |
+| Unmodified metric | `153.88ms` |
+| Prototype metric | `154.51ms` |
+| Prototype optical headings | `201.11ms` |
+| Prototype optical everywhere | `239.31ms` |
 
 The fixture contains 240 optical headings. Enabling optical spacing for those
-headings adds about `48.4ms` total over the prototype metric median. The two
-metric medians differ by less than `0.6ms`; output remains byte-identical.
+headings adds about `46.6ms` total over the prototype metric median, or
+`47.2ms` over the unmodified metric median. The two metric medians differ by
+about `0.64ms`; output remains byte-identical.
 
 ### Cold one-page workload, 15 runs
 
@@ -176,8 +180,8 @@ release microbenchmark.
 - no claim yet for combining marks, non-Latin scripts, vertical text, or
   cross-font boundaries;
 - academic display evidence now covers Libertinus, STIX Two Text, and Latin
-  Modern, but the broad metric audit shows that a stronger preservation rule or
-  fallback-only scope remains unresolved;
+  Modern; the bounded metric rule is implemented, while upstream may still
+  prefer a stricter fallback-only scope;
 - variable axes and more professionally kerned preservation controls remain to
   be tested.
 
@@ -209,8 +213,8 @@ cargo build -p typst-cli --release
 
 scripts/verify-typst-prototype.py \
   --typst /path/to/typst/target/release/typst \
-  --summary renders/runtime-candidate-comparison/no-ligatures/compact-guarded/summary.json \
-  --output metrics/typst-prototype-width-verification.json
+  --summary renders/runtime-candidate-comparison/no-ligatures/compact-preserving-v1/summary.json \
+  --output metrics/typst-prototype-width-verification-preserving-no-ligatures-v1.json
 ```
 
 The benchmark fixtures are under `prototypes/typst/`. Generated PDFs, PNGs, and

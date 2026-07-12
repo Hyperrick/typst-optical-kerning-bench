@@ -21,20 +21,22 @@ The current Latin display-text evidence contains 30 no-ligature cases and 31
 ligature-capable cases. The candidate's combined mean rendered difference from
 InDesign Optical is `0.0146em`; the worst current case is `0.0304em`.
 
-The compact kernel has also been checked against the 30-case no-ligature suite:
-its mean rendered difference from InDesign Optical is `0.0200em` and its worst
-current difference is `0.0432em`. The prototype reproduces the workbench's
-expected word-width corrections within `0.000049em` on all 30 cases. On the
-31-case ligature suite, the compact kernel reaches `0.0132em` mean and
-`0.0240em` worst rendered difference and passes the same compiler-width gate.
+The compact kernel now includes a bounded metric-prior rule. On the 30-case
+no-ligature suite its mean rendered difference from InDesign Optical is
+`0.0222em` and its worst difference is `0.0624em`. The prototype reproduces the
+workbench's expected word-width corrections within `0.000049em` on all 30
+cases. On the 31-case ligature suite, the compact kernel reaches `0.0156em`
+mean and `0.0360em` worst rendered difference and passes the same
+compiler-width gate within `0.000045em`.
 
 Later evidence expands the picture rather than simply increasing the headline
 case count. The academic display suite adds Libertinus Serif, STIX Two Text,
-and Latin Modern at 80 pt and 100 pt. Its mean rendered difference is about
-`0.052em`, with Latin Modern `OpenType` as the main outlier. A separate
-15-Google-Font audit retains `15,271` pairs with effective font kerning and
-finds `659` cases where the compact candidate changes the sign. Metric
-preservation is therefore a concrete open issue, not a resolved property.
+and Latin Modern at 80 pt and 100 pt. With bounded preservation, the 100 pt
+suite has `0.0556em` mean rendered difference, with Latin Modern `OpenType` as
+the main outlier. A separate 15-Google-Font audit retains `15,271` pairs with
+effective font kerning. The initial candidate changed the sign in `659` cases;
+the bounded version changes none and limits the maximum difference to
+`0.0300em`.
 
 This is enough to make the direction and implementation boundary concrete. It
 is not an upstream decision, a final API, or a merge-ready patch.
@@ -64,8 +66,9 @@ Typst would need to decide whether an optical mode:
 - only acts as a fallback when no effective kerning is present.
 
 The workbench supports comparison between these directions. The current
-candidate favors conservative adjustment because it preserves good typeface
-spacing and reduces the risk of making ordinary text worse.
+candidate implements conservative bounded adjustment. Metricless pairs retain
+the full optical path; metricful pairs cannot change sign and remain within a
+dynamic `0.012em` to `0.030em` allowance around the shaped value.
 
 ### Metric Semantics
 
@@ -117,18 +120,21 @@ the benchmark rather than user-facing modes.
 
 ### Metric Preservation Budget
 
-The current compact candidate can move weak nonzero metric pairs too far toward
-its optical estimate. The 100 largest differences are dominated by deliberate
-positive positioning before punctuation, especially in Pacifico. Upstream
-discussion should therefore decide whether a first implementation:
+The initial compact candidate moved weak nonzero metric pairs too far toward
+its optical estimate. The 100 largest differences were dominated by deliberate
+positive positioning before punctuation, especially in Pacifico. The current
+prototype implements one reviewable answer:
 
-- preserves every nonzero shaped pair position and only fills missing pairs;
-- allows bounded optical movement around the shaped metric value; or
-- keeps the broader candidate but adds a generic confidence rule that can be
-  justified without font or glyph exceptions.
+- shaped values below `0.006em` are preserved exactly;
+- larger values allow half their magnitude as movement, clamped between
+  `0.012em` and `0.030em`;
+- no nonzero metric pair may change sign;
+- the guarantee is enforced after pair and run rules;
+- no font, glyph, or sample exceptions are used.
 
-See [`metric-agreement-audit.md`](metric-agreement-audit.md). No focused PR
-should be opened until this boundary is chosen.
+See [`metric-preservation-results.md`](metric-preservation-results.md). Upstream
+review still needs to decide whether this bounded policy is preferable to a
+strict missing-only fallback.
 
 ## Proposed Milestones
 
@@ -156,7 +162,7 @@ The prototype:
 See [`typst-integration-map.md`](typst-integration-map.md) and
 [`runtime-prototype-results.md`](runtime-prototype-results.md). The concrete
 compiler experiment is published as
-[`Hyperrick/typst-upstream@908e895`](https://github.com/Hyperrick/typst-upstream/tree/908e89562d72a6b27fc903a67584dbc0fffca3e4),
+[`Hyperrick/typst-upstream@071a3e8`](https://github.com/Hyperrick/typst-upstream/tree/071a3e87b8ccc8d85049d85f31ceb186c949b6a9),
 without an upstream PR.
 
 ### 3. Upstream Design Discussion
@@ -181,14 +187,17 @@ Measure separately:
 
 The current prototype's metric PDF is byte-identical to the same-commit
 baseline, and metric-only timing shows no material measured regression. The
-opt-in pass adds about `48.4ms` to the median compilation time of the current
-120-page, 240-heading workload after caches were split by responsibility.
-These numbers are evidence for discussion, not a stable performance guarantee.
+opt-in pass adds about `47.2ms` to the median compilation time of the current
+120-page, 240-heading workload. Seven-run medians are `153.88ms` for the
+same-commit baseline metric compiler, `154.51ms` for prototype metric,
+`201.11ms` for optical headings, and `239.31ms` for optical everywhere. These
+numbers are evidence for discussion, not a stable performance guarantee.
 
 ### 5. Broader Correctness Evidence
 
-**Status: in progress.** Academic display fonts and the first broad
-font-metric agreement audit are complete; the preservation outliers are not.
+**Status: in progress.** Academic display fonts, the broad font-metric audit,
+and a bounded preservation response are complete. Broader scripts and font
+conditions remain outside the current eligibility slice.
 
 Before a merge proposal, expand the corpus beyond the current Latin display
 focus. Important additions include:
@@ -200,8 +209,8 @@ focus. Important additions include:
 - professional fonts with strong native spacing as preservation controls;
 - intentionally sparse or broken kerning data as fallback controls.
 
-The next correctness pass should focus on the top metric-preservation outliers,
-then add variable axes, combining marks, and non-Latin eligibility controls.
+The next correctness pass should add variable axes, combining marks, and
+non-Latin eligibility controls while keeping the metric-preservation invariant.
 
 ### 6. Focused Upstream PR
 

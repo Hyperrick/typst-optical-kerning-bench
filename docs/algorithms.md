@@ -82,7 +82,9 @@ cacheable.
 - `compact-guarded`: extracts the metric prior, collision/aperture bounds,
   dynamic side-shape classification, and minimal run context into a
   dependency-free runtime kernel. The workbench computes its outline evidence;
-  the kernel only decides the final deterministic delta.
+  the kernel only decides the final deterministic delta. Its final preservation
+  guard keeps sub-dead-zone metric values exact, prevents metric sign changes,
+  and bounds movement around larger shaped values to at most `0.030em`.
 - `safe-fallback-only`: preserves metric kerning if it exists; otherwise uses
   the robust optical outlier correction. Monospaced fonts are preserved.
 
@@ -113,8 +115,10 @@ individually plausible pair decisions from accumulating into a poor word.
 
 `compact-guarded` is the compiler-facing candidate. It deliberately accepts a
 small quality tradeoff to separate the host's font geometry and caching from a
-reviewable pair/run decision kernel. This is why the result remains a guarded
-hybrid rather than a pure nearest-distance or pure whitespace rule.
+reviewable pair/run decision kernel. The later broad metric audit added the
+bounded-prior rule without font or glyph exceptions. This is why the result
+remains a guarded hybrid rather than a pure nearest-distance or pure whitespace
+rule.
 
 ## V6 Calibration Notes
 

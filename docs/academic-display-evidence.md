@@ -44,6 +44,12 @@ secondary outlier. The results are useful evidence, but they are weaker than
 the original five-font word suite and should not be folded into one flattering
 average.
 
+A later bounded metric-prior pass reran the 100 pt suite unchanged. Its mean is
+`0.0556em` and its worst result is `0.1824em`, again Latin Modern `OpenType`.
+This loss of InDesign agreement is the visible cost of preventing the optical
+candidate from moving too far away from existing font positioning. See
+[`metric-preservation-results.md`](metric-preservation-results.md).
+
 ![Academic display comparison at 80 pt](figures/academic-display-80pt.webp)
 
 ![Academic display comparison at 100 pt](figures/academic-display-100pt.webp)
@@ -79,4 +85,3 @@ The compact machine-readable results are:
 - [`metric-academic-display-100pt-v1.json`](../baselines/metric-academic-display-100pt-v1.json)
 - [`optical-academic-display-80pt-v2.json`](../baselines/optical-academic-display-80pt-v2.json)
 - [`optical-academic-display-100pt-v1.json`](../baselines/optical-academic-display-100pt-v1.json)
-
