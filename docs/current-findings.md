@@ -1,5 +1,10 @@
 # Current Findings
 
+> **Status note (2026-07-12):** This file records the 25-iteration research
+> candidate and remains the detailed history for `guarded-profile-hybrid`.
+> The smaller compiler-facing extraction and separate Typst prototype are
+> documented in [`runtime-prototype-results.md`](runtime-prototype-results.md).
+
 Generated on 2026-06-22 from the pinned corpus after dynamic font calibration,
 Rustybuzz glyph-run shaping, the guarded V5 contact-zone pass, V6 measurement
 upgrades, the V8 sans run-context pass, script-run V13 tuning, the first
@@ -252,7 +257,7 @@ The InDesign comparison PDF was regenerated and spot-checked as rendered PNGs.
 - `metric-prior-hybrid` remains an important baseline: it follows good font
   kerning where present, uses optical estimates only when there is a real
   disagreement or missing metric data, and preserves monospaced fonts.
-- `guarded-profile-hybrid` is the leading candidate. V5 adds contact-zone
+- `guarded-profile-hybrid` is the leading research reference. V5 adds contact-zone
   handling for local outline collisions, uppercase punctuation, and
   round-to-overhang pairs without hard-coding words or glyph names.
 - In the 32-sample EB Garamond V5 review, average absolute width error against

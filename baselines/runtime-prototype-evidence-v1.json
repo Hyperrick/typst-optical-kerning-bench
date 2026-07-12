@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-12",
+  "typstBaseCommit": "921bb8318a54caf152acea6554d229f5596eb4a0e",
+  "prototypeCommit": "908e89562d72a6b27fc903a67584dbc0fffca3e4",
+  "candidate": "compact-guarded",
+  "renderedComparisons": {
+    "noLigatures": {
+      "caseCount": 30,
+      "nearestContourDistance": {
+        "meanErrorEm": 0.29136,
+        "medianErrorEm": 0.2676,
+        "worstErrorEm": 0.8232
+      },
+      "safeFallbackOnly": {
+        "meanErrorEm": 0.10607117896163827,
+        "medianErrorEm": 0.1008,
+        "worstErrorEm": 0.216
+      },
+      "compactGuarded": {
+        "meanErrorEm": 0.020011803965120773,
+        "medianErrorEm": 0.02069074212063223,
+        "worstErrorEm": 0.0432
+      },
+      "researchGuardedReference": {
+        "meanErrorEm": 0.0169831816,
+        "worstErrorEm": 0.0303794
+      }
+    },
+    "ligatures": {
+      "caseCount": 31,
+      "compactGuarded": {
+        "meanErrorEm": 0.013207894910267744,
+        "medianErrorEm": 0.014387048560236822,
+        "worstErrorEm": 0.024
+      },
+      "researchGuardedReference": {
+        "meanErrorEm": 0.0123,
+        "worstErrorEm": 0.024
+      }
+    }
+  },
+  "compilerAgreement": {
+    "toleranceEm": 0.00011,
+    "noLigatures": {
+      "passedCases": 30,
+      "caseCount": 30,
+      "maxAbsoluteErrorEm": 0.00004861299999997515
+    },
+    "ligatures": {
+      "passedCases": 31,
+      "caseCount": 31,
+      "maxAbsoluteErrorEm": 0.000045885999999994986
+    }
+  },
+  "metricParity": {
+    "fixture": "prototypes/typst/compiler-cold-benchmark.typ",
+    "sha256": "f30962136aa13c2037f48197c9dce41d4c83580000cd358a5eb81216aed416f2",
+    "byteIdentical": true
+  },
+  "performanceMs": {
+    "warm120PagesSevenRuns": {
+      "baselineMetricMedian": 155.91508299985435,
+      "prototypeMetricMedian": 155.364666999958,
+      "prototypeOpticalHeadingsMedian": 203.75920799961023,
+      "prototypeOpticalEverywhereMedian": 244.01245800072502
+    },
+    "coldOnePageFifteenRuns": {
+      "baselineMetricMedian": 126.51841599836189,
+      "prototypeMetricMedian": 126.80037499922037,
+      "prototypeOpticalHeadingsMedian": 164.8817080003937,
+      "prototypeOpticalEverywhereMedian": 197.84949999848322
+    }
+  },
+  "runtimeKernel": {
+    "pairAndRunDecisionNonblankLines": 663,
+    "runtimeSourceLines": 882,
+    "dependencies": 0,
+    "microbenchmark": {
+      "iterations": 1000000,
+      "pairsPerIteration": 8,
+      "runs": 3,
+      "medianNearestNsPerPair": 1.532,
+      "medianFallbackNsPerPair": 1.534,
+      "medianCompactNsPerPair": 10.736
+    }
+  },
+  "typstPrototype": {
+    "productionLinesApprox": 1660,
+    "largestModuleLines": 478,
+    "newRuntimeDependencies": 0
+  }
+}

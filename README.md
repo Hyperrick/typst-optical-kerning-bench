@@ -9,11 +9,19 @@ The main question is: can an outline-based, cacheable algorithm produce a useful
 optical alternative while preserving good font kerning and remaining plausible
 for Typst?
 
-**For the current Latin display-text corpus, yes.** The
-`guarded-profile-hybrid` candidate follows InDesign Optical closely enough to
-justify a focused compiler prototype: 61/61 current cases are measured, with a
-combined mean rendered difference of `0.0146em` and a worst current difference
-of `0.0304em`.
+**For the current Latin display-text corpus, yes.** The research
+`guarded-profile-hybrid` candidate reached a combined mean rendered difference
+of `0.0146em` from InDesign Optical across 61/61 measured cases. A smaller
+`compact-guarded` kernel now preserves the main behavior on the 30-case
+no-ligature suite with a mean difference of `0.0200em` and a worst difference
+of `0.0432em`. On the 31-case ligature suite it reaches `0.0132em` mean and
+`0.0240em` worst, close to the research reference's `0.0123em`/`0.0240em`.
+
+That kernel also runs inside a separate Typst compiler prototype. Its current
+metric output is byte-identical to an unmodified compiler built from the same
+Typst commit, while the opt-in mode applies the expected optical corrections
+after shaping in all 61 current comparison cases. This moves the project from
+algorithm-only evaluation to a measurable integration candidate.
 
 ![Typst Metric, InDesign Optical, and the Typst candidate compared on the same word](site/assets/main-comparison.png)
 
@@ -21,6 +29,8 @@ This result does not mean that InDesign is ground truth, that optical spacing is
 always better, or that the current research code is merge-ready. It means that
 there is now a concrete algorithmic direction and reproducible evidence for an
 upstream discussion.
+
+![Typst Metric and the opt-in Typst Optical prototype across five fonts](docs/figures/typst-optical-prototype-contact-sheet.png)
 
 ## What Optical Kerning Changes
 
@@ -45,7 +55,7 @@ reverse-engineering target. Before any optical score is accepted, the workbench
 checks that Typst and InDesign use the same static font instance, text, size,
 ligature setting, and closely matching metric output.
 
-Only then does it compare Typst Metric, InDesign Optical, Typst Guarded Optical,
+Only then does it compare Typst Metric, InDesign Optical, the optical candidate,
 and a rendered overlay:
 
 ![Cross-font comparison table](site/assets/cross-font-evidence.png)
@@ -57,14 +67,17 @@ This is an independent support artifact for the open
 discussion. It is not an official Typst project, not a ready-to-merge patch, and
 not a final API proposal.
 
-The next step is not to copy the entire research crate into Typst. The next step
-is to agree on behavior and complexity, then extract the smallest post-shaping,
-cacheable runtime kernel for a deliberately opt-in compiler prototype. The
-upstream discussion also needs to define how base advances, legacy `kern`, and
-GPOS positioning interact before terms such as `metric` become a public API.
+The extraction and first compiler experiment are now complete. The repository
+contains a dependency-free decision kernel, a map to Typst's shaping pipeline,
+and evidence from a separate compiler branch. The next upstream step is review:
+maintainers need to decide whether the behavior and complexity are worth
+pursuing, what the public API should be, and how broad the first supported text
+slice may be. No upstream PR has been opened.
 
 See [`docs/path-to-typst.md`](docs/path-to-typst.md) for the proposed milestones,
-open decisions, and useful community contributions. The visual overview is at
+open decisions, and useful community contributions. See
+[`docs/runtime-prototype-results.md`](docs/runtime-prototype-results.md) for the
+prototype architecture, measurements, and limitations. The visual overview is at
 <https://hyperrick.github.io/typst-optical-kerning-bench/>.
 
 ## Workbench Loop
@@ -72,7 +85,7 @@ open decisions, and useful community contributions. The visual overview is at
 1. shape text with Rustybuzz,
 2. evaluate adjacent shaped glyph pairs from font outlines,
 3. emit deterministic `em` deltas,
-4. render Typst Metric, Typst Guarded Optical, and InDesign Optical,
+4. render Typst Metric, the selected optical candidate, and InDesign Optical,
 5. compare cropped PNGs and overlays.
 
 ## Typst Context
@@ -195,6 +208,7 @@ Implemented candidate algorithms:
 - `area-balance`
 - `metric-prior-hybrid`
 - `guarded-profile-hybrid`
+- `compact-guarded`
 - `safe-fallback-only`
 
 The current candidate did not start as a fixed conclusion. The suite first kept
@@ -213,12 +227,13 @@ the constraints that make them plausible for a future Typst implementation.
 See [`docs/research-alignment.md`](docs/research-alignment.md) for the external
 sources that shaped the current benchmark rules.
 
-The current main candidate is `guarded-profile-hybrid`. It combines
-metric-prior kerning, contact-zone awareness, shaped ligature handling, and
-run-context refinements from 25 benchmark iterations across sans-like, serif,
-script, and comic-style/display fonts. See
+`guarded-profile-hybrid` remains the higher-complexity research reference. The
+compiler-facing candidate is `compact-guarded`: a dependency-free extraction
+of the metric prior, outline evidence, collision/aperture safeguards, and
+minimal run context developed over 25 benchmark iterations. It contains no
+font-name, word, glyph-id, raster, or machine-learning exceptions. See
 [`docs/algorithms.md`](docs/algorithms.md) and
-[`docs/optical-comparison-suite.md`](docs/optical-comparison-suite.md).
+[`docs/runtime-prototype-results.md`](docs/runtime-prototype-results.md).
 For a short public narrative, see
 [`docs/towards-optical-kerning-in-typst.md`](docs/towards-optical-kerning-in-typst.md).
 For the technical Typst-facing review paper, see

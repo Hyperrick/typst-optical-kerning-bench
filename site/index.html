@@ -49,16 +49,18 @@
         <div class="answer" id="answer">
           <p class="answer-label">Current answer</p>
           <p class="answer-text">
-            Yes, for the current Latin display-text corpus, the
-            <code>guarded-profile-hybrid</code> candidate follows InDesign
-            Optical closely enough to justify a focused Typst compiler
+            Yes, for the current Latin display-text corpus. The strongest
+            research candidate follows InDesign Optical closely, and a smaller
+            extracted kernel now runs inside a separate Typst compiler
             prototype.
           </p>
           <p>
-            Across 61 measured cases, its combined mean rendered difference
-            from InDesign Optical is <code>0.0146em</code>; the worst current
-            case is <code>0.0304em</code>. This is evidence for a technical
-            direction, not proof of universal typographic quality.
+            The research candidate's combined mean difference across 61 cases
+            is <code>0.0146em</code>. The smaller compiler-facing candidate
+            scores <code>0.0200em</code> mean across the current 30-case
+            no-ligature suite and <code>0.0132em</code> across the 31-case
+            ligature suite. This is evidence for a technical direction, not
+            proof of universal typographic quality.
           </p>
         </div>
         <figure class="hero-figure">
@@ -166,11 +168,12 @@
       <section id="algorithm">
         <h2>What the algorithm does</h2>
         <p>
-          The result of this work is an actual algorithm candidate named
-          <code>guarded-profile-hybrid</code>. It was not chosen upfront. The
-          benchmark first tested nearest-contour distance, whitespace profiles,
-          area balance, metric-prior blending, and conservative fallback
-          behavior. Their failures led to the guarded hybrid.
+          The result of this work is a guarded hybrid algorithm, not one spacing
+          constant. The benchmark first tested nearest-contour distance,
+          whitespace profiles, area balance, metric-prior blending, and
+          conservative fallback behavior. Their failures led to the full
+          <code>guarded-profile-hybrid</code> research reference and then to the
+          smaller <code>compact-guarded</code> runtime candidate.
         </p>
         <ol class="pipeline">
           <li><strong>Shape first.</strong> Work with the real glyph run and active OpenType features.</li>
@@ -196,7 +199,12 @@
             href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/algorithms.md"
             target="_blank"
             rel="noreferrer"
-          >algorithm and candidate-selection notes</a>
+          >algorithm and candidate-selection notes</a>, the
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/runtime-prototype-results.md"
+            target="_blank"
+            rel="noreferrer"
+          >runtime and compiler prototype results</a>,
           or the
           <a
             href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/typst-optical-kerning-evaluation.md"
@@ -245,6 +253,16 @@
           InDesign Optical. They make regressions visible; they do not replace
           visual review or prove that InDesign is always preferable.
         </p>
+        <p>
+          The extracted <code>compact-guarded</code> kernel was compared with
+          two deliberately simpler controls on the same 30 no-ligature cases:
+          nearest contour scored <code>0.2914em</code> mean, fallback only
+          <code>0.1061em</code>, and compact guarded <code>0.0200em</code>.
+          On the 31-case ligature suite, compact guarded scores
+          <code>0.0132em</code> mean and <code>0.0240em</code> worst. The separate
+          compiler prototype matches the workbench's expected width correction
+          in all 61 current cases within <code>0.000049em</code>.
+        </p>
         <p class="detail-link">
           See the
           <a
@@ -274,14 +292,14 @@
             <p>Reproducible fonts, shaping, algorithms, InDesign baselines, visual sheets, metrics, and regression cases.</p>
           </article>
           <article>
-            <p class="step">2 · Current</p>
-            <h3>Upstream design discussion</h3>
-            <p>Agree on scope, complexity budget, fallback semantics, and how advance widths, legacy <code>kern</code>, and GPOS interact.</p>
+            <p class="step">2 · Complete</p>
+            <h3>Small compiler prototype</h3>
+            <p>Extracted dependency-free runtime kernel, post-shaping Typst integration, font/glyph caches, parity checks, and compiler measurements.</p>
           </article>
           <article>
-            <p class="step">3 · Proposed</p>
-            <h3>Small compiler prototype</h3>
-            <p>Extract the smallest runtime kernel from the research code, place it after shaping, keep it opt-in, and add caches.</p>
+            <p class="step">3 · Current</p>
+            <h3>Upstream design review</h3>
+            <p>Decide whether the behavior and complexity are worth pursuing, then agree on API, scope, and font-positioning semantics.</p>
           </article>
           <article>
             <p class="step">4 · Before PR</p>
@@ -289,6 +307,16 @@
             <p>Measure compiler cost, expand scripts and font classes, lock compatibility tests, and only then propose a focused PR.</p>
           </article>
         </div>
+        <figure class="wide-figure compact-figure">
+          <img
+            src="assets/typst-prototype-contact-sheet.png"
+            alt="Typst Metric and the opt-in Typst Optical compiler prototype across six samples and five fonts."
+          >
+          <figcaption>
+            Output from the separate Typst compiler prototype. Each sample is
+            stacked across five fonts before the next sample begins.
+          </figcaption>
+        </figure>
         <p>
           The exact API remains open. A deliberately small sketch is to preserve
           the current boolean behavior and add an optical mode rather than
@@ -306,7 +334,13 @@
             href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/path-to-typst.md"
             target="_blank"
             rel="noreferrer"
-          >Path to a Typst Prototype</a>.
+          >Path to a Typst Prototype</a>. Concrete implementation and timing
+          evidence is in the
+          <a
+            href="https://github.com/Hyperrick/typst-optical-kerning-bench/blob/main/docs/runtime-prototype-results.md"
+            target="_blank"
+            rel="noreferrer"
+          >runtime prototype report</a>.
         </p>
       </section>
 
@@ -316,6 +350,10 @@
           <article>
             <h3><code>crates/optikern-core</code></h3>
             <p>Font loading, shaping, outline profiles, algorithm candidates, guards, and tests.</p>
+          </article>
+          <article>
+            <h3><code>crates/optikern-runtime</code></h3>
+            <p>Dependency-free compact pair/run decision kernel used by the compiler experiment.</p>
           </article>
           <article>
             <h3><code>scripts/</code></h3>

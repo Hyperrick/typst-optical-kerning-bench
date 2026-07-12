@@ -79,6 +79,10 @@ cacheable.
   sans-like display words. This is intended to catch cases such as Libre
   Baskerville `G|o`, EB Garamond `Y|F`, `P|.`, `T|.`, and `o|T` without
   hard-coding a font or glyph name.
+- `compact-guarded`: extracts the metric prior, collision/aperture bounds,
+  dynamic side-shape classification, and minimal run context into a
+  dependency-free runtime kernel. The workbench computes its outline evidence;
+  the kernel only decides the final deterministic delta.
 - `safe-fallback-only`: preserves metric kerning if it exists; otherwise uses
   the robust optical outlier correction. Monospaced fonts are preserved.
 
@@ -101,12 +105,16 @@ The simpler outline algorithms were useful as probes:
 - `safe-fallback-only` established the conservative lower-risk baseline for
   sparse or missing metric kerning.
 
-`guarded-profile-hybrid` is the current candidate because it keeps the useful
-parts of those tests and adds the missing safety model: metric kerning remains
-the base signal, outline profiles provide optical evidence, nearest-contour
-checks catch local danger, and run context prevents individually plausible pair
-decisions from accumulating into a poor word. This is why the result is a
-guarded hybrid rather than a pure nearest-distance or pure whitespace rule.
+`guarded-profile-hybrid` remains the research reference because it keeps the
+useful parts of those tests and adds the missing safety model: metric kerning
+remains the base signal, outline profiles provide optical evidence,
+nearest-contour checks catch local danger, and run context prevents
+individually plausible pair decisions from accumulating into a poor word.
+
+`compact-guarded` is the compiler-facing candidate. It deliberately accepts a
+small quality tradeoff to separate the host's font geometry and caching from a
+reviewable pair/run decision kernel. This is why the result remains a guarded
+hybrid rather than a pure nearest-distance or pure whitespace rule.
 
 ## V6 Calibration Notes
 
@@ -262,6 +270,25 @@ This shape is closer to what a Typst-side implementation would need: the
 algorithm stays deterministic, cacheable, and inspectable, while still admitting
 that optical kerning needs several interacting guards rather than one universal
 formula.
+
+## Compact Runtime Boundary
+
+`crates/optikern-runtime` contains no font parser, shaper, image library, PDF
+tooling, CLI, or Typst dependency. Its host supplies normalized `PairEvidence`
+for adjacent shaped glyphs. The kernel then provides three directly comparable
+decisions:
+
+- `nearest_contour`, the intentionally naive geometric control;
+- `fallback_only`, the conservative control that preserves nonzero metric
+  positioning;
+- `compact_guarded`, the current extracted pair and run decision.
+
+The pair/run decision is roughly 660 nonblank lines before tests. It contains
+no font names, sample strings, glyph ids, raster checks, or learned model. A
+release microbenchmark over eight representative evidence records currently
+measures about `10ns` per warm compact pair on the development machine. Outline
+flattening, profile sampling, calibration, and cache misses are measured
+separately because they dominate real cold-path cost.
 
 ## Typst Compatibility Constraints
 
